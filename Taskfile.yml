@@ -1,0 +1,210 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  BACKEND_DIR: backend
+  FRONTEND_DIR: frontend
+
+tasks:
+  default:
+    desc: 利用可能なタスクを表示
+    cmds:
+      - task --list
+
+  setup:
+    desc: 初期セットアップ（環境変数、依存関係のインストール）
+    cmds:
+      - cp .env.example .env
+      - docker-compose up -d postgres
+      - task: backend:deps
+      - task: frontend:deps
+    status:
+      - test -f .env
+
+  start:
+    desc: 開発環境を起動（DB + バックエンド + フロントエンド）
+    deps: [db:start]
+    cmds:
+      - task: backend:dev &
+      - task: frontend:dev
+    interactive: true
+
+  stop:
+    desc: 開発環境を停止
+    cmds:
+      - docker-compose down
+      - pkill -f "go run"
+      - pkill -f "npm start"
+
+  clean:
+    desc: データベースを含めて完全に削除
+    cmds:
+      - docker-compose down -v
+      - docker system prune -f
+
+  dev:
+    desc: 開発環境一式起動（adminer含む）
+    cmds:
+      - docker-compose --profile dev up -d
+      - echo "✨ 開発環境が起動しました！"
+      - echo "📊 Adminer: http://localhost:8080"
+      - echo "⚡ バックエンド: task backend:dev"
+      - echo "🚀 フロントエンド: task frontend:dev"
+
+  # データベース関連
+  db:start:
+    desc: PostgreSQLを起動
+    cmds:
+      - docker-compose up -d postgres
+      - echo "🐘 PostgreSQL started at localhost:5432"
+
+  db:stop:
+    desc: PostgreSQLを停止
+    cmds:
+      - docker-compose stop postgres
+
+  db:reset:
+    desc: データベースをリセット（全データ削除）
+    cmds:
+      - docker-compose down postgres -v
+      - docker-compose up -d postgres
+      - echo "🔄 Database reset completed"
+
+  db:logs:
+    desc: PostgreSQLのログを表示
+    cmds:
+      - docker-compose logs -f postgres
+
+  # バックエンド関連
+  backend:deps:
+    desc: バックエンドの依存関係をインストール
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  backend:dev:
+    desc: バックエンドを開発モードで起動
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - go run main.go
+    env:
+      GO_ENV: development
+
+  backend:build:
+    desc: バックエンドをビルド
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - go build -o ../bin/backend main.go
+
+  backend:test:
+    desc: バックエンドのテストを実行
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - go test ./... -v
+
+  backend:lint:
+    desc: バックエンドのLintを実行
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - golangci-lint run
+
+  # フロントエンド関連
+  frontend:deps:
+    desc: フロントエンドの依存関係をインストール
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - npm install
+
+  frontend:dev:
+    desc: フロントエンドを開発モードで起動
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - npm start
+
+  frontend:build:
+    desc: フロントエンドをビルド
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - npm run build
+
+  frontend:test:
+    desc: フロントエンドのテストを実行
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - npm test
+
+  frontend:lint:
+    desc: フロントエンドのLintを実行
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - npm run lint
+
+  # テスト関連
+  test:
+    desc: 全体のテストを実行
+    cmds:
+      - task: backend:test
+      - task: frontend:test
+
+  lint:
+    desc: 全体のLintを実行
+    cmds:
+      - task: backend:lint
+      - task: frontend:lint
+
+  # ビルド関連
+  build:
+    desc: 全体をビルド
+    cmds:
+      - task: backend:build
+      - task: frontend:build
+
+  # デプロイ関連
+  deploy:prep:
+    desc: デプロイ準備（ビルド + テスト）
+    cmds:
+      - task: lint
+      - task: test
+      - task: build
+      - echo "🚢 Ready for deployment!"
+
+  # ヘルス関連
+  health:
+    desc: サービスの健康状態をチェック
+    cmds:
+      - echo "🔍 Checking services..."
+      - docker-compose ps
+      - curl -f http://localhost:8000/health || echo "❌ Backend down"
+      - curl -f http://localhost:3000 || echo "❌ Frontend down"
+
+  # ログ関連
+  logs:
+    desc: 全サービスのログを表示
+    cmds:
+      - docker-compose logs -f
+
+  logs:backend:
+    desc: バックエンドのログを表示（開発時）
+    cmds:
+      - echo "Backend logs (use Ctrl+C to exit)"
+
+  # 便利コマンド
+  fresh:
+    desc: 完全に新しい状態で環境を起動
+    cmds:
+      - task: clean
+      - task: setup
+      - task: start
+
+  install:task:
+    desc: Taskをインストール（初回のみ）
+    cmds:
+      - |
+        if ! command -v task &> /dev/null; then
+          echo "Installing Task..."
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+        else
+          echo "✅ Task is already installed"
+        fi
