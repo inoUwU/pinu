@@ -22,11 +22,7 @@ services:
     networks:
       - portfolio_network
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${DB_USER:-portfolio_user} -d ${DB_NAME:-portfolio}",
-        ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-portfolio_user} -d ${DB_NAME:-portfolio}" ]
       interval: 10s
       timeout: 5s
       retries: 5
