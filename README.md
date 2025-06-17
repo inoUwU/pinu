@@ -1,66 +1,99 @@
 # Pinu
 
-Pinu is toy ordering system for restaurants.
+ポートフォリオプロジェクト用のフルスタック開発環境
 
-## 🚀 クイックスタート
+## 概要
 
-### 前提条件
+このプロジェクトは、バックエンド（Go）とフロントエンドを含むポートフォリオアプリケーションです。Task ランナーと Docker を利用して簡単に開発環境を構築できます。
 
-- [Task](https://taskfile.dev/) のインストール
+## 前提条件
 
-# Task未インストールの場合
+- [Docker](https://www.docker.com/get-started)
+- [Task](https://taskfile.dev) (インストールコマンド: `sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d`)
+- Go 言語環境
+- Node.js と npm
+
+## セットアップ
+
+初めてプロジェクトをセットアップする場合：
 
 ```bash
+# Task ツールをインストール（初回のみ）
 task install:task
+
+# プロジェクトをセットアップ（環境変数、依存関係のインストール）
+task setup
 ```
 
-1. 環境のセットアップ
-   ```bash
-   bashtask setup
-   ```
-2. 開発環境の起動
-   ```bash
-   task start # 一括起動
-   ```
-
-# または個別起動
+## 開発環境の起動
 
 ```bash
-task db:start
-task backend:dev
-task frontend:dev
+# 開発環境を起動（データベース、バックエンド、フロントエンド）
+task start
+
+# 開発環境一式（adminer含む）を起動
+task dev
 ```
 
-3. アクセス
+開発環境起動後、以下のURLでアクセスできます：
 
-- フロントエンド: http://localhost:3000
-- バックエンド: http://localhost:8000
-- DB管理画面: http://localhost:8080
+- バックエンド: <http://localhost:8000>
+- フロントエンド: <http://localhost:3000>
+- Adminer (DB管理): <http://localhost:8080>
 
-🛠️ 開発用コマンド
-bash# 利用可能なコマンド一覧
-task
+## 主要なタスク
 
-# 開発環境一式起動（adminer含む）
+| タスク | 説明 |
+|--------|------|
+| `task setup` | 初期セットアップ（環境変数、依存関係のインストール） |
+| `task start` | 開発環境を起動（DB + バックエンド + フロントエンド） |
+| `task dev` | 開発環境一式起動（adminer含む） |
+| `task stop` | 開発環境を停止 |
+| `task clean` | データベースを含めて完全に削除 |
+| `task test` | 全体のテストを実行 |
+| `task build` | 全体をビルド |
+| `task deploy:prep` | デプロイ準備（ビルド + テスト） |
+| `task fresh` | 完全に新しい状態で環境を起動 |
 
-task dev
+すべてのタスクを表示するには:
 
-# テスト実行
+```bash
+task --list
+```
 
-task test
+## データベース
 
-# リント実行
+PostgreSQL データベースは Docker コンテナとして実行され、以下のデフォルト設定が適用されます：
 
-task lint
+- データベース名: `portfolio`
+- ユーザー名: `portfolio_user`
+- パスワード: `portfolio_pass`
+- ポート: `5432`
 
-# ビルド
+データベース関連のタスク：
 
-task build
+```bash
+task db:start    # PostgreSQLを起動
+task db:stop     # PostgreSQLを停止
+task db:reset    # データベースをリセット（全データ削除）
+task db:logs     # PostgreSQLのログを表示
+```
 
-# 完全リセット
+## プロジェクト構造
 
-task fresh
+```bash
+.
+├── backend/         # Goバックエンドコード
+├── frontend/        # フロントエンドコード
+├── database/        # データベース関連ファイル
+│   ├── init/        # 初期化SQL
+│   └── postgresql.conf  # PostgreSQL設定
+├── bin/             # ビルド生成物
+├── compose.yml      # Docker Compose設定
+├── Taskfile.yml     # Taskランナー設定
+└── .env             # 環境変数（セットアップ時に作成）
+```
 
-# ヘルスチェック
+## ライセンス
 
-task health
+[MIT License](LICENSE)
