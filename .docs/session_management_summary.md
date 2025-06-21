@@ -16,18 +16,18 @@ QRオーダーシステムのセッション管理において重要な要件：
 
 ### 初期設計案：QRコードバージョン管理
 
-```
 テーブル: table_status
+
 - table_id (PK): テーブルの識別子（例：T003）
 - status: テーブルの状態（空席/使用中/会計済み）
 - current_order_group_id: 現在の注文グループID
 - qr_code_version: QRコードのバージョン（テーブルリセット時に更新）
 
 テーブル: sessions
+
 - session_id (PK): セッションの識別子
 - table_id (FK): 関連するテーブルID
 - qr_code_version: セッション作成時のQRコードバージョン
-```
 
 特徴：
 
@@ -42,18 +42,18 @@ QRオーダーシステムのセッション管理において重要な要件：
 
 ### 改善案：静的QRコード + リダイレクト + UUID
 
-```
 テーブル: tables
+
 - table_id (PK): テーブルの識別子（例：T003）
 - status: テーブルの状態（空席/使用中/会計済み）
 - current_group_id: 現在の注文グループID
 
 テーブル: order_tokens
+
 - token (PK): UUIDトークン
 - table_id (FK): 関連するテーブルID
 - created_at: 作成時間
 - expires_at: 有効期限（オプション）
-```
 
 特徴：
 
@@ -72,14 +72,15 @@ QRオーダーシステムのセッション管理において重要な要件：
 
 ### データ構造
 
-```
 テーブル: tables
+
 - table_id (PK): テーブルの識別子（例：T003）
 - status: テーブルの状態（空席/使用中/会計済み）
 - current_group_id: 現在の注文グループID
 - last_updated: 最終更新時間
 
 テーブル: order_tokens
+
 - token (PK): UUIDトークン
 - table_id (FK): 関連するテーブルID
 - group_id: 注文グループID
@@ -88,6 +89,7 @@ QRオーダーシステムのセッション管理において重要な要件：
 - expires_at: 有効期限（フェイルセーフ用）
 
 テーブル: orders
+
 - order_id (PK): 注文ID
 - group_id (FK): 注文グループID
 - menu_item_id: 商品ID
@@ -95,7 +97,6 @@ QRオーダーシステムのセッション管理において重要な要件：
 - price: 価格
 - status: 注文状態
 - created_at: 注文時間
-```
 
 ### フロー
 
