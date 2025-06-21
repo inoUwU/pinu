@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome lint",
+    "format": "biome format ",
+    "check": "biome check ",
+    "lint:fix": "biome lint --only ",
+    "format:fix": "biome format  --write",
+    "check:fix": "biome check --only "
   },
   "dependencies": {
     "@conform-to/react": "^1.7.0",
@@ -25,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "lefthook": "^1.11.14",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"

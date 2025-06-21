@@ -1,54 +1,59 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"extends": [],
-	"files": {
-		"ignoreUnknown": true
-	},
-	"organizeImports": {
-		"enabled": true
-	},
-	"linter": {
-		"ignore": [
-			".next",
-			"node_modules",
-			"public"
-		],
-		"rules": {
-			"recommended": true
-		}
-	},
-	"formatter": {
-		"enabled": true,
-		"formatWithErrors": true,
-		"ignore": [
-			".next",
-			"node_modules",
-			"public"
-		],
-		"indentWidth": 2,
-		"indentStyle": "space",
-		"lineWidth": 80
-	},
-	"javascript": {
-		"parser": {
-			"unsafeParameterDecoratorsEnabled": true
-		},
-		"formatter": {
-			"quoteStyle": "single",
-			"jsxQuoteStyle": "single",
-			"semicolons": "always",
-			"arrowParentheses": "asNeeded"
-		}
-	},
-	"json": {
-		"parser": {
-			"allowComments": true
-		},
-		"formatter": {
-			"enabled": true,
-			"indentStyle": "space",
-			"indentWidth": 2,
-			"lineWidth": 80
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "extends": [],
+  "files": {
+    "ignoreUnknown": true
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "linter": {
+    "includes": ["**", "!**/.next", "!**/node_modules", "!**/public"],
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "includes": ["**", "!**/.next", "!**/node_modules", "!**/public"],
+    "indentWidth": 2,
+    "indentStyle": "space",
+    "lineWidth": 80
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    },
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "semicolons": "always",
+      "arrowParentheses": "asNeeded"
+    }
+  },
+  "css": {
+    "formatter": { "enabled": true }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineWidth": 80
+    }
+  }
 }
