@@ -2,9 +2,22 @@
 applyTo: "**"
 ---
 
-- 日本語で指示を提供します。英語で思考してください。
-- 回答は日本語で行ってください。
-- 変数名や関数名は意味のある名前を使ってください。
-- コメントは簡潔かつ具体的に書いてください。
-- マジックナンバーは避け、定数として定義してください。
-- コードの可読性を重視してください。
+- Provide instructions in Japanese. Think in English.
+- Provide commit message in English.
+- Answer in Japanese.
+- Use meaningful variable and function names.
+- Write concise and specific comments.
+- Avoid magic numbers; define them as constants.
+- Prioritize code readability.
+- Write code with the DRY (Don't Repeat Yourself) principle in mind.
+- Follow SOLID and KISS (Keep It Simple, Stupid) principles.
+- Emphasize type safety; actively use type definitions and annotations.
+- Handle errors carefully, considering exceptions and failure cases.
+- Structure code for testability and make it easy to test.
+- Ensure functions and classes follow the single responsibility principle.
+- Consider performance and scalability.
+- Be aware of security risks (e.g., injection, XSS, etc.).
+- Write appropriate documentation and type comments.
+- Write code with code review in mind; use clear structure, naming, and comments for others to understand.
+- Minimize dependencies and aim for loose coupling.
+- Remove unnecessary code, unused variables, and functions.
