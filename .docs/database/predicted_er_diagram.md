@@ -69,7 +69,6 @@ erDiagram
     menus       ||--o{ order_items : "is ordered in"
     order_items }o--|| order_item_options : "has"
     menu_options }|--o{ order_item_options : "is selected for"
-
 ```
 
 ## 各テーブルの説明
