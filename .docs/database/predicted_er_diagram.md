@@ -6,8 +6,20 @@ erDiagram
         string key PK "設定キー (例: logo_url, table_count)"
         string value "設定値"
     }
+    
+    users {
+        string user_id PK "ユーザーID (UUIDv7)"
+        string username "ログインID"
+        string password_hash "パスワードハッシュ"
+        string name "表示名"
+        string email "メールアドレス"
+        string phone "電話番号"
+        timestamp created_at "アカウント作成時間"
+        boolean is_admin "管理者フラグ"
+        string password_salt "パスワードソルト"
+    }
 
-    tables ||--o{ order_tokens : "has"
+    tables ||--o{ table_sessions : "has"
     tables {
         string table_id PK "テーブルの識別子（例：T003）"
         string status "テーブルの状態（空席/使用中/会計済み）"
@@ -15,15 +27,37 @@ erDiagram
         timestamp last_updated "最終更新時間"
     }
 
-    order_tokens ||--o{ orders : "belongs to"
-    order_tokens {
-        uuid token PK "UUIDトークン"
+    table_sessions ||--o{ orders : "belongs to"
+    table_sessions {
+        uuid session_id PK "セッションID(uuidv7)"
         string table_id FK "関連するテーブルID"
         string group_id FK "注文グループID (UUIDv7)"
         timestamp created_at "作成時間"
         timestamp last_used "最終使用時間"
         timestamp expires_at "有効期限（フェイルセーフ用/2時間）"
         boolean is_active "有効フラグ（会計時や期限切れでfalse）"
+    }
+    
+    orders {
+        string order_id PK "注文ID"
+        string group_id FK "注文グループID (UUIDv7)"
+        string menu_item_id "商品ID"
+        integer quantity "数量"
+        decimal price "価格"
+        string status "注文状態"
+        timestamp created_at "注文時間"
+    }
+
+    order_items {
+        string id PK "注文明細ID"
+        string order_id FK "注文ID"
+        string menu_id FK "メニューID"
+        integer quantity "数量"
+    }
+
+    order_item_options {
+        string order_item_id FK "注文明細ID"
+        string option_id FK "オプションID"
     }
 
     categories {
@@ -53,27 +87,6 @@ erDiagram
         string option_id FK "オプションID"
     }
 
-    orders {
-        string order_id PK "注文ID"
-        string group_id FK "注文グループID (UUIDv7)"
-        string menu_item_id "商品ID"
-        integer quantity "数量"
-        decimal price "価格"
-        string status "注文状態"
-        timestamp created_at "注文時間"
-    }
-
-    order_items {
-        string id PK "注文明細ID"
-        string order_id FK "注文ID"
-        string menu_id FK "メニューID"
-        integer quantity "数量"
-    }
-
-    order_item_options {
-        string order_item_id FK "注文明細ID"
-        string option_id FK "オプションID"
-    }
 
     categories  ||--o{ menus : "contains"
     menus       }|--|| menu_option_assignments : "can have"
