@@ -2,8 +2,7 @@
 applyTo: "**"
 ---
 
-- Provide instructions in Japanese. Think in English.
-- Provide commit message in English.
+- Provide instructions in Japanese. Think in English
 - Answer in Japanese.
 - Use meaningful variable and function names.
 - Write concise and specific comments.
