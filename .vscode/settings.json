@@ -17,6 +17,9 @@
     },
     "github.copilot.chat.commitMessageGeneration.instructions": [
         {
+            "file": ".docs/commit-guidelines.md",
+        },
+        {
             "text": "Make sure you write your commit message in Japanese."
         },
         {
