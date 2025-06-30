@@ -19,7 +19,7 @@ erDiagram
     tables ||--o{ table_sessions : "has"
     tables {
         string table_id PK "テーブルID（例：T003）"
-        string status "テーブルの状態（空席/使用中/会計済み）"
+        table_status status "テーブルの状態 (ENUM)"
         string current_orders_id FK "現在の注文ID (UUIDv7)"
         timestamp last_updated "最終更新時間"
     }
@@ -39,7 +39,7 @@ erDiagram
         string menu_id FK "メニューID"
         integer quantity "数量"
         decimal price_at_order "注文時の価格"
-        string status "注文状態 (例: 調理中, 提供済み)"
+        order_status status "注文状態 (ENUM)"
         timestamp created_at "注文時間"
     }
 
@@ -58,7 +58,7 @@ erDiagram
         string menu_id PK "メニューID"
         string name "メニュー名"
         string description "説明"
-        integer price "価格"
+        decimal price "価格 (DECIMAL)"
         string image_url "画像URL"
         boolean is_sold_out "品切れフラグ"
         string category_id FK "カテゴリID"
@@ -67,7 +67,7 @@ erDiagram
     menu_options {
         string menu_option_id PK "オプションID"
         string name "オプション名 (例: 大盛り, 辛さ増し)"
-        integer price "追加料金"
+        decimal price "追加料金 (DECIMAL)"
     }
 
     menu_option_assignments {
@@ -95,6 +95,15 @@ erDiagram
 - **menu_option_assignments**: どのメニューにどのオプションが利用可能かを示す中間テーブルです。
 - **orders**: 各注文に含まれる個別のメニュー項目を管理します。どの注文グループに属し、どのメニューがいくつ注文されたかを記録します。
 - **order_item_options**: 注文された各メニュー項目にどのオプションが選択されたかを記録する中間テーブルです。
+
+## データ型 (ENUM)
+
+PostgreSQLのENUM型を利用して、特定カラムの値を制限し、データ整合性を高めます。
+
+- **table_status**: テーブルの状態を管理します。
+  - `('available', 'occupied', 'billing')`  `('空席', '使用中', '会計済み')`
+- **order_status**: 注文の状態を管理します。
+  - `('pending', 'preparing', 'served', 'cancelled')` `('受付待ち', '調理中', '提供済み', 'キャンセル')`
 
 ---
 
