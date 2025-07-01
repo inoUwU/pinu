@@ -24,16 +24,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # 開発用のadminer（データベース管理ツール）- オプション
-  adminer:
-    image: adminer:latest
-    container_name: portfolio_adminer
-    restart: unless-stopped
+  air:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile/air/dockerfile.yml 
     ports:
-      - "8080:8080"
+      - 8000:8000
+    volumes:
+      - ./backend/:/app
     networks:
-      - portfolio_network
+      - pita_network
 
 volumes:
   postgres_data:
