@@ -3,7 +3,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { Calendar, Home, Inbox, Search, User2 } from 'lucide-react';
+import { Calendar, ChevronUp, Home, Inbox, Search, User2 } from 'lucide-react';
 import Link from 'next/link';
 import { DropdownMenu } from './ui/dropdown-menu';
 import {
@@ -43,9 +43,9 @@ const items = [
   },
 ];
 
-const AppSidebar = () => {
+const AppSidebar = async () => {
   return (
-    <Sidebar>
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -84,7 +84,8 @@ const AppSidebar = () => {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <User2 />
-                  <span className='ml-auto'>User</span>
+                  John Doe
+                  <ChevronUp className='ml-auto' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='align-end'>
