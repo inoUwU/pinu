@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { SidebarTrigger } from './ui/sidebar';
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
@@ -17,7 +18,7 @@ const Navbar = () => {
   return (
     <nav className='p-4 flex items-center justify-between'>
       {/*LEFT*/}
-      collapseButton
+      <SidebarTrigger />
       {/*RIGHT*/}
       <div className='flex items-center gap-4'>
         <Link href='/'>DashBoard</Link>

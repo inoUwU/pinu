@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { cookies } from 'next/headers';
 import AppSidebar from '@/components/AdminSidebar';
 import Navbar from '@/components/Navbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -19,17 +20,19 @@ export const metadata: Metadata = {
   description: 'Admin dashboard for Pinu',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
   return (
     <html lang='ja'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
       >
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar />
           <main className='w-full'>
             <Navbar />
