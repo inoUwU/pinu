@@ -71,18 +71,32 @@ BREAKING CHANGE: Express 5 no longer supports middleware chaining via `next('rou
 
 ---
 
-## 📌 Common `type` Values
+## 📌 Common commit types and gitmoji
 
-| Type       | Meaning                       |
-| ---------- | ----------------------------- |
-| `feat`     | A new feature                 |
-| `fix`      | A bug fix                     |
-| `docs`     | Documentation only changes    |
-| `style`    | Code style (formatting, etc.) |
-| `refactor` | Code refactoring              |
-| `perf`     | Performance improvement       |
-| `test`     | Adding or fixing tests        |
-| `chore`    | Build process or tool changes |
+Use these types and emojis for commit messages. Each type should be used according to the change's intent.
+
+| Emoji | Type         | Description                        |
+| :---- | :----------- | :--------------------------------- |
+| ✨    | feat         | Add a new feature                  |
+| 🐛    | fix          | Fix a bug                          |
+| 📝    | docs         | Add or update documentation        |
+| 🎨    | style        | Improve code style or formatting   |
+| ♻️    | refactor     | Refactor code (no behavior change) |
+| ⚡️    | perf         | Improve performance                |
+| ✅    | test         | Add or update tests                |
+| 🔧    | chore        | Build process or tool changes      |
+| 🚧    | wip          | Work in progress                   |
+| 🔥    | remove       | Remove code or files               |
+| ⬆️    | upgrade      | Upgrade dependencies               |
+| ⬇️    | downgrade    | Downgrade dependencies             |
+| ⏪️    | revert       | Revert changes                     |
+| 🗑️    | deprecate    | Mark code as deprecated            |
+| 💚    | ci           | CI related changes                 |
+| 🐳    | docker       | Docker related changes             |
+| 🧪    | test-fail    | Add a failing test                 |
+| 🛂    | auth         | Authentication/authorization       |
+| 🌐    | i18n         | Internationalization/localization  |
+| 💄    | ui           | UI or visual changes               |
 
 You may define and use additional types if needed.
 
