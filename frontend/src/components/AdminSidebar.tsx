@@ -2,10 +2,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { Calendar, ChevronUp, Home, Inbox, Search, User2 } from 'lucide-react';
-import Link from 'next/link';
-import { DropdownMenu } from './ui/dropdown-menu';
+} from "@radix-ui/react-dropdown-menu";
+import { Calendar, ChevronUp, Home, Inbox, Search, User2 } from "lucide-react";
+import Link from "next/link";
+import { DropdownMenu } from "./ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -18,27 +18,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from './ui/sidebar';
+} from "./ui/sidebar";
 
 const items = [
   {
-    title: 'Home',
-    url: '/',
+    title: "Home",
+    url: "/",
     icon: <Home />,
   },
   {
-    title: 'Inbox',
-    url: '/#',
+    title: "Inbox",
+    url: "/#",
     icon: <Inbox />,
   },
   {
-    title: 'Settings',
-    url: '/#',
+    title: "Settings",
+    url: "/#",
     icon: <Calendar />,
   },
   {
-    title: 'Search',
-    url: '/#',
+    title: "Search",
+    url: "/#",
     icon: <Search />,
   },
 ];

@@ -1,4 +1,9 @@
 {
+    // Biome LSP バイナリのパスをOSごとに指定
+    "biome.lsp.bin": {
+        "win32-x64": "frontend\\node_modules\\@biomejs\\cli-win32-x64\\biome.exe"
+    },
+    "biome.configurationPath": "frontend\\biome.json",
     "[typescript]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "biomejs.biome"

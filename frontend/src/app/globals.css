@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body {
+  height: 100svh;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -117,6 +121,25 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground h-lvh;
+  }
+
+  h1 {
+    @apply text-5xl font-extrabold dark:text-white;
+  }
+  h2 {
+    @apply text-4xl font-bold dark:text-white;
+  }
+  h3 {
+    @apply text-3xl font-semibold dark:text-white;
+  }
+  h4 {
+    @apply text-2xl font-medium dark:text-white;
+  }
+  h5 {
+    @apply text-xl font-normal dark:text-white;
+  }
+  h6 {
+    @apply text-lg font-light dark:text-white;
   }
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import LoginPageHeader from "@/app/login/components/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,28 +13,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pinu",
-  description: "toy ordering system for restaurants",
+  title: "Pinu - Admin Dashboard",
+  description: "Admin dashboard for Pinu",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='ja' suppressHydrationWarning>
+    <html lang='ja' className=''>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <div className='h-20'>
+          <LoginPageHeader />
+        </div>
+        <main className='w-full'>
+          <div className='px-4'>{children}</div>
+        </main>
       </body>
     </html>
   );
