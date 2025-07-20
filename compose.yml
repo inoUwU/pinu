@@ -1,29 +1,27 @@
 services:
   postgres:
     image: postgres:17.5-alpine
-    container_name: pita_postgres
+    container_name: pinu_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-pita}
-      POSTGRES_USER: ${DB_USER:-pita_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-pita_pass}
+      POSTGRES_DB: ${DB_NAME:-pinu}
+      POSTGRES_USER: ${DB_USER:-pinu_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pinu_pass}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      # データ永続化
       - postgres_data:/var/lib/postgresql/data
-      # 初期化SQLを実行（ファイル名順で実行される）
       - ./database/init:/docker-entrypoint-initdb.d:ro
-      # PostgreSQL設定
       - ./database/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     networks:
-      - pita_network
+      - pinu_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-pita_user} -d ${DB_NAME:-pita}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-pinu_user} -d ${DB_NAME:-pinu}" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
   air:
     build:
       context: ./backend
@@ -33,12 +31,29 @@ services:
     volumes:
       - ./backend/:/app
     networks:
-      - pita_network
+      - pinu_network
+
+  minio:
+    image: minio/minio
+    container_name: pinu_minio
+    command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    networks:
+      - pinu_network
 
 volumes:
   postgres_data:
     driver: local
+  minio_data:
+    driver: local
 
 networks:
-  pita_network:
+  pinu_network:
     driver: bridge
