@@ -17,7 +17,7 @@ services:
     networks:
       - pinu_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-pinu_user} -d ${DB_NAME:-pinu}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-pinu_user} -d ${DB_NAME:-pinu}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,34 +25,29 @@ services:
   air:
     build:
       context: ./backend
-      dockerfile: ./Dockerfile/air/dockerfile.yml 
+      dockerfile: ./Dockerfile/air/dockerfile.yml
+    container_name: pinu_backend
+    restart: unless-stopped
     ports:
-      - ${BACKEND_PORT:-8000}:${BACKEND_PORT:-8000}
+      - "${BACKEND_PORT:-8000}:${BACKEND_PORT:-8000}"
     volumes:
       - ./backend/:/app
+      - uploads:/app/uploads
     networks:
       - pinu_network
-
-  minio:
-    image: minio/minio
-    container_name: pinu_minio
-    command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}"
-    ports:
-      - "${MINIO_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-    volumes:
-      - minio_data:/data
-    networks:
-      - pinu_network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
     driver: local
-  minio_data:
+  uploads:
     driver: local
+    driver_opts:
+      type: none
+      device: ./uploads
+      o: bind
 
 networks:
   pinu_network:
