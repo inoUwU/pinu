@@ -3,7 +3,7 @@ import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 export default function TabBar() {
   return (
-    <Menubar className='w-11/12 h-10'>
+    <Menubar className='w-lvw h-full'>
       <MenubarMenu>
         <MenubarTrigger className='flex-1 text-center min-w-[5rem]'>
           <Link href='/client/category' className='block w-full h-full'>
