@@ -2,8 +2,8 @@ package repositories
 
 import "inoUwU/pinu/app/domain/entities"
 
-// UserRepository ユーザーリポジトリのインターフェース（ポート）
-type UserRepository interface {
+// IUserRepository ユーザーリポジトリのインターフェース（ポート）
+type IUserRepository interface {
 	// GetAllUsers 全てのユーザーを取得する
 	GetAllUsers() ([]entities.User, error)
 

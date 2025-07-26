@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"github.com/samber/do"
 	"inoUwU/pinu/app/domain/entities"
 	"inoUwU/pinu/app/domain/repositories"
 )
@@ -12,10 +13,9 @@ type UserRepositoryImpl struct {
 }
 
 // NewUserRepository ユーザーリポジトリの実装を生成する
-func NewUserRepository(db *sql.DB) repositories.UserRepository {
-	return &UserRepositoryImpl{
-		db: db,
-	}
+func NewUserRepository(i *do.Injector) (repositories.IUserRepository, error) {
+	db := do.MustInvokeNamed[*sql.DB](i, "user")
+	return &UserRepositoryImpl{db: db}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する

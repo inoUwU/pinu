@@ -4,19 +4,25 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/samber/do"
 	"inoUwU/pinu/app/domain/services"
 )
 
 // UserController ユーザーコントローラー
 type UserController struct {
-	userService *services.UserService
+	userService services.UserService
 }
 
 // NewUserController ユーザーコントローラーを生成する
-func NewUserController(userService *services.UserService) *UserController {
+func NewUserController(i *do.Injector) (*UserController, error) {
+	userService := do.MustInvoke[services.UserService](i)
 	return &UserController{
 		userService: userService,
-	}
+	}, nil
+}
+
+func (uc *UserController) Route(router fiber.Router) {
+	router.Get("/users", uc.GetUsers)
 }
 
 // GetUsers ユーザー一覧を取得するAPIハンドラー

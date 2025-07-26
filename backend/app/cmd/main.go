@@ -10,13 +10,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
-	"github.com/uptrace/bun/driver/sqliteshim"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/extra/bundebug"
 	"inoUwU/pinu/app/api"
 )
 
 func main() {
 	// ルートの.envファイルを読み込む
-	err := godotenv.Load(".env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Printf(".envファイルの読み込みに失敗しました: %v", err)
 	}
@@ -54,61 +56,47 @@ func main() {
 		return c.SendString("Pinu API is running!")
 	})
 
+	// 依存性注入コンテナの設定
+	injector := Injection(db)
+
 	// APIルートを設定
-	api.SetupRoutes(app, db)
+	api.SetupRoutes(app, injector)
 
 	log.Printf("サーバーをポート %s で起動します", port)
 	log.Fatal(app.Listen(":" + port))
 }
 
-// initDatabase データベースを初期化する
 func initDatabase() (*sql.DB, error) {
-	// 開発環境ではSQLiteを使用
-	dbPath := os.Getenv("DATABASE_PATH")
-	if dbPath == "" {
-		dbPath = "./database.db"
+
+	user := os.Getenv("DATABASE_USER")
+	password := os.Getenv("DATABASE_PASSWORD")
+	host := os.Getenv("DATABASE_HOST")
+	port := os.Getenv("DATABASE_PORT")
+	dbname := os.Getenv("DATABASE_NAME")
+
+	if user == "" || password == "" || host == "" || port == "" || dbname == "" {
+		return nil, fmt.Errorf("データベース接続情報が不足しています")
 	}
 
-	db, err := sql.Open(sqliteshim.ShimName, dbPath)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
+	pool, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return nil, fmt.Errorf("データベースオープンエラー: %w", err)
+		return nil, fmt.Errorf("データベース接続エラー: %w", err)
 	}
 
 	// 接続テスト
-	if err := db.Ping(); err != nil {
+	if err := pool.Ping(); err != nil {
 		return nil, fmt.Errorf("データベース接続テストエラー: %w", err)
 	}
 
-	// テーブル作成（本番環境では別途マイグレーションツールを使用）
-	err = createTables(db)
-	if err != nil {
-		return nil, fmt.Errorf("テーブル作成エラー: %w", err)
-	}
+	// Postgre SQL用の ダイアレクトを設定
+	db := bun.NewDB(pool, pgdialect.New())
+	defer db.Close()
 
-	return db, nil
-}
+	// クエリを標準出力する設定
+	db.AddQueryHook(bundebug.NewQueryHook(
+		bundebug.WithVerbose(true),
+	))
 
-// createTables テーブルを作成する（サンプル）
-func createTables(db *sql.DB) error {
-	createUserTable := `
-	CREATE TABLE IF NOT EXISTS users (
-		id TEXT PRIMARY KEY,
-		name TEXT NOT NULL,
-		email TEXT UNIQUE NOT NULL
-	);`
-
-	_, err := db.Exec(createUserTable)
-	if err != nil {
-		return err
-	}
-
-	// サンプルデータの挿入
-	insertSampleData := `
-	INSERT OR IGNORE INTO users (id, name, email) VALUES 
-	('1', 'John Doe', 'john@example.com'),
-	('2', 'Jane Smith', 'jane@example.com'),
-	('3', 'Bob Johnson', 'bob@example.com');`
-
-	_, err = db.Exec(insertSampleData)
-	return err
+	return db.DB, nil
 }

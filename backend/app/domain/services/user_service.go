@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/samber/do"
 	"inoUwU/pinu/app/usecases"
 	"inoUwU/pinu/app/usecases/input"
 	"inoUwU/pinu/app/usecases/output"
@@ -8,14 +9,12 @@ import (
 
 // UserService ユーザーサービス
 type UserService struct {
-	userUsecase usecases.UserUsecase
+	userUsecase usecases.IUserUsecase
 }
 
 // NewUserService ユーザーサービスを生成する
-func NewUserService(userUsecase usecases.UserUsecase) *UserService {
-	return &UserService{
-		userUsecase: userUsecase,
-	}
+func NewUserService(i *do.Injector) (*UserService, error) {
+	return &UserService{}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する
