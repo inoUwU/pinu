@@ -1,26 +1,18 @@
 import Link from "next/link";
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export default function TabBar() {
   return (
-    <Menubar className='w-lvw h-full'>
-      <MenubarMenu>
-        <MenubarTrigger className='flex-1 text-center min-w-[5rem]'>
-          <Link href='/client/category' className='block w-full h-full'>
-            カテゴリー
-          </Link>
-        </MenubarTrigger>
-        <MenubarTrigger className='flex-1 text-center min-w-[5rem]'>
-          <Link href='/client/order' className='block w-full h-full'>
-            注文
-          </Link>
-        </MenubarTrigger>
-        <MenubarTrigger className='flex-1 text-center min-w-[5rem]'>
-          <Link href='/client/history' className='block w-full h-full'>
-            会計・履歴
-          </Link>
-        </MenubarTrigger>
-      </MenubarMenu>
-    </Menubar>
+    <ToggleGroup type='single' size='lg' className='w-lvw h-full p-0 m-0'>
+      <ToggleGroupItem value='category'>
+        <Link href='/client/category'>カテゴリー</Link>
+      </ToggleGroupItem>
+      <ToggleGroupItem value='order'>
+        <Link href='/client/order'>注文</Link>
+      </ToggleGroupItem>
+      <ToggleGroupItem value='history'>
+        <Link href='/client/history'>会計・履歴</Link>
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }
