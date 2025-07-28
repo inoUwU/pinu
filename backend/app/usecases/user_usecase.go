@@ -18,7 +18,7 @@ type UserUsecaseImpl struct {
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
-func NewUserUsecase(i *do.Injector) (*UserUsecaseImpl, error) {
+func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
 	repository := do.MustInvoke[repositories.IUserRepository](i)
 	return &UserUsecaseImpl{
 		userRepo: repository,

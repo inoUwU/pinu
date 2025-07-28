@@ -14,7 +14,7 @@ type UserRepositoryImpl struct {
 
 // NewUserRepository ユーザーリポジトリの実装を生成する
 func NewUserRepository(i *do.Injector) (repositories.IUserRepository, error) {
-	db := do.MustInvokeNamed[*sql.DB](i, "user")
+	db := do.MustInvokeNamed[*sql.DB](i, "db")
 	return &UserRepositoryImpl{db: db}, nil
 }
 

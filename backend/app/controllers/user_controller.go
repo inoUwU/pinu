@@ -1,28 +1,39 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
-	"inoUwU/pinu/app/domain/services"
+	"inoUwU/pinu/app/usecases"
+	"inoUwU/pinu/app/usecases/input"
 )
+
+type IUserController interface {
+	GetUsers(c *fiber.Ctx) error
+	GetUserByID(c *fiber.Ctx) error
+	Route(router fiber.Router) error
+}
 
 // UserController ユーザーコントローラー
 type UserController struct {
-	userService services.UserService
+	userUsecase usecases.IUserUsecase
 }
 
 // NewUserController ユーザーコントローラーを生成する
-func NewUserController(i *do.Injector) (*UserController, error) {
-	userService := do.MustInvoke[services.UserService](i)
+func NewUserController(i *do.Injector) (IUserController, error) {
+	userUsecase := do.MustInvoke[usecases.IUserUsecase](i)
 	return &UserController{
-		userService: userService,
+		userUsecase: userUsecase,
 	}, nil
 }
 
-func (uc *UserController) Route(router fiber.Router) {
+func (uc *UserController) Route(router fiber.Router) error {
+	fmt.Println("Registering user routes")
 	router.Get("/users", uc.GetUsers)
+	router.Get("/test", uc.GetUserByID)
+	return nil
 }
 
 // GetUsers ユーザー一覧を取得するAPIハンドラー
@@ -35,7 +46,8 @@ func (uc *UserController) Route(router fiber.Router) {
 // @Failure 500 {object} map[string]string
 // @Router /api/users [get]
 func (uc *UserController) GetUsers(c *fiber.Ctx) error {
-	result, err := uc.userService.GetAllUsers()
+	input := &input.GetUsersInput{}
+	result, err := uc.userUsecase.GetAllUsers(input)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to retrieve users",
@@ -44,4 +56,10 @@ func (uc *UserController) GetUsers(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(result)
+}
+
+func (uc *UserController) GetUserByID(c *fiber.Ctx) error {
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "User retrieved successfully",
+	})
 }

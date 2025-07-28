@@ -7,18 +7,24 @@ import (
 	"inoUwU/pinu/app/usecases/output"
 )
 
-// UserService ユーザーサービス
-type UserService struct {
+type IUserService interface {
+	GetAllUsers() (*output.GetUsersOutput, error)
+}
+
+// userService ユーザーサービス
+type userService struct {
 	userUsecase usecases.IUserUsecase
 }
 
 // NewUserService ユーザーサービスを生成する
-func NewUserService(i *do.Injector) (*UserService, error) {
-	return &UserService{}, nil
+func NewUserService(i *do.Injector) (IUserService, error) {
+	return &userService{
+		userUsecase: do.MustInvoke[usecases.IUserUsecase](i),
+	}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する
-func (s *UserService) GetAllUsers() (*output.GetUsersOutput, error) {
+func (us *userService) GetAllUsers() (*output.GetUsersOutput, error) {
 	input := &input.GetUsersInput{}
-	return s.userUsecase.GetAllUsers(input)
+	return us.userUsecase.GetAllUsers(input)
 }

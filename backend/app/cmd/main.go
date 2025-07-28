@@ -14,11 +14,15 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
 	"inoUwU/pinu/app/api"
+	"inoUwU/pinu/app/middleware"
+	
+	// PostgreSQLドライバーを匿名インポート
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	// ルートの.envファイルを読み込む
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Printf(".envファイルの読み込みに失敗しました: %v", err)
 	}
@@ -57,7 +61,7 @@ func main() {
 	})
 
 	// 依存性注入コンテナの設定
-	injector := Injection(db)
+	injector := middleware.Injection(db)
 
 	// APIルートを設定
 	api.SetupRoutes(app, injector)

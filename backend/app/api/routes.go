@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
+	"inoUwU/pinu/app/controllers"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
-	"inoUwU/pinu/app/controllers"
 )
 
 // SetupRoutes APIルートを設定する
@@ -12,11 +14,11 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	api := app.Group("/api")
 
 	// ユーザー関連のルート
-	users := api.Group("/users")
 	userController, err := controllers.NewUserController(injector)
 	if err != nil {
 		panic("Failed to create UserController: " + err.Error())
 	}
 
-	userController.Route(users)
+	fmt.Println("Setting up user routes")
+	userController.Route(api)
 }

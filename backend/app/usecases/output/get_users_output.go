@@ -7,3 +7,5 @@ type GetUsersOutput struct {
 	Users []entities.User `json:"users"`
 	Count int             `json:"count"`
 }
+type SignUpOutput struct {
+}
