@@ -5,7 +5,6 @@ import (
 
 	"database/sql"
 	"inoUwU/pinu/app/controllers"
-	"inoUwU/pinu/app/domain/services"
 	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases"
 )
@@ -20,7 +19,6 @@ func Injection(db *sql.DB) (i *do.Injector) {
 	})
 
 	do.Provide(injector, repositories.NewUserRepository)
-	do.Provide(injector, services.NewUserService)
 	do.Provide(injector, usecases.NewUserUsecase)
 	do.Provide(injector, controllers.NewUserController)
 	return injector
