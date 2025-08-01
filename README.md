@@ -1,3 +1,5 @@
+![Pinu Logo](.github/assets/readme_logo.webp)
+
 # 🚧Pinu
 
 ポートフォリオプロジェクト用のフルスタック開発環境
