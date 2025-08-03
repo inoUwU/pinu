@@ -4,11 +4,15 @@
   "files": {
     "ignoreUnknown": true
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": { "source": { "organizeImports": "on", "recommended": true } }
+  },
   "linter": {
     "includes": ["**", "!**/.next", "!**/node_modules", "!**/public"],
+    "domains": {
+      "next": "recommended"
+    },
     "rules": {
-      "recommended": true,
       "style": {
         "noParameterAssign": "error",
         "useAsConstAssertion": "error",

@@ -1,35 +1,70 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import PageHeader from "@/app/client/components/PageHeader";
-
-// メニューバーの高さを定数で管理
-const MENU_BAR_HEIGHT_PX = 64; // 例: 64px。実際の高さに合わせて調整してください
-const CHECKOUT_BUTTON_HEIGHT_PX = 64; // 会計ボタン領域の高さ
+import { DataTable } from "@/app/client/history/datatable";
+import { columns, payments } from "@/app/client/history/SampleData";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // 注文履歴部分のコンポーネント
-function OrderHistorySection() {
-  // TODO: 実際の注文履歴データをここに表示
+const OrderHistorySection = () => {
   return (
-    <div className='h-full w-full flex items-center justify-center overflow-auto'>
-      <p>ここに会計や履歴のコンテンツが表示されます。</p>
+    <div className='h-full w-full flex flex-col items-center justify-start overflow-auto'>
+      <p className='mb-2'>ここに会計や履歴のコンテンツが表示されます。</p>
+      <DataTable columns={columns} data={payments} />
     </div>
   );
-}
+};
 
 // 会計ボタン部分のコンポーネント
-function CheckoutButtonSection() {
-  // TODO: 会計処理の実装
+const CheckoutButtonSection = () => {
+  const router = useRouter();
   return (
-    <div className='flex items-center justify-center h-full'>
-      <button
-        type='button'
-        className='px-8 py-3 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition'
-      >
-        会計する
-      </button>
+    <div className='flex items-center justify-center h-full w-full'>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant='default' className='w-3/4'>
+            会計する
+          </Button>
+        </DialogTrigger>
+        <DialogContent className='sm:max-w-[350px] [&>button]:hidden'>
+          <DialogHeader>
+            <DialogTitle>会計確認</DialogTitle>
+            <DialogDescription>
+              注文内容を確認し、会計を行います。よろしいですか？
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className='flex justify-between w-full'>
+              <Button
+                variant='destructive'
+                className='w-35'
+                onClick={() => router.push("/checkout")}
+              >
+                会計
+              </Button>
+              <DialogClose asChild>
+                <Button variant='outline' className='w-35'>
+                  キャンセル
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
 
 export default function HistoryPage() {
   return (
@@ -37,7 +72,7 @@ export default function HistoryPage() {
       <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center'>
         <PageHeader title='会計・履歴' />
       </div>
-      <div className='basis-10/12 grow overflow-auto bg-gray-50'>
+      <div className='basis-10/12 grow overflow-auto bg-gray-50 pt-2'>
         <OrderHistorySection />
       </div>
       <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center bg-gray-50'>

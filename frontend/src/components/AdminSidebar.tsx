@@ -3,7 +3,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Calendar, ChevronUp, Home, Inbox, Search, User2 } from "lucide-react";
+import {
+  Calendar,
+  ChevronUp,
+  Home,
+  Inbox,
+  Search,
+  User,
+  User2,
+} from "lucide-react";
 import Link from "next/link";
 import { DropdownMenu } from "./ui/dropdown-menu";
 import {
@@ -23,23 +31,18 @@ import {
 const items = [
   {
     title: "Home",
-    url: "/",
+    url: "/admin/",
     icon: <Home />,
   },
   {
-    title: "Inbox",
-    url: "/#",
-    icon: <Inbox />,
+    title: "User",
+    url: "/admin/user",
+    icon: <User />,
   },
   {
     title: "Settings",
-    url: "/#",
+    url: "/admin/settings",
     icon: <Calendar />,
-  },
-  {
-    title: "Search",
-    url: "/#",
-    icon: <Search />,
   },
 ];
 

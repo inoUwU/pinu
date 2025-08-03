@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export type CategoryCardProps = {
@@ -21,6 +21,7 @@ export default function CategoryCard({
       <CardContent>
         <div className='flex gap-2'>
           {showImage && category.imageUrl && (
+            // biome-ignore lint/performance/noImgElement: Using placeholder image
             <img
               src={category.imageUrl}
               alt={category.name}
