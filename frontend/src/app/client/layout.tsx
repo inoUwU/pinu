@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import TabBar from "@/app/client/components/TabBar";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,17 +28,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='light'
-          enableSystem
-          disableTransitionOnChange
-        >
+        <div className='flex flex-col h-screen w-screen'>
           <div className='h-15/16'>{children}</div>
           <div className='h-1/16 flex w-lvw'>
             <TabBar />
           </div>
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   );
