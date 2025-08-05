@@ -3,9 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -15,7 +12,9 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 	"inoUwU/pinu/app/api"
 	"inoUwU/pinu/app/middleware"
-	
+	"log"
+	"os"
+
 	// PostgreSQLドライバーを匿名インポート
 	_ "github.com/lib/pq"
 )
@@ -53,12 +52,20 @@ func main() {
 
 	// ミドルウェア設定
 	app.Use(logger.New())
-	app.Use(cors.New())
 
-	// ヘルスチェック
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Pinu API is running!")
-	})
+	app.Use(middleware.Recover())
+
+	// TODO: production環境では、CORS設定を適切に行う必要があります
+	// TODO: Read .env file for origin settings
+
+	// corsミドルウェアを設定
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000",
+		AllowHeaders:     "Origin, Content-Type, Accept, Cache-Control",
+		AllowCredentials: true,
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		ExposeHeaders:    "Content-Length, Content-Type, Connection, Cache-Control",
+	}))
 
 	// 依存性注入コンテナの設定
 	injector := middleware.Injection(db)

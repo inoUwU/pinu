@@ -10,6 +10,9 @@ import (
 // IUserUsecase ユーザーユースケースのインターフェース
 type IUserUsecase interface {
 	GetAllUsers(input *input.GetUsersInput) (*output.GetUsersOutput, error)
+	CreateUser(input *input.CreateUserInput) (*output.CreateUserOutput, error)
+	UpdateUser(input *input.UpdateUserInput) (*output.UpdateUserOutput, error)
+	DeleteUser(input *input.DeleteUserInput) (*output.DeleteUserOutput, error)
 }
 
 // UserUsecaseImpl ユーザーユースケースの実装
@@ -36,4 +39,17 @@ func (u *UserUsecaseImpl) GetAllUsers(input *input.GetUsersInput) (*output.GetUs
 		Users: users,
 		Count: len(users),
 	}, nil
+}
+
+func (u *UserUsecaseImpl) CreateUser(input *input.CreateUserInput) (*output.CreateUserOutput, error) {
+	// ユーザー作成のロジックを実装
+	return &output.CreateUserOutput{}, nil
+}
+func (u *UserUsecaseImpl) UpdateUser(input *input.UpdateUserInput) (*output.UpdateUserOutput, error) {
+	// ユーザー更新のロジックを実装
+	return &output.UpdateUserOutput{}, nil
+}
+func (u *UserUsecaseImpl) DeleteUser(input *input.DeleteUserInput) (*output.DeleteUserOutput, error) {
+	// ユーザー削除のロジックを実装
+	return &output.DeleteUserOutput{}, nil
 }

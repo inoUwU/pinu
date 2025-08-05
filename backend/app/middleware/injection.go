@@ -4,8 +4,9 @@ import (
 	"github.com/samber/do"
 
 	"database/sql"
-	"inoUwU/pinu/app/controllers"
+	"inoUwU/pinu/app/handlers"
 	"inoUwU/pinu/app/infrastructure/repositories"
+	"inoUwU/pinu/app/services"
 	"inoUwU/pinu/app/usecases"
 )
 
@@ -18,8 +19,11 @@ func Injection(db *sql.DB) (i *do.Injector) {
 		return db, nil
 	})
 
+	do.Provide(injector, services.NewSSEService)
 	do.Provide(injector, repositories.NewUserRepository)
 	do.Provide(injector, usecases.NewUserUsecase)
-	do.Provide(injector, controllers.NewUserController)
+	do.Provide(injector, handlers.NewUserHandler)
+	do.Provide(injector, handlers.NewAuthHandler)
+	do.Provide(injector, handlers.NewCategoryHandler)
 	return injector
 }
