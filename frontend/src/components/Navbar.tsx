@@ -13,7 +13,7 @@ import {
 import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   return (
     <nav className='p-4 flex items-center justify-between'>
@@ -21,7 +21,7 @@ const Navbar = () => {
       <SidebarTrigger />
       {/*RIGHT*/}
       <div className='flex items-center gap-4'>
-        <Link href='/'>DashBoard</Link>
+        <Link href='/admin/operation'>オペレーション</Link>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
