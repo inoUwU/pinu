@@ -80,7 +80,8 @@ func (h *UserHandler) Delete(c *fiber.Ctx) error {
 // @Router /api/users [get]
 func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
 	input := &input.GetUsersInput{}
-	result, err := h.userUsecase.GetAllUsers(input)
+	ctx := c.UserContext()
+	result, err := h.userUsecase.GetAllUsers(ctx, input)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to retrieve users",
