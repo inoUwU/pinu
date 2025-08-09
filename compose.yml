@@ -24,8 +24,8 @@ services:
 
   air:
     build:
-      context: ./backend
-      dockerfile: ./Dockerfile/air/dockerfile.yml
+      context: .
+      dockerfile: ./docker/air/dockerfile.yml
     container_name: pinu_backend
     restart: unless-stopped
     ports:
