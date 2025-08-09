@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/samber/do"
 	"inoUwU/pinu/app/usecases"
 	"inoUwU/pinu/app/usecases/input"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/do"
 )
 
 type IUserHandler interface {
@@ -32,36 +33,37 @@ func NewUserHandler(i *do.Injector) (IUserHandler, error) {
 	}, nil
 }
 
-func (uh *UserHandler) Route(router fiber.Router) error {
+func (h *UserHandler) Route(router fiber.Router) error {
 	fmt.Println("Registering user routes")
 	user := router.Group("/user")
-	user.Get("/", uh.GetUsers)
-	user.Get("/:id", uh.GetUserByID)
-	user.Post("/register", uh.Register)
-	user.Post("/update", uh.Update)
-	user.Delete("/delete", uh.Delete)
+	user.Get("/", h.GetUsers)
+	user.Get("/:id", h.GetUserByID)
+	user.Post("/register", h.Register)
+	user.Post("/update", h.Update)
+	user.Delete("/delete", h.Delete)
 	return nil
 }
 
-func (uh *UserHandler) GetUserByID(c *fiber.Ctx) error {
+func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "User retrieved successfully",
 	})
 }
 
-func (uh *UserHandler) Register(c *fiber.Ctx) error {
+func (h *UserHandler) Register(c *fiber.Ctx) error {
+
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "User registered successfully",
 	})
 }
 
-func (uh *UserHandler) Update(c *fiber.Ctx) error {
+func (h *UserHandler) Update(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "User updated successfully",
 	})
 }
 
-func (uh *UserHandler) Delete(c *fiber.Ctx) error {
+func (h *UserHandler) Delete(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "User deleted successfully",
 	})
@@ -76,9 +78,9 @@ func (uh *UserHandler) Delete(c *fiber.Ctx) error {
 // @Success 200 {object} output.GetUsersOutput
 // @Failure 500 {object} map[string]string
 // @Router /api/users [get]
-func (uh *UserHandler) GetUsers(c *fiber.Ctx) error {
+func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
 	input := &input.GetUsersInput{}
-	result, err := uh.userUsecase.GetAllUsers(input)
+	result, err := h.userUsecase.GetAllUsers(input)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to retrieve users",
