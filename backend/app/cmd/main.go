@@ -77,7 +77,7 @@ func main() {
 	log.Fatal(app.Listen(":" + port))
 }
 
-func initDatabase() (*sql.DB, error) {
+func initDatabase() (*bun.DB, error) {
 
 	user := os.Getenv("DATABASE_USER")
 	password := os.Getenv("DATABASE_PASSWORD")
@@ -102,12 +102,13 @@ func initDatabase() (*sql.DB, error) {
 
 	// Postgre SQL用の ダイアレクトを設定
 	db := bun.NewDB(pool, pgdialect.New())
-	defer db.Close()
 
 	// クエリを標準出力する設定
 	db.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithVerbose(true),
 	))
 
-	return db.DB, nil
+	db.NewSelect()
+
+	return db, nil
 }

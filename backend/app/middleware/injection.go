@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/samber/do"
 
-	"database/sql"
+	"github.com/uptrace/bun"
 	"inoUwU/pinu/app/handlers"
 	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/services"
@@ -11,11 +11,11 @@ import (
 )
 
 // Injection 依存性注入コンテナの初期化
-func Injection(db *sql.DB) (i *do.Injector) {
+func Injection(db *bun.DB) (i *do.Injector) {
 	injector := do.New()
 
 	// DIコンテナにリポジトリを登録
-	do.ProvideNamed(injector, "db", func(i *do.Injector) (*sql.DB, error) {
+	do.ProvideNamed(injector, "db", func(i *do.Injector) (*bun.DB, error) {
 		return db, nil
 	})
 
