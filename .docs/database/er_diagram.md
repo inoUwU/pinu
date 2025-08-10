@@ -11,6 +11,7 @@ erDiagram
         uuid user_id PK "ユーザーID"
         string username "ログインID"
         string password_hash "パスワードハッシュ"
+        string password_salt "パスワードソルト"
         string name "表示名"
         boolean is_admin "管理者フラグ"
         timestamp created_at "作成時間"
@@ -82,6 +83,15 @@ erDiagram
         string menu_option_id FK
     }
 
+    sessions {
+        uuid session_id PK "セッションID"
+        uuid user_id FK "ユーザーID"
+        timestamp created_at "作成時間"
+        timestamp expires_at "有効期限"
+        string ip_address "IPアドレス"
+        string user_agent "ユーザーエージェント"
+    }
+
     categories ||--o{ menus : "contains"
     menus ||--o{ order_items : "used in"
     menus ||--|| menu_option_assignments : "can have"
@@ -92,6 +102,7 @@ erDiagram
     table_sessions ||--o{ order_groups : "initiates"
     order_groups ||--o{ order_items : "contains"
     tables ||--|| order_groups : "now processing"
+    users ||--o{ sessions : "has"
 ```
 
 ## 各テーブルの説明
@@ -105,6 +116,7 @@ erDiagram
 - **menu_option_assignments**: どのメニューにどのオプションが利用可能かを示す中間テーブルです。
 - **orders**: 各注文に含まれる個別のメニュー項目を管理します。どの注文グループに属し、どのメニューがいくつ注文されたかを記録します。
 - **order_item_options**: 注文された各メニュー項目にどのオプションが選択されたかを記録する中間テーブルです。
+- **sessions**: ユーザーのログインセッション情報を管理します。ユーザーID、作成日時、有効期限、IPアドレス、ユーザーエージェントを記録します。
 
 ## データ型 (ENUM)
 

@@ -21,6 +21,7 @@ CREATE TABLE users (
     user_id UUID PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    password_salt VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -104,6 +105,16 @@ CREATE TABLE order_item_options (
     PRIMARY KEY (order_item_id, menu_option_id),
     FOREIGN KEY (order_item_id) REFERENCES order_items(order_item_id) ON DELETE CASCADE,
     FOREIGN KEY (menu_option_id) REFERENCES menu_options(menu_option_id) ON DELETE CASCADE
+);
+
+-- Sessions
+CREATE TABLE sessions (
+    session_id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(user_id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMP NOT NULL,
+    ip_address TEXT,
+    user_agent TEXT
 );
 
 -- 外部キー制約の追加（循環回避）
