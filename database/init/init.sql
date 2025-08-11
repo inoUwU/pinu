@@ -19,7 +19,7 @@ CREATE TABLE settings (
 -- Users
 CREATE TABLE users (
     user_id UUID PRIMARY KEY,
-    username VARCHAR(255) UNIQUE NOT NULL,
+    login_id VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     password_salt VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,

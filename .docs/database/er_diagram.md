@@ -9,7 +9,7 @@ erDiagram
 
     users {
         uuid user_id PK "ユーザーID"
-        string username "ログインID"
+        string login_id "ログインID"
         string password_hash "パスワードハッシュ"
         string password_salt "パスワードソルト"
         string name "表示名"
