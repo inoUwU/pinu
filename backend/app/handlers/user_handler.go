@@ -51,8 +51,19 @@ func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) Register(c *fiber.Ctx) error {
+	request := new(input.CreateUserInput)
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	}
+
+	output, err := h.userUsecase.CreateUser(c.UserContext(), request)
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot create user"})
+	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"result":  output,
 		"message": "User registered successfully",
 	})
 }

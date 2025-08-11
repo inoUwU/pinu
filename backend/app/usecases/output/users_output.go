@@ -1,6 +1,9 @@
 package output
 
-import "inoUwU/pinu/app/domain/entities"
+import (
+	"inoUwU/pinu/app/domain/entities"
+	"time"
+)
 
 type UserOutputPort interface {
 }
@@ -12,10 +15,19 @@ type GetUsersOutput struct {
 }
 
 type CreateUserOutput struct {
+	User      entities.User    `json:"user"`
+	LoginId   entities.LoginID `json:"login_id"`
+	PassWord  string           `json:"password"`
+	UserId    entities.UserID  `json:"user_id"`
+	Name      string           `json:"name"`
+	IsAdmin   bool             `json:"is_admin"`
+	CreatedAt time.Time        `json:"created_at"`
 }
 
 type UpdateUserOutput struct {
+	User entities.User `json:"user"`
 }
 
 type DeleteUserOutput struct {
+	User entities.User `json:"user"`
 }
