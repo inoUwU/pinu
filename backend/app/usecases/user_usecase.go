@@ -10,7 +10,6 @@ import (
 	"inoUwU/pinu/pkg/security"
 
 	"github.com/samber/do"
-	"golang.org/x/oauth2/slack"
 )
 
 // IUserUsecase ユーザーユースケースのインターフェース
