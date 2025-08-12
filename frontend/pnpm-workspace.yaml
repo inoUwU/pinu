@@ -1,4 +1,3 @@
-onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - lefthook
-  - sharp
+packages:
+  - "apps/*"
+  - "packages/*"
