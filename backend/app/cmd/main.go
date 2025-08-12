@@ -3,6 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"inoUwU/pinu/app/api"
+	"inoUwU/pinu/app/middleware"
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -10,10 +15,6 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
-	"inoUwU/pinu/app/api"
-	"inoUwU/pinu/app/middleware"
-	"log"
-	"os"
 
 	// PostgreSQLドライバーを匿名インポート
 	_ "github.com/lib/pq"
@@ -79,11 +80,11 @@ func main() {
 
 func initDatabase() (*bun.DB, error) {
 
-	user := os.Getenv("DATABASE_USER")
-	password := os.Getenv("DATABASE_PASSWORD")
-	host := os.Getenv("DATABASE_HOST")
-	port := os.Getenv("DATABASE_PORT")
-	dbname := os.Getenv("DATABASE_NAME")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbname := os.Getenv("DB_NAME")
 
 	if user == "" || password == "" || host == "" || port == "" || dbname == "" {
 		return nil, fmt.Errorf("データベース接続情報が不足しています")
