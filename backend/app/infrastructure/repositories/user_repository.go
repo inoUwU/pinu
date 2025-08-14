@@ -3,8 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
-	"inoUwU/pinu/app/domain/entities"
-	"inoUwU/pinu/app/domain/repositories"
+	"inoUwU/pinu/app/domain/user"
 	"inoUwU/pinu/app/infrastructure/models"
 
 	"github.com/samber/do"
@@ -17,24 +16,24 @@ type UserRepositoryImpl struct {
 }
 
 // NewUserRepository ユーザーリポジトリの実装を生成する
-func NewUserRepository(i *do.Injector) (repositories.IUserRepository, error) {
+func NewUserRepository(i *do.Injector) (user.IUserRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &UserRepositoryImpl{db: db}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する
-func (r *UserRepositoryImpl) GetAllUsers(ctx context.Context) ([]entities.User, error) {
+func (r *UserRepositoryImpl) GetAllUsers(ctx context.Context) ([]user.User, error) {
 	tmp_users := make([]models.User, 0)
 	if err := r.db.NewSelect().Model(&tmp_users).Scan(ctx); err != nil {
 		return nil, err
 	}
 
-	users := make([]entities.User, len(tmp_users))
+	users := make([]user.User, len(tmp_users))
 	for i := 0; i < len(tmp_users); i++ {
 		model := tmp_users[i]
-		users[i] = entities.User{
-			USER_ID:       entities.UserID(model.USER_ID),
-			LOGIN_ID:      entities.LoginID(model.LOGIN_ID),
+		users[i] = user.User{
+			USER_ID:       user.UserID(model.USER_ID),
+			LOGIN_ID:      user.LoginID(model.LOGIN_ID),
 			PASSWORD_HASH: model.PASSWORD_HASH,
 			NAME:          model.NAME,
 			IS_ADMIN:      model.IS_ADMIN,
@@ -46,8 +45,8 @@ func (r *UserRepositoryImpl) GetAllUsers(ctx context.Context) ([]entities.User, 
 }
 
 // GetUserByID IDでユーザーを取得する
-func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id string) (*entities.User, error) {
-	user := new(entities.User)
+func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id string) (*user.User, error) {
+	user := new(user.User)
 	if err := r.db.NewSelect().Model(user).Where("id = ?", id).Scan(ctx); err != nil {
 		return nil, nil // ユーザーが見つからない場合はnilを返す
 	}
@@ -56,7 +55,7 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id string) (*entit
 }
 
 // CreateUser ユーザーを作成する
-func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *entities.User) error {
+func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *user.User) error {
 	modelUser := &models.User{
 		USER_ID:       string(user.USER_ID),
 		LOGIN_ID:      string(user.LOGIN_ID),
@@ -72,7 +71,7 @@ func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *entities.User
 }
 
 // UpdateUser ユーザーを更新する
-func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *entities.User) error {
+func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *user.User) error {
 	modelUser := &models.User{
 		USER_ID:       string(user.USER_ID),
 		LOGIN_ID:      string(user.LOGIN_ID),
