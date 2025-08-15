@@ -49,7 +49,10 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 
 	// TODO: implement transaction
 
-	id := pkg.NewUUID()
+	id, err := pkg.GenerateUUIDv7()
+	if err != nil {
+		return nil, err
+	}
 
 	// Passwordをハッシュ化する
 	salt, err := security.GenerateSalt(16)
