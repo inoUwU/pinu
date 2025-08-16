@@ -4,6 +4,7 @@ import (
 	"github.com/samber/do"
 
 	"github.com/uptrace/bun"
+	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/handlers"
 	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/services"
@@ -11,12 +12,17 @@ import (
 )
 
 // Injection 依存性注入コンテナの初期化
-func Injection(db *bun.DB) (i *do.Injector) {
+func Injection(db *bun.DB, logger port.Logger) (i *do.Injector) {
 	injector := do.New()
 
 	// DIコンテナにリポジトリを登録
 	do.ProvideNamed(injector, "db", func(i *do.Injector) (*bun.DB, error) {
 		return db, nil
+	})
+
+	// ロガーをDIコンテナに登録
+	do.ProvideNamed(injector, "logger", func(i *do.Injector) (port.Logger, error) {
+		return logger, nil
 	})
 
 	do.Provide(injector, services.NewSSEService)

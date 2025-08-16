@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"inoUwU/pinu/app/api"
+	mylogger "inoUwU/pinu/app/infrastructure/logger"
 	"inoUwU/pinu/app/middleware"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -61,15 +63,23 @@ func main() {
 
 	// corsミドルウェアを設定
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
+		AllowOrigins:     "http://localhost:3000,http://localhost:3500",
 		AllowHeaders:     "Origin, Content-Type, Accept, Cache-Control",
 		AllowCredentials: true,
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
 		ExposeHeaders:    "Content-Length, Content-Type, Connection, Cache-Control",
 	}))
 
+	// ロガーの設定
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+
+	slogger := slog.New(handler)
+	appLogger := mylogger.NewSlogLogger(slogger)
+
 	// 依存性注入コンテナの設定
-	injector := middleware.Injection(db)
+	injector := middleware.Injection(db, appLogger)
 
 	// APIルートを設定
 	api.SetupRoutes(app, injector)

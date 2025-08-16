@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
 	"inoUwU/pinu/app/usecases/input"
 	"inoUwU/pinu/app/usecases/output"
@@ -22,13 +23,17 @@ type IUserUsecase interface {
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
 	userRepo user.IUserRepository
+	logger   port.Logger
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
 func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
 	repository := do.MustInvoke[user.IUserRepository](i)
+	logger := do.MustInvokeNamed[port.Logger](i, "logger")
+
 	return &UserUsecaseImpl{
 		userRepo: repository,
+		logger:   logger,
 	}, nil
 }
 
@@ -46,7 +51,7 @@ func (u *UserUsecaseImpl) GetAllUsers(ctx context.Context, input *input.GetUsers
 }
 
 func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUserInput) (*output.CreateUserOutput, error) {
-
+	u.logger.Info("creating user", "userID", input.UserId, "", input.Name)
 	// TODO: implement transaction
 
 	id, err := pkg.GenerateUUIDv7()
@@ -84,6 +89,8 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 	if err != nil {
 		return nil, err
 	}
+
+	u.logger.Info("user created successfully", "userID", id)
 
 	// ユーザー作成のロジックを実装
 	return &output.CreateUserOutput{
