@@ -2,8 +2,7 @@ package usecases
 
 import (
 	"context"
-	"inoUwU/pinu/app/domain/entities"
-	"inoUwU/pinu/app/domain/repositories"
+	"inoUwU/pinu/app/domain/user"
 	"inoUwU/pinu/app/usecases/input"
 	"inoUwU/pinu/app/usecases/output"
 	"inoUwU/pinu/pkg"
@@ -22,12 +21,12 @@ type IUserUsecase interface {
 
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
-	userRepo repositories.IUserRepository
+	userRepo user.IUserRepository
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
 func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
-	repository := do.MustInvoke[repositories.IUserRepository](i)
+	repository := do.MustInvoke[user.IUserRepository](i)
 	return &UserUsecaseImpl{
 		userRepo: repository,
 	}, nil
@@ -47,7 +46,13 @@ func (u *UserUsecaseImpl) GetAllUsers(ctx context.Context, input *input.GetUsers
 }
 
 func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUserInput) (*output.CreateUserOutput, error) {
-	id := pkg.NewUUID()
+
+	// TODO: implement transaction
+
+	id, err := pkg.GenerateUUIDv7()
+	if err != nil {
+		return nil, err
+	}
 
 	// Passwordをハッシュ化する
 	salt, err := security.GenerateSalt(16)
@@ -60,9 +65,9 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 		return nil, err
 	}
 
-	modelUser := &entities.User{
-		USER_ID:       entities.UserID(id),
-		LOGIN_ID:      entities.LoginID(input.LoginId),
+	modelUser := &user.User{
+		USER_ID:       user.UserID(id),
+		LOGIN_ID:      user.LoginID(input.LoginId),
 		PASSWORD_HASH: hash,
 		PASSWORD_SALT: salt,
 		NAME:          input.Name,
@@ -83,9 +88,9 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 	// ユーザー作成のロジックを実装
 	return &output.CreateUserOutput{
 		User:      *createdUser,
-		LoginId:   entities.LoginID(createdUser.LOGIN_ID),
+		LoginId:   user.LoginID(createdUser.LOGIN_ID),
 		PassWord:  createdUser.PASSWORD_HASH,
-		UserId:    entities.UserID(createdUser.USER_ID),
+		UserId:    user.UserID(createdUser.USER_ID),
 		Name:      createdUser.NAME,
 		IsAdmin:   createdUser.IS_ADMIN,
 		CreatedAt: createdUser.CREATED_AT,
@@ -96,6 +101,9 @@ func (u *UserUsecaseImpl) UpdateUser(ctx context.Context, input *input.UpdateUse
 	return &output.UpdateUserOutput{}, nil
 }
 func (u *UserUsecaseImpl) DeleteUser(ctx context.Context, input *input.DeleteUserInput) (*output.DeleteUserOutput, error) {
+
+	// TODO:
+
 	// ユーザー削除のロジックを実装
 	return &output.DeleteUserOutput{}, nil
 }
