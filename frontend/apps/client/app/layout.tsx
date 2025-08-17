@@ -24,14 +24,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // TODO: サーバーサイドでの状態管理を検討
+  // チェックアウト状態をDBに保存後、クライアント側の状態を更新する
+
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang='ja' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex flex-col h-screen w-screen">
-          <div className="h-15/16">{children}</div>
-          <div className="h-1/16 flex w-lvw">
+        <div className='flex flex-col h-screen w-screen'>
+          <div className='h-15/16'>{children}</div>
+          <div className='h-1/16 flex w-lvw'>
             <TabBar />
           </div>
         </div>

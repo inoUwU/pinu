@@ -1,10 +1,10 @@
+import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
-import AppSidebar from "@/components/AdminSidebar";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { SidebarProvider } from "@workspace/ui/components/sidebar";
+import AppSidebar from "@/components/Sidebar";
 
 import "@workspace/ui/globals.css";
 
@@ -31,21 +31,21 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
-    <html lang="ja">
+    <html lang='ja'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
+          attribute='class'
+          defaultTheme='light'
           enableSystem
           disableTransitionOnChange
         >
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
-            <main className="w-full">
+            <main className='w-full'>
               <Navbar />
-              <div className="px-4">{children}</div>
+              <div className='px-4'>{children}</div>
             </main>
           </SidebarProvider>
         </ThemeProvider>

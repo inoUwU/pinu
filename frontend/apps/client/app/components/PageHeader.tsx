@@ -1,5 +1,5 @@
-import { ChevronLeft } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { ChevronLeft } from "lucide-react";
 
 type Props = {
   title: string;
@@ -11,20 +11,20 @@ const BackButton = () => {
     window.history.back();
   };
   return (
-    <Button onClick={onClick} className="p-6 w-20 relative" variant="ghost">
-      <ChevronLeft className="absolute left-3 top-1/2 transform -translate-y-1/2" />
+    <Button onClick={onClick} className='p-6 w-20 relative' variant='ghost'>
+      <ChevronLeft className='absolute left-3 top-1/2 transform -translate-y-1/2' />
     </Button>
   );
 };
 
 export default function PageHeader({ title, showBackButton }: Props) {
   return (
-    <div className="grid grid-cols-12 items-center p-2">
-      <div className="col-start-1 col-end-1">
+    <div className='grid grid-cols-12 items-center p-2'>
+      <div className='col-start-1 col-end-1'>
         {showBackButton ? <BackButton /> : null}
       </div>
-      <div className="col-start-2 col-end-12 flex items-center justify-center">
-        <div className="text-3xl font-bold select-none">{title}</div>
+      <div className='col-start-2 col-end-12 flex items-center justify-center'>
+        <div className='text-3xl font-bold select-none'>{title}</div>
       </div>
     </div>
   );

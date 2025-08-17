@@ -1,5 +1,11 @@
-const UserPage = () => {
-  return <h1>UserPage</h1>;
+const userList = () => {
+  return (
+    <div>
+      <h2>ユーザー一覧</h2>
+    </div>
+  );
 };
 
-export default UserPage;
+export default function UserPage() {
+  return <h1>ユーザー</h1>;
+}

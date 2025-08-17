@@ -16,11 +16,11 @@ export function useEventSource(url: string): string[] {
 
     // メッセージ受信時の処理
     eventSource.onmessage = (e: MessageEvent) => {
-      setMessages((prev) => [...prev, e.data]);
+      setMessages(prev => [...prev, e.data]);
     };
 
     // エラー発生時はログ出力して接続をクローズ
-    eventSource.onerror = (err) => {
+    eventSource.onerror = err => {
       console.error("SSE接続エラー", err);
       eventSource.close();
     };

@@ -5,7 +5,7 @@ import PageHeader from "@/app/components/PageHeader";
 
 const CategorySection = () => {
   return (
-    <div className="h-full w-full p-4 flex flex-col gap-2 justify-start overflow-auto">
+    <div className='h-full w-full p-4 flex flex-col gap-2 justify-start overflow-auto'>
       <CategoryCard
         key={1}
         category={{
@@ -30,11 +30,11 @@ const CategorySection = () => {
 
 export default function CategoryPage() {
   return (
-    <div className="flex flex-col h-full">
-      <div className="basis-1/12 flex-shrink-0 flex align-middle justify-center">
-        <PageHeader title="カテゴリー" />
+    <div className='flex flex-col h-full'>
+      <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center'>
+        <PageHeader title='カテゴリー' />
       </div>
-      <div className="basis-11/12 grow overflow-auto bg-gray-50 pt-2">
+      <div className='basis-11/12 grow overflow-auto bg-gray-50 pt-2'>
         <CategorySection />
       </div>
     </div>

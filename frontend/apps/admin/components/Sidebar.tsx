@@ -1,11 +1,9 @@
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { Calendar, ChevronUp, Home, User, User2 } from "lucide-react";
-import Link from "next/link";
-import { DropdownMenu } from "@workspace/ui/components/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -19,34 +17,36 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@workspace/ui/components/sidebar";
+import { Calendar, ChevronUp, Home, User, User2 } from "lucide-react";
+import Link from "next/link";
 
 const items = [
   {
     title: "Home",
-    url: "/admin/",
+    url: "",
     icon: <Home />,
   },
   {
     title: "User",
-    url: "/admin/user",
+    url: "user",
     icon: <User />,
   },
   {
     title: "Settings",
-    url: "/admin/settings",
+    url: "settings",
     icon: <Calendar />,
   },
 ];
 
 const AppSidebar = async () => {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/admin">
-                <span className="text-2xl font-bold">Pinu</span>
+              <Link href='/admin'>
+                <span className='text-2xl font-bold'>Pinu</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -58,7 +58,7 @@ const AppSidebar = async () => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {items.map(item => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
@@ -80,10 +80,10 @@ const AppSidebar = async () => {
                 <SidebarMenuButton>
                   <User2 />
                   John Doe
-                  <ChevronUp className="ml-auto" />
+                  <ChevronUp className='ml-auto' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="align-end">
+              <DropdownMenuContent className='align-end'>
                 <DropdownMenuItem>Account</DropdownMenuItem>
                 <DropdownMenuItem>Sign Out</DropdownMenuItem>
               </DropdownMenuContent>
