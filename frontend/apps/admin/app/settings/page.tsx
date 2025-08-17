@@ -1,5 +1,3 @@
-export const SettingPage = () => {
+export default function SettingPage() {
   return <div>設定</div>;
-};
-
-export default SettingPage;
+}

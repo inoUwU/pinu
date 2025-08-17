@@ -1,5 +1,3 @@
-export const MenuPage = () => {
+export default function MenuPage() {
   return <div>メニュー</div>;
-};
-
-export default MenuPage;
+}
