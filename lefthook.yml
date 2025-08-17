@@ -40,13 +40,16 @@
 #
 #     - script: "hello.go"
 #       runner: go run
-
 pre-commit:
   parallel: true
   commands:
     check:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,css}"
-      run: pnpm dlx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      run: pnpm dlx @biomejs/biome check --write \
+        --no-errors-on-unmatched \
+        --files-ignore-unknown=true \
+        --diagnostic-level=error \
+        --colors=off {staged_files}
       exclude:
         - frontend/apps/ui/src/components/ui/*.tsx
       stage_fixed: true
