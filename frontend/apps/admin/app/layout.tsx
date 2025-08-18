@@ -1,7 +1,9 @@
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
+import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import AppSidebar from "@/components/Sidebar";
@@ -35,6 +37,8 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NextTopLoader />
+        <Toaster />
         <ThemeProvider
           attribute='class'
           defaultTheme='light'

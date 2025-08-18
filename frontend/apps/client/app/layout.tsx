@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import TabBar from "@/app/components/TabBar";
 
 import "@workspace/ui/globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NextTopLoader />
         <div className='flex flex-col h-screen w-screen'>
           <div className='h-15/16'>{children}</div>
           <div className='h-1/16 flex w-lvw'>
