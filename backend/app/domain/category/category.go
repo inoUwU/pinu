@@ -1,8 +1,9 @@
 package category
 
+// Category カテゴリエンティティ
 type Category struct {
-	CATEGORY_ID   string
-	NAME          string
-	DISPLAY_ORDER int
-	IMAGE_URL     string
+	CategoryID   string `json:"category_id" bun:",pk"`
+	Name         string `json:"name"`
+	DisplayOrder int    `json:"display_order"`
+	ImageURL     string `json:"image_url"`
 }

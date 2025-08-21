@@ -30,6 +30,5 @@ func Injection(db *bun.DB, logger port.Logger) (i *do.Injector) {
 	do.Provide(injector, usecases.NewUserUsecase)
 	do.Provide(injector, handlers.NewUserHandler)
 	do.Provide(injector, handlers.NewAuthHandler)
-	do.Provide(injector, handlers.NewCategoryHandler)
 	return injector
 }
