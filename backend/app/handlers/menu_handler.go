@@ -1,31 +1,39 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 
-	"inoUwU/pinu/app/domain/menu"
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/do"
+
+	menuUsecase "inoUwU/pinu/app/usecases/menu"
+	"inoUwU/pinu/app/usecases/menu/input"
 )
 
+type IMenuHandler interface {
+	GetAllMenus(c *fiber.Ctx) error
+	GetMenu(c *fiber.Ctx) error
+	GetMenusByCategory(c *fiber.Ctx) error
+	CreateMenu(c *fiber.Ctx) error
+	UpdateMenu(c *fiber.Ctx) error
+	DeleteMenu(c *fiber.Ctx) error
+}
+
 type MenuHandler struct {
-	repo menu.MenuRepository
+	menuUsecase menuUsecase.IMenuUsecase
 }
 
 // NewMenuHandler メニューハンドラーの新規作成
-func NewMenuHandler(repo menu.MenuRepository) *MenuHandler {
-	return &MenuHandler{repo: repo}
+func NewMenuHandler(i *do.Injector) (IMenuHandler, error) {
+	menuUC := do.MustInvoke[menuUsecase.IMenuUsecase](i)
+	return &MenuHandler{
+		menuUsecase: menuUC,
+	}, nil
 }
 
 // CreateMenu メニュー作成
 func (h *MenuHandler) CreateMenu(c *fiber.Ctx) error {
-	var req struct {
-		MenuID      string  `json:"menu_id"`
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
-		ImageURL    string  `json:"image_url"`
-		IsSoldOut   bool    `json:"is_sold_out"`
-		CategoryID  string  `json:"category_id"`
-	}
+	req := new(input.CreateMenuInput)
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -33,118 +41,119 @@ func (h *MenuHandler) CreateMenu(c *fiber.Ctx) error {
 		})
 	}
 
-	menuItem := &menu.Menu{
-		MENU_ID:     req.MenuID,
-		NAME:        req.Name,
-		DESCRIPTION: req.Description,
-		PRICE:       req.Price,
-		IMAGE_URL:   req.ImageURL,
-		IS_SOLD_OUT: req.IsSoldOut,
-		CATEGORY_ID: req.CategoryID,
-	}
-
-	if err := h.repo.Create(c.Context(), menuItem); err != nil {
+	result, err := h.menuUsecase.CreateMenu(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create menu",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(menuItem)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"result":  result,
+		"message": "Menu created successfully",
+	})
 }
 
 // GetMenu メニュー取得
 func (h *MenuHandler) GetMenu(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	menuItem, err := h.repo.GetByID(c.Context(), id)
+	req := &input.GetMenuByIDInput{
+		MenuID: id,
+	}
+
+	result, err := h.menuUsecase.GetMenuByID(c.UserContext(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menu",
 		})
 	}
 
-	if menuItem == nil {
+	if result.Menu == nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Menu not found",
 		})
 	}
 
-	return c.JSON(menuItem)
+	return c.Status(http.StatusOK).JSON(result)
 }
 
 // GetAllMenus 全メニュー取得
 func (h *MenuHandler) GetAllMenus(c *fiber.Ctx) error {
-	menus, err := h.repo.GetAll(c.Context())
+	req := &input.GetMenusInput{}
+
+	result, err := h.menuUsecase.GetAllMenus(c.UserContext(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menus",
 		})
 	}
 
-	return c.JSON(menus)
+	return c.Status(http.StatusOK).JSON(result)
 }
 
 // GetMenusByCategory カテゴリ別メニュー取得
 func (h *MenuHandler) GetMenusByCategory(c *fiber.Ctx) error {
 	categoryID := c.Params("categoryId")
 
-	menus, err := h.repo.GetByCategory(c.Context(), categoryID)
+	req := &input.GetMenusByCategoryInput{
+		CategoryID: categoryID,
+	}
+
+	result, err := h.menuUsecase.GetMenusByCategory(c.UserContext(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menus by category",
 		})
 	}
 
-	return c.JSON(menus)
+	return c.Status(http.StatusOK).JSON(result)
 }
 
 // UpdateMenu メニュー更新
 func (h *MenuHandler) UpdateMenu(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	var req struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
-		ImageURL    string  `json:"image_url"`
-		IsSoldOut   bool    `json:"is_sold_out"`
-		CategoryID  string  `json:"category_id"`
-	}
-
+	req := new(input.UpdateMenuInput)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	menuItem := &menu.Menu{
-		MENU_ID:     id,
-		NAME:        req.Name,
-		DESCRIPTION: req.Description,
-		PRICE:       req.Price,
-		IMAGE_URL:   req.ImageURL,
-		IS_SOLD_OUT: req.IsSoldOut,
-		CATEGORY_ID: req.CategoryID,
-	}
+	// URLパラメータからIDを設定
+	req.MenuID = id
 
-	if err := h.repo.Update(c.Context(), menuItem); err != nil {
+	result, err := h.menuUsecase.UpdateMenu(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update menu",
 		})
 	}
 
-	return c.JSON(menuItem)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"result":  result,
+		"message": "Menu updated successfully",
+	})
 }
 
 // DeleteMenu メニュー削除
 func (h *MenuHandler) DeleteMenu(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	if err := h.repo.Delete(c.Context(), id); err != nil {
+	req := &input.DeleteMenuInput{
+		MenuID: id,
+	}
+
+	result, err := h.menuUsecase.DeleteMenu(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete menu",
 		})
 	}
 
-	return c.Status(fiber.StatusNoContent).Send(nil)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"result":  result,
+		"message": "Menu deleted successfully",
+	})
 }

@@ -1,28 +1,38 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 
-	"inoUwU/pinu/app/domain/category"
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/do"
+
+	categoryUsecase "inoUwU/pinu/app/usecases/category"
+	"inoUwU/pinu/app/usecases/category/input"
 )
 
+type ICategoryHandler interface {
+	GetAllCategories(c *fiber.Ctx) error
+	GetCategory(c *fiber.Ctx) error
+	CreateCategory(c *fiber.Ctx) error
+	UpdateCategory(c *fiber.Ctx) error
+	DeleteCategory(c *fiber.Ctx) error
+}
+
 type CategoryHandler struct {
-	repo category.CategoryRepository
+	categoryUsecase categoryUsecase.ICategoryUsecase
 }
 
 // NewCategoryHandler カテゴリハンドラーの新規作成
-func NewCategoryHandler(repo category.CategoryRepository) *CategoryHandler {
-	return &CategoryHandler{repo: repo}
+func NewCategoryHandler(i *do.Injector) (ICategoryHandler, error) {
+	categoryUC := do.MustInvoke[categoryUsecase.ICategoryUsecase](i)
+	return &CategoryHandler{
+		categoryUsecase: categoryUC,
+	}, nil
 }
 
 // CreateCategory カテゴリ作成
 func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
-	var req struct {
-		CategoryID   string `json:"category_id"`
-		Name         string `json:"name"`
-		DisplayOrder int    `json:"display_order,omitempty"`
-		ImageURL     string `json:"image_url,omitempty"`
-	}
+	req := new(input.CreateCategoryInput)
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -30,95 +40,101 @@ func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	cat := &category.Category{
-		CategoryID:   req.CategoryID,
-		Name:         req.Name,
-		DisplayOrder: req.DisplayOrder,
-		ImageURL:     req.ImageURL,
-	}
-
-	if err := h.repo.Create(c.Context(), cat); err != nil {
+	result, err := h.categoryUsecase.CreateCategory(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create category",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(cat)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"result":  result,
+		"message": "Category created successfully",
+	})
 }
 
 // GetCategory カテゴリ取得
 func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	cat, err := h.repo.GetByID(c.Context(), id)
+	req := &input.GetCategoryByIDInput{
+		CategoryID: id,
+	}
+
+	result, err := h.categoryUsecase.GetCategoryByID(c.UserContext(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get category",
 		})
 	}
 
-	if cat == nil {
+	if result.Category == nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Category not found",
 		})
 	}
 
-	return c.JSON(cat)
+	return c.Status(http.StatusOK).JSON(result)
 }
 
 // GetAllCategories 全カテゴリ取得
 func (h *CategoryHandler) GetAllCategories(c *fiber.Ctx) error {
-	categories, err := h.repo.GetAll(c.Context())
+	req := &input.GetCategoriesInput{}
+
+	result, err := h.categoryUsecase.GetAllCategories(c.UserContext(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get categories",
 		})
 	}
 
-	return c.JSON(categories)
+	return c.Status(http.StatusOK).JSON(result)
 }
 
 // UpdateCategory カテゴリ更新
 func (h *CategoryHandler) UpdateCategory(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	var req struct {
-		Name         string `json:"name"`
-		DisplayOrder int    `json:"display_order"`
-		ImageURL     string `json:"image_url"`
-	}
-
+	req := new(input.UpdateCategoryInput)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	cat := &category.Category{
-		CategoryID:   id,
-		Name:         req.Name,
-		DisplayOrder: req.DisplayOrder,
-		ImageURL:     req.ImageURL,
-	}
+	// URLパラメータからIDを設定
+	req.CategoryID = id
 
-	if err := h.repo.Update(c.Context(), cat); err != nil {
+	result, err := h.categoryUsecase.UpdateCategory(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update category",
 		})
 	}
 
-	return c.JSON(cat)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"result":  result,
+		"message": "Category updated successfully",
+	})
 }
 
 // DeleteCategory カテゴリ削除
 func (h *CategoryHandler) DeleteCategory(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	if err := h.repo.Delete(c.Context(), id); err != nil {
+	req := &input.DeleteCategoryInput{
+		CategoryID: id,
+	}
+
+	result, err := h.categoryUsecase.DeleteCategory(c.UserContext(), req)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete category",
 		})
 	}
 
-	return c.Status(fiber.StatusNoContent).Send(nil)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"result":  result,
+		"message": "Category deleted successfully",
+	})
 }

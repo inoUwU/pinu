@@ -3,15 +3,9 @@ package api
 import (
 	"github.com/gofiber/swagger"
 	"inoUwU/pinu/app/handlers"
-	"inoUwU/pinu/app/infrastructure/repositories/category"
-	"inoUwU/pinu/app/infrastructure/repositories/menu"
-	"inoUwU/pinu/app/infrastructure/repositories/menu_option"
-	"inoUwU/pinu/app/infrastructure/repositories/settings"
-	"inoUwU/pinu/app/infrastructure/repositories/table"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
-	"github.com/uptrace/bun"
 )
 
 // SetupRoutes APIルートを設定する
@@ -28,9 +22,6 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	// APIグループを作成
 	api := app.Group("/api")
 
-	// データベース接続を取得
-	db := do.MustInvoke[*bun.DB](injector)
-
 	// ユーザー関連のルート
 	userHandler, err := handlers.NewUserHandler(injector)
 	if err != nil {
@@ -46,8 +37,10 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	user.Delete("/delete", userHandler.Delete)
 
 	// カテゴリー関連のルート
-	categoryRepo := category.NewCategoryRepository(db)
-	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
+	categoryHandler, err := handlers.NewCategoryHandler(injector)
+	if err != nil {
+		panic("Failed to create CategoryHandler: " + err.Error())
+	}
 	categoryGroup := api.Group("/categories")
 	{
 		categoryGroup.Post("/", categoryHandler.CreateCategory)
@@ -58,8 +51,10 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	}
 
 	// メニュー関連のルート
-	menuRepo := menu.NewMenuRepository(db)
-	menuHandler := handlers.NewMenuHandler(menuRepo)
+	menuHandler, err := handlers.NewMenuHandler(injector)
+	if err != nil {
+		panic("Failed to create MenuHandler: " + err.Error())
+	}
 	menuGroup := api.Group("/menus")
 	{
 		menuGroup.Post("/", menuHandler.CreateMenu)
@@ -71,8 +66,10 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	}
 
 	// メニューオプション関連のルート
-	menuOptionRepo := menu_option.NewMenuOptionRepository(db)
-	menuOptionHandler := handlers.NewMenuOptionHandler(menuOptionRepo)
+	menuOptionHandler, err := handlers.NewMenuOptionHandler(injector)
+	if err != nil {
+		panic("Failed to create MenuOptionHandler: " + err.Error())
+	}
 	menuOptionGroup := api.Group("/menu-options")
 	{
 		menuOptionGroup.Post("/", menuOptionHandler.CreateMenuOption)
@@ -83,8 +80,10 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	}
 
 	// テーブル関連のルート
-	tableRepo := table.NewTableRepository(injector)
-	tableHandler := handlers.NewTableHandler(tableRepo)
+	tableHandler, err := handlers.NewTableHandler(injector)
+	if err != nil {
+		panic("Failed to create TableHandler: " + err.Error())
+	}
 	tableGroup := api.Group("/tables")
 	{
 		tableGroup.Post("/", tableHandler.CreateTable)
@@ -96,8 +95,10 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	}
 
 	// 設定関連のルート
-	settingsRepo := settings.NewSettingsRepository(db)
-	settingsHandler := handlers.NewSettingsHandler(settingsRepo)
+	settingsHandler, err := handlers.NewSettingsHandler(injector)
+	if err != nil {
+		panic("Failed to create SettingsHandler: " + err.Error())
+	}
 	settingsGroup := api.Group("/settings")
 	{
 		settingsGroup.Get("/", settingsHandler.GetAllSettings)

@@ -7,7 +7,6 @@ import (
 )
 
 type IAuthHandler interface {
-	Handler
 }
 
 // UserAuthHandler ユーザー認証ハンドラー

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/samber/do"
 	"github.com/uptrace/bun"
 
 	"inoUwU/pinu/app/domain/table"
@@ -17,7 +18,8 @@ type tableRepository struct {
 }
 
 // NewTableRepository テーブルリポジトリの新規作成
-func NewTableRepository(db *bun.DB) table.TableRepository {
+func NewTableRepository(i *do.Injector) table.TableRepository {
+	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &tableRepository{db: db}
 }
 

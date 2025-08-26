@@ -1,18 +1,29 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
-
 	"inoUwU/pinu/app/domain/table"
+	tableUsecase "inoUwU/pinu/app/usecases/table"
+	"inoUwU/pinu/app/usecases/table/input"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/do"
 )
 
+// TableHandler テーブルハンドラー
 type TableHandler struct {
-	repo table.TableRepository
+	tableUsecase tableUsecase.ITableUsecase
 }
 
-// NewTableHandler テーブルハンドラーの新規作成
-func NewTableHandler(repo table.TableRepository) *TableHandler {
-	return &TableHandler{repo: repo}
+// NewTableHandler 新しいテーブルハンドラーを生成
+func NewTableHandler(i *do.Injector) (*TableHandler, error) {
+	tableUC, err := do.InvokeNamed[tableUsecase.ITableUsecase](i, "tableUsecase")
+	if err != nil {
+		return nil, err
+	}
+
+	return &TableHandler{
+		tableUsecase: tableUC,
+	}, nil
 }
 
 // CreateTable テーブル作成
@@ -33,64 +44,75 @@ func (h *TableHandler) CreateTable(c *fiber.Ctx) error {
 		status = table.TableStatus(req.Status)
 	}
 
-	tbl := &table.Table{
+	createInput := &input.CreateTableInput{
 		TableID: table.TableID(req.TableID),
 		Status:  status,
 	}
 
-	if err := h.repo.Create(c.Context(), tbl); err != nil {
+	output, err := h.tableUsecase.CreateTable(c.Context(), createInput)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create table",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(tbl)
+	return c.Status(fiber.StatusCreated).JSON(output)
 }
 
 // GetTable テーブル取得
 func (h *TableHandler) GetTable(c *fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
-	tbl, err := h.repo.GetByID(c.Context(), id)
+	getInput := &input.GetTableByIDInput{
+		TableID: id,
+	}
+
+	output, err := h.tableUsecase.GetTableByID(c.Context(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get table",
 		})
 	}
 
-	if tbl == nil {
+	if output.Table == nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Table not found",
 		})
 	}
 
-	return c.JSON(tbl)
+	return c.JSON(output)
 }
 
 // GetAllTables 全テーブル取得
 func (h *TableHandler) GetAllTables(c *fiber.Ctx) error {
-	tables, err := h.repo.GetAll(c.Context())
+	getInput := &input.GetTablesInput{}
+
+	output, err := h.tableUsecase.GetAllTables(c.Context(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get tables",
 		})
 	}
 
-	return c.JSON(tables)
+	return c.JSON(output)
 }
 
 // GetTablesByStatus ステータス別テーブル取得
 func (h *TableHandler) GetTablesByStatus(c *fiber.Ctx) error {
 	status := table.TableStatus(c.Params("status"))
 
-	tables, err := h.repo.GetByStatus(c.Context(), status)
+	getInput := &input.GetTablesByStatusInput{
+		Status: status,
+	}
+
+	output, err := h.tableUsecase.GetTablesByStatus(c.Context(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get tables by status",
 		})
 	}
 
-	return c.JSON(tables)
+	return c.JSON(output)
 }
 
 // UpdateTableStatus テーブルステータス更新
@@ -107,26 +129,35 @@ func (h *TableHandler) UpdateTableStatus(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := h.repo.UpdateStatus(c.Context(), id, table.TableStatus(req.Status)); err != nil {
+	updateInput := &input.UpdateTableStatusInput{
+		TableID: id,
+		Status:  table.TableStatus(req.Status),
+	}
+
+	output, err := h.tableUsecase.UpdateTableStatus(c.Context(), updateInput)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update table status",
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Table status updated successfully",
-	})
+	return c.Status(fiber.StatusOK).JSON(output)
 }
 
 // DeleteTable テーブル削除
 func (h *TableHandler) DeleteTable(c *fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
-	if err := h.repo.Delete(c.Context(), id); err != nil {
+	deleteInput := &input.DeleteTableInput{
+		TableID: id,
+	}
+
+	output, err := h.tableUsecase.DeleteTable(c.Context(), deleteInput)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete table",
 		})
 	}
 
-	return c.Status(fiber.StatusNoContent).Send(nil)
+	return c.Status(fiber.StatusOK).JSON(output)
 }
