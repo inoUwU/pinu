@@ -36,7 +36,14 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	if err != nil {
 		panic("Failed to create UserHandler: " + err.Error())
 	}
-	userHandler.Route(api)
+
+	// ユーザー関連のルート
+	user := api.Group("/user")
+	user.Get("/", userHandler.GetUsers)
+	user.Get("/:id", userHandler.GetUserByID)
+	user.Post("/register", userHandler.Register)
+	user.Post("/update", userHandler.Update)
+	user.Delete("/delete", userHandler.Delete)
 
 	// カテゴリー関連のルート
 	categoryRepo := category.NewCategoryRepository(db)
@@ -76,7 +83,7 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	}
 
 	// テーブル関連のルート
-	tableRepo := table.NewTableRepository(db)
+	tableRepo := table.NewTableRepository(injector)
 	tableHandler := handlers.NewTableHandler(tableRepo)
 	tableGroup := api.Group("/tables")
 	{

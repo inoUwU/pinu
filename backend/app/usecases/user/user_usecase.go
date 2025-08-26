@@ -4,8 +4,8 @@ import (
 	"context"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
-	"inoUwU/pinu/app/usecases/input"
-	"inoUwU/pinu/app/usecases/output"
+	"inoUwU/pinu/app/usecases/user/input"
+	"inoUwU/pinu/app/usecases/user/output"
 	"inoUwU/pinu/pkg"
 	"inoUwU/pinu/pkg/security"
 

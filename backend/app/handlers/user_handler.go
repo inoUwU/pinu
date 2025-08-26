@@ -1,18 +1,16 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
-	"inoUwU/pinu/app/usecases"
-	"inoUwU/pinu/app/usecases/input"
+	"inoUwU/pinu/app/usecases/user"
+	"inoUwU/pinu/app/usecases/user/input"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
 )
 
 type IUserHandler interface {
-	Handler
 	GetUsers(c *fiber.Ctx) error
 	GetUserByID(c *fiber.Ctx) error
 	Register(c *fiber.Ctx) error
@@ -31,17 +29,6 @@ func NewUserHandler(i *do.Injector) (IUserHandler, error) {
 	return &UserHandler{
 		userUsecase: userUsecase,
 	}, nil
-}
-
-func (h *UserHandler) Route(router fiber.Router) error {
-	fmt.Println("Registering user routes")
-	user := router.Group("/user")
-	user.Get("/", h.GetUsers)
-	user.Get("/:id", h.GetUserByID)
-	user.Post("/register", h.Register)
-	user.Post("/update", h.Update)
-	user.Delete("/delete", h.Delete)
-	return nil
 }
 
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
