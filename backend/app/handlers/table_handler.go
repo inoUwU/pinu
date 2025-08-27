@@ -16,13 +16,10 @@ type TableHandler struct {
 
 // NewTableHandler 新しいテーブルハンドラーを生成
 func NewTableHandler(i *do.Injector) (*TableHandler, error) {
-	tableUC, err := do.InvokeNamed[tableUsecase.ITableUsecase](i, "tableUsecase")
-	if err != nil {
-		return nil, err
-	}
+	tableUsecase := do.MustInvoke[tableUsecase.ITableUsecase](i)
 
 	return &TableHandler{
-		tableUsecase: tableUC,
+		tableUsecase: tableUsecase,
 	}, nil
 }
 

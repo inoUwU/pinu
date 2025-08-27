@@ -15,13 +15,10 @@ type SettingsHandler struct {
 
 // NewSettingsHandler 新しい設定ハンドラーを生成
 func NewSettingsHandler(i *do.Injector) (*SettingsHandler, error) {
-	settingsUC, err := do.InvokeNamed[settingsUsecase.ISettingsUsecase](i, "settingsUsecase")
-	if err != nil {
-		return nil, err
-	}
+	settingsUsecase := do.MustInvoke[settingsUsecase.ISettingsUsecase](i)
 
 	return &SettingsHandler{
-		settingsUsecase: settingsUC,
+		settingsUsecase: settingsUsecase,
 	}, nil
 }
 
