@@ -63,7 +63,7 @@ func main() {
 
 	// corsミドルウェアを設定
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, http://localhost:3500",
+		AllowOrigins:     "http://localhost:3000,http://localhost:5500",
 		AllowHeaders:     "Origin, Content-Type, Accept, Cache-Control",
 		AllowCredentials: true,
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
