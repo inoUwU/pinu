@@ -8,12 +8,21 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
-import { Moon, Sun } from "lucide-react";
-import Link from "next/link";
+import { Coins, Moon, Sun, UtensilsCrossed } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useRouter } from "nextjs-toploader/app";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
+  const router = useRouter();
+
+  const handleOperationClick = () => {
+    router.push("/operation");
+  };
+
+  const handleBillClick = () => {
+    router.push("/bill");
+  };
 
   return (
     <nav className='p-4 flex items-center justify-between'>
@@ -21,7 +30,14 @@ const Navbar = () => {
       <SidebarTrigger />
       {/*RIGHT*/}
       <div className='flex items-center gap-4'>
-        <Link href='operation'>オペレーション</Link>
+        <Button variant='outline' onClick={handleBillClick}>
+          <Coins className='h-4 w-4 mr-2' />
+          会計
+        </Button>
+        <Button variant='outline' onClick={handleOperationClick}>
+          <UtensilsCrossed className='h-4 w-4 mr-2' />
+          オペレーション
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -14,7 +14,7 @@ import { Input } from "@workspace/ui/components/input";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { LoginFormSchema } from "@/app/login/schema";
+import { LoginFormSchema } from "@/app/(auth)/schema";
 
 export default function LoginPage() {
   const form = useForm<z.infer<typeof LoginFormSchema>>({

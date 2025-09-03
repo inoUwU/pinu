@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@workspace/ui/components/sidebar";
-import { Calendar, ChevronUp, Home, User, User2 } from "lucide-react";
+import { ChevronUp, CookingPot, Home, User, User2, Wrench } from "lucide-react";
 import Link from "next/link";
 
 const items = [
@@ -32,9 +32,14 @@ const items = [
     icon: <User />,
   },
   {
+    title: "Menu",
+    url: "menu",
+    icon: <CookingPot />,
+  },
+  {
     title: "Settings",
     url: "settings",
-    icon: <Calendar />,
+    icon: <Wrench />,
   },
 ];
 

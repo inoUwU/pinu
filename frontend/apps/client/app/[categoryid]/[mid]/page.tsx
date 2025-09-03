@@ -1,8 +1,8 @@
 "use client";
 import PageHeader from "@/app/components/PageHeader";
 
-export default function MenuPage({ params }: { params: { mid: number } }) {
-  const menuId: number = params.mid;
+export default function MenuPage({ params }: { params: { mid: string } }) {
+  const menuId: number = Number(params.mid);
 
   return (
     <div className='flex flex-col h-full'>

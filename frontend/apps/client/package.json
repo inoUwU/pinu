@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check ."
+    "lint": "biome check . --diagnostic-level=error",
+    "lint:fix": "biome check . --write"
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
