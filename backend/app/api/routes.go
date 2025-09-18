@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/gofiber/swagger"
 	"inoUwU/pinu/app/handlers"
+
+	"github.com/gofiber/swagger"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
@@ -22,19 +23,32 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	// APIグループを作成
 	api := app.Group("/api")
 
+	// 認証関連のルート
+	authHandler, err := handlers.NewAuthHandler(injector)
+	if err != nil {
+		panic("Failed to create AuthHandler: " + err.Error())
+	}
+	authGroup := api.Group("/auth")
+	{
+		authGroup.Post("/login", authHandler.Login)
+		authGroup.Post("/logout", authHandler.Logout)
+		authGroup.Post("/renew", authHandler.RenewAccessToken)
+		authGroup.Post("/revoke", authHandler.RevokeSession)
+	}
+
 	// ユーザー関連のルート
 	userHandler, err := handlers.NewUserHandler(injector)
 	if err != nil {
 		panic("Failed to create UserHandler: " + err.Error())
 	}
-
-	// ユーザー関連のルート
-	user := api.Group("/user")
-	user.Get("/", userHandler.GetUsers)
-	user.Get("/:id", userHandler.GetUserByID)
-	user.Post("/register", userHandler.Register)
-	user.Post("/update", userHandler.Update)
-	user.Delete("/delete", userHandler.Delete)
+	userGroup := api.Group("/user")
+	{
+		userGroup.Get("/", userHandler.GetUsers)
+		userGroup.Get("/:id", userHandler.GetUserByID)
+		userGroup.Post("/register", userHandler.Register)
+		userGroup.Post("/update", userHandler.Update)
+		userGroup.Delete("/delete", userHandler.Delete)
+	}
 
 	// カテゴリー関連のルート
 	categoryHandler, err := handlers.NewCategoryHandler(injector)
@@ -107,6 +121,18 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 		settingsGroup.Delete("/:key", settingsHandler.DeleteSetting)
 	}
 
+	// 注文関連のルート
+	orderHandler, err := handlers.NewOrderHandler(injector)
+	if err != nil {
+		panic("Failed to create OrderHandler: " + err.Error())
+	}
+	orderGroup := api.Group("/orders")
+	{
+		orderGroup.Get("/", orderHandler.GetAllOrders)
+		orderGroup.Post("/", orderHandler.Order)
+	}
+
+	// TODO: SSEハンドラーではなく注文画面と支払い画面に分割する
 	// SSEハンドラーの設定
 	sseHandler, err := handlers.NewSSEHandler(injector)
 	if err != nil {

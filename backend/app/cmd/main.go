@@ -22,6 +22,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const minSecretKeyLength = 32
+
 func main() {
 	// ルートの.envファイルを読み込む
 	err := godotenv.Load(".env")
@@ -78,8 +80,14 @@ func main() {
 	slogger := slog.New(handler)
 	appLogger := mylogger.NewSlogLogger(slogger)
 
+	// secret keyの設定
+	secretKey := os.Getenv("SECRET_KEY")
+	if len(secretKey) < minSecretKeyLength {
+		appLogger.Error("SECRET_KEYは少なくとも32文字以上である必要があります")
+	}
+
 	// 依存性注入コンテナの設定
-	injector := middleware.Injection(db, appLogger)
+	injector := middleware.Injection(db, appLogger, secretKey)
 
 	// APIルートを設定
 	api.SetupRoutes(app, injector)

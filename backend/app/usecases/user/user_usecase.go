@@ -1,15 +1,18 @@
-package usecases
+package user
 
 import (
 	"context"
+	"database/sql"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
+	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/user/input"
 	"inoUwU/pinu/app/usecases/user/output"
 	"inoUwU/pinu/pkg"
 	"inoUwU/pinu/pkg/security"
 
 	"github.com/samber/do"
+	"github.com/uptrace/bun"
 )
 
 // IUserUsecase ユーザーユースケースのインターフェース
@@ -22,6 +25,7 @@ type IUserUsecase interface {
 
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
+	txRepo   *repositories.TxRepository
 	userRepo user.IUserRepository
 	logger   port.Logger
 }
@@ -30,28 +34,44 @@ type UserUsecaseImpl struct {
 func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
 	repository := do.MustInvoke[user.IUserRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
+	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
 
 	return &UserUsecaseImpl{
 		userRepo: repository,
 		logger:   logger,
+		txRepo:   txRepo,
 	}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する
 func (u *UserUsecaseImpl) GetAllUsers(ctx context.Context, input *input.GetUsersInput) (*output.GetUsersOutput, error) {
-	users, err := u.userRepo.GetAllUsers(ctx)
+	var users []user.User = nil
+
+	// ユーザー一覧を取得するトランザクション処理
+	err := u.txRepo.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+		// userRepoを使ってユーザー一覧を取得
+		var err error
+		users, err = u.userRepo.GetAllUsers(ctx)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
 	return &output.GetUsersOutput{
 		Users: users,
-		Count: len(users),
 	}, nil
 }
 
+// CreateUser 新しいユーザーを作成し登録後のユーザー情報を返す
 func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUserInput) (*output.CreateUserOutput, error) {
 	u.logger.Info("creating user", "userID", input.UserId, "", input.Name)
+
 	// TODO: implement transaction
 
 	id, err := pkg.GenerateUUIDv7()
@@ -92,7 +112,6 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 
 	u.logger.Info("user created successfully", "userID", id)
 
-	// ユーザー作成のロジックを実装
 	return &output.CreateUserOutput{
 		User:      *createdUser,
 		LoginId:   user.LoginID(createdUser.LOGIN_ID),
@@ -103,10 +122,14 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 		CreatedAt: createdUser.CREATED_AT,
 	}, nil
 }
+
+// UpdateUser ユーザーを更新する
 func (u *UserUsecaseImpl) UpdateUser(ctx context.Context, input *input.UpdateUserInput) (*output.UpdateUserOutput, error) {
 	// ユーザー更新のロジックを実装
 	return &output.UpdateUserOutput{}, nil
 }
+
+// DeleteUser ユーザーを削除する
 func (u *UserUsecaseImpl) DeleteUser(ctx context.Context, input *input.DeleteUserInput) (*output.DeleteUserOutput, error) {
 
 	// TODO:

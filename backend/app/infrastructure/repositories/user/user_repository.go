@@ -11,12 +11,12 @@ import (
 	"github.com/uptrace/bun"
 )
 
-// ユーザーリポジトリの実装（アダプター）
+// UserRepositoryImpl ユーザーリポジトリの実装（アダプター）
 type UserRepositoryImpl struct {
 	db *bun.DB
 }
 
-// ユーザーリポジトリの実装を生成する
+// NewUserRepository ユーザーリポジトリの実装を生成する
 func NewUserRepository(i *do.Injector) (user.IUserRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &UserRepositoryImpl{db: db}, nil
@@ -24,14 +24,14 @@ func NewUserRepository(i *do.Injector) (user.IUserRepository, error) {
 
 // GetAllUsers 全てのユーザーを取得する
 func (r *UserRepositoryImpl) GetAllUsers(ctx context.Context) ([]user.User, error) {
-	tmp_users := make([]models.User, 0)
-	if err := r.db.NewSelect().Model(&tmp_users).Scan(ctx); err != nil {
+	tmpUsers := make([]models.User, 0)
+	if err := r.db.NewSelect().Model(&tmpUsers).Scan(ctx); err != nil {
 		return nil, err
 	}
 
-	users := make([]user.User, len(tmp_users))
-	for i := 0; i < len(tmp_users); i++ {
-		model := tmp_users[i]
+	users := make([]user.User, len(tmpUsers))
+	for i := 0; i < len(tmpUsers); i++ {
+		model := tmpUsers[i]
 		users[i] = user.User{
 			USER_ID:       user.UserID(model.USER_ID),
 			LOGIN_ID:      user.LoginID(model.LOGIN_ID),
@@ -45,53 +45,53 @@ func (r *UserRepositoryImpl) GetAllUsers(ctx context.Context) ([]user.User, erro
 	return users, nil
 }
 
-// ログインIDでユーザーを取得する
+// GetUserByLoginID ログインIDでユーザーを取得する
 func (r *UserRepositoryImpl) GetUserByLoginID(ctx context.Context, loginID string) (*user.User, error) {
 	user := new(user.User)
 
-	var selecter *bun.SelectQuery
+	var selector *bun.SelectQuery
 
 	// contextからトランザクションオブジェクトを取得する
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
 		// トランザクションオブジェクトが存在する場合はそれを使用
-		selecter = tx.NewSelect()
+		selector = tx.NewSelect()
 	} else {
 		// トランザクションオブジェクトが存在しない場合はDBオブジェクトを使用
-		selecter = r.db.NewSelect()
+		selector = r.db.NewSelect()
 	}
 
 	// 実行処理は共通化
-	selecter.Model(user).Where("login_id = ?", loginID)
-	if err := selecter.Scan(ctx); err != nil {
+	selector.Model(user).Where("login_id = ?", loginID)
+	if err := selector.Scan(ctx); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-// IDでユーザーを取得する
+// GetUserByID IDでユーザーを取得する
 func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id string) (*user.User, error) {
 	user := new(user.User)
 
-	var selecter *bun.SelectQuery
+	var selector *bun.SelectQuery
 
 	// contextからトランザクションオブジェクトを取得する
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
 		// トランザクションオブジェクトが存在する場合はそれを使用
-		selecter = tx.NewSelect()
+		selector = tx.NewSelect()
 	} else {
 		// トランザクションオブジェクトが存在しない場合はDBオブジェクトを使用
-		selecter = r.db.NewSelect()
+		selector = r.db.NewSelect()
 	}
 
 	// 実行処理は共通化
-	selecter.Model(user).Where("id = ?", id)
-	if err := selecter.Scan(ctx); err != nil {
+	selector.Model(user).Where("id = ?", id)
+	if err := selector.Scan(ctx); err != nil {
 		return nil, nil // ユーザーが見つからない場合はnilを返す
 	}
 	return user, nil
 }
 
-// ユーザーを作成する
+// CreateUser ユーザーを作成する
 func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *user.User) error {
 	modelUser := &models.User{
 		USER_ID:       string(user.USER_ID),
@@ -120,7 +120,7 @@ func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *user.User) er
 	return nil
 }
 
-// ユーザーを更新する
+// UpdateUser ユーザーを更新する
 func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *user.User) error {
 	modelUser := &models.User{
 		USER_ID:       string(user.USER_ID),
@@ -132,23 +132,23 @@ func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *user.User) er
 		CREATED_AT:    user.CREATED_AT,
 	}
 
-	var inserter *bun.UpdateQuery
+	var updater *bun.UpdateQuery
 	// contextからトランザクションオブジェクトを取得する
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
 		// トランザクションオブジェクトが存在する場合はそれを使用
-		inserter = tx.NewUpdate()
+		updater = tx.NewUpdate()
 	} else {
 		// トランザクションオブジェクトが存在しない場合はDBオブジェクトを使用
-		inserter = r.db.NewUpdate()
+		updater = r.db.NewUpdate()
 	}
 
-	if _, err := inserter.Model(modelUser).WherePK().Exec(ctx); err != nil {
+	if _, err := updater.Model(modelUser).WherePK().Exec(ctx); err != nil {
 		return err
 	}
 	return nil
 }
 
-// ユーザーを削除する
+// DeleteUser ユーザーを削除する
 func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id string) error {
 	var deleter *bun.DeleteQuery
 	// contextからトランザクションオブジェクトを取得する

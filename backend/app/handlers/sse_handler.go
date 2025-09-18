@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"encoding/json"
+	"inoUwU/pinu/app/services"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
 	"github.com/valyala/fasthttp"
-	"inoUwU/pinu/app/services"
 )
 
 // SSEHandler はSSE用エンドポイントを提供します
@@ -35,7 +36,7 @@ func (h *SSEHandler) SSEStream(c *fiber.Ctx) error {
 	c.Set("Content-Type", "text/event-stream")
 	c.Set("Cache-Control", "no-cache")
 	c.Set("Connection", "keep-alive")
-	c.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.Set("Access-Control-Allow-Origin", "*")
 	c.Set("Access-Control-Allow-Headers", "Cache-Control")
 
 	c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {

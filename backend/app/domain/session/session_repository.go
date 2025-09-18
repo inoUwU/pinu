@@ -4,17 +4,15 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"inoUwU/pinu/app/domain/user"
 )
 
 // SessionRepository セッションリポジトリのインターface
-type SessionRepository interface {
+type ISessionRepository interface {
 	// Session関連
 	CreateSession(ctx context.Context, session *Session) error
-	GetSessionByID(ctx context.Context, id uuid.UUID) (*Session, error)
-	GetSessionsByUserID(ctx context.Context, userID user.UserID) ([]*Session, error)
-	DeleteSession(ctx context.Context, id uuid.UUID) error
-	DeleteExpiredSessions(ctx context.Context) error
+	GetSessionByID(ctx context.Context, id string) (*Session, error)
+	RevokeSessionByID(ctx context.Context, id string) error
+	DeleteSession(ctx context.Context, id string) error
 
 	// TableSession関連
 	CreateTableSession(ctx context.Context, tableSession *TableSession) error

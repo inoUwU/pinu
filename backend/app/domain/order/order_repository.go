@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// OrderRepository 注文リポジトリのインターface
-type OrderRepository interface {
+// IOrderRepository 注文リポジトリのインターフェース
+type IOrderRepository interface {
 	// OrderGroup関連
 	CreateOrderGroup(ctx context.Context, orderGroup *OrderGroup) error
 	GetOrderGroupByID(ctx context.Context, id uuid.UUID) (*OrderGroup, error)

@@ -1,9 +1,13 @@
 package middleware
 
 import (
+	"inoUwU/pinu/app/infrastructure/repositories"
+	"inoUwU/pinu/app/infrastructure/repositories/session"
+	"inoUwU/pinu/app/usecases/auth"
+	"inoUwU/pinu/pkg/security/token"
+
 	"github.com/samber/do"
 
-	"github.com/uptrace/bun"
 	"inoUwU/pinu/app/domain/category"
 	"inoUwU/pinu/app/domain/menu"
 	"inoUwU/pinu/app/domain/menu_option"
@@ -11,12 +15,12 @@ import (
 	"inoUwU/pinu/app/domain/settings"
 	"inoUwU/pinu/app/domain/table"
 	"inoUwU/pinu/app/handlers"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	categoryRepo "inoUwU/pinu/app/infrastructure/repositories/category"
 	menuRepo "inoUwU/pinu/app/infrastructure/repositories/menu"
 	menuOptionRepo "inoUwU/pinu/app/infrastructure/repositories/menu_option"
 	settingsRepo "inoUwU/pinu/app/infrastructure/repositories/settings"
 	tableRepo "inoUwU/pinu/app/infrastructure/repositories/table"
+	userRepo "inoUwU/pinu/app/infrastructure/repositories/user"
 	"inoUwU/pinu/app/services"
 	categoryUsecase "inoUwU/pinu/app/usecases/category"
 	menuUsecase "inoUwU/pinu/app/usecases/menu"
@@ -24,10 +28,12 @@ import (
 	settingsUsecase "inoUwU/pinu/app/usecases/settings"
 	tableUsecase "inoUwU/pinu/app/usecases/table"
 	usecases "inoUwU/pinu/app/usecases/user"
+
+	"github.com/uptrace/bun"
 )
 
 // Injection 依存性注入コンテナの初期化
-func Injection(db *bun.DB, logger port.Logger) (i *do.Injector) {
+func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	injector := do.New()
 
 	// DIコンテナにリポジトリを登録
@@ -40,14 +46,30 @@ func Injection(db *bun.DB, logger port.Logger) (i *do.Injector) {
 		return logger, nil
 	})
 
+	// JwtMakerをDIコンテナに登録
+	do.ProvideNamed(injector, "jwtMaker", func(i *do.Injector) (*token.JWTMaker, error) {
+		jwtMaker, _ := token.NewJwtMaker(secret)
+		return jwtMaker, nil
+	})
+
+	// トランザクション
+	do.ProvideNamed(injector, "tx", func(i *do.Injector) (*repositories.TxRepository, error) {
+		tx := repositories.NewTxRepository(db)
+		return tx, nil
+	})
+
+	// 認証関連
+	do.Provide(injector, session.NewSessionRepository)
+	do.Provide(injector, auth.NewAuthUsecase)
+	do.Provide(injector, handlers.NewAuthHandler)
+
 	// Services
 	do.Provide(injector, services.NewSSEService)
 
 	// User関連
-	do.Provide(injector, repositories.NewUserRepository)
+	do.Provide(injector, userRepo.NewUserRepository)
 	do.Provide(injector, usecases.NewUserUsecase)
 	do.Provide(injector, handlers.NewUserHandler)
-	do.Provide(injector, handlers.NewAuthHandler)
 
 	// Category関連
 	do.Provide(injector, func(i *do.Injector) (category.CategoryRepository, error) {

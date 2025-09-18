@@ -20,66 +20,40 @@ type IUserHandler interface {
 
 // UserController ユーザーコントローラー
 type UserHandler struct {
-	userUsecase usecases.IUserUsecase
+	userUsecase user.IUserUsecase
 }
 
 // NewUserHandler ユーザーコントローラーを生成する
 func NewUserHandler(i *do.Injector) (IUserHandler, error) {
-	userUsecase := do.MustInvoke[usecases.IUserUsecase](i)
+	userUsecase := do.MustInvoke[user.IUserUsecase](i)
 	return &UserHandler{
 		userUsecase: userUsecase,
 	}, nil
 }
 
+// GetUserByID ユーザーIDでユーザーを取得します
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "User retrieved successfully",
-	})
-}
-
-func (h *UserHandler) Register(c *fiber.Ctx) error {
-	request := new(input.CreateUserInput)
-	if err := c.BodyParser(&request); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing user ID"})
 	}
 
-	output, err := h.userUsecase.CreateUser(c.UserContext(), request)
+	users, err := h.userUsecase.GetAllUsers(c.UserContext(), &input.GetUsersInput{
+		UserId: id,
+	})
 
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot create user"})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot retrieve user"})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"result":  output,
-		"message": "User registered successfully",
-	})
+	return c.Status(http.StatusOK).JSON(users)
 }
 
-func (h *UserHandler) Update(c *fiber.Ctx) error {
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "User updated successfully",
-	})
-}
-
-func (h *UserHandler) Delete(c *fiber.Ctx) error {
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "User deleted successfully",
-	})
-}
-
-// GetUsers ユーザー一覧を取得するAPIハンドラー
-// @Summary ユーザー一覧取得
-// @Description 全てのユーザーの一覧を取得する
-// @Tags users
-// @Accept json
-// @Produce json
-// @Success 200 {object} output.GetUsersOutput
-// @Failure 500 {object} map[string]string
-// @Router /api/users [get]
+// GetUsers ユーザー一覧を取得します
 func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
-	input := &input.GetUsersInput{}
+	i := &input.GetUsersInput{}
 	ctx := c.UserContext()
-	result, err := h.userUsecase.GetAllUsers(ctx, input)
+	result, err := h.userUsecase.GetAllUsers(ctx, i)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to retrieve users",
@@ -88,4 +62,55 @@ func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(result)
+}
+
+// Register ユーザーを登録します
+func (h *UserHandler) Register(c *fiber.Ctx) error {
+	request := new(input.CreateUserInput)
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	}
+
+	newUser, err := h.userUsecase.CreateUser(c.Context(), request)
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot create user"})
+	}
+
+	return c.Status(http.StatusOK).JSON(newUser)
+}
+
+// Update ユーザー情報を更新し更新後のユーザー情報を返します。
+func (h *UserHandler) Update(c *fiber.Ctx) error {
+
+	request := new(input.UpdateUserInput)
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	}
+
+	updatedUser, err := h.userUsecase.UpdateUser(c.Context(), request)
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot update user"})
+	}
+
+	return c.Status(http.StatusOK).JSON(updatedUser)
+}
+
+// Delete ユーザーを削除します
+func (h *UserHandler) Delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing user ID"})
+	}
+
+	_, err := h.userUsecase.DeleteUser(c.Context(), &input.DeleteUserInput{
+		UserId: id,
+	})
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "cannot delete user"})
+	}
+
+	return c.Status(http.StatusNoContent).JSON(nil)
 }

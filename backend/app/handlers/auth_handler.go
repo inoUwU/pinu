@@ -1,118 +1,97 @@
 package handlers
 
 import (
-	"fmt"
+	"inoUwU/pinu/app/usecases/auth"
+	"inoUwU/pinu/app/usecases/auth/input"
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
 )
 
 type IAuthHandler interface {
+	Login(c *fiber.Ctx) error
+	Logout(c *fiber.Ctx) error
+	RenewAccessToken(c *fiber.Ctx) error
+	RevokeSession(c *fiber.Ctx) error
 }
 
-// UserAuthHandler ユーザー認証ハンドラー
+// AuthHandler UserAuthHandler ユーザー認証ハンドラー
 type AuthHandler struct {
+	authUsecase auth.IAuthUsecase
 }
 
 // NewAuthHandler ユーザー認証ハンドラーを生成する
 func NewAuthHandler(i *do.Injector) (IAuthHandler, error) {
-	return &AuthHandler{}, nil
+	authUsecase := do.MustInvoke[auth.IAuthUsecase](i)
+
+	return &AuthHandler{
+		authUsecase: authUsecase,
+	}, nil
 }
 
-func (h *AuthHandler) Route(router fiber.Router) error {
-	fmt.Println("Handling auth request")
-	return nil
+// Login ログイン
+func (h *AuthHandler) Login(c *fiber.Ctx) error {
+	request := new(input.Login)
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	}
+
+	res, err := h.authUsecase.Login(c.Context(), request)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(res)
 }
 
-// ↓　Authサンプル実装
-// package main
+// Logout  ログアウト
+func (h *AuthHandler) Logout(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing session ID"})
+	}
 
-// import (
-//  "crypto/rand"
-//  "crypto/rsa"
-//  "log"
-//  "time"
+	err := h.authUsecase.Logout(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to logout", "message": err.Error()})
+	}
 
-//  "github.com/gofiber/fiber/v2"
+	return c.Status(http.StatusNoContent).JSON(fiber.Map{"message": "successfully logged out"})
+}
 
-//  "github.com/golang-jwt/jwt/v5"
+// RenewAccessToken アクセストークンの更新
+func (h *AuthHandler) RenewAccessToken(c *fiber.Ctx) error {
+	request := new(input.RenewAccessToken)
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
+	}
+	res, err := h.authUsecase.RenewAccessToken(c.Context(), request)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
 
-//  jwtware "github.com/gofiber/contrib/jwt"
-// )
+// RevokeSession セッションの無効化
+func (h *AuthHandler) RevokeSession(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing session ID"})
+	}
 
-// var (
-//  // Obviously, this is just a test example. Do not do this in production.
-//  // In production, you would have the private key and public key pair generated
-//  // in advance. NEVER add a private key to any GitHub repo.
-//  privateKey *rsa.PrivateKey
-// )
+	// user_idはミドルウェアでセットされていることを想定
+	if c.Locals("user_id") == nil {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
 
-// func main() {
-//  app := fiber.New()
+	err := h.authUsecase.RevokeSession(c.Context(), input.RevokeSession{
+		SessionId: id,
+	})
 
-//  // Just as a demo, generate a new private/public key pair on each run. See note above.
-//  rng := rand.Reader
-//  var err error
-//  privateKey, err = rsa.GenerateKey(rng, 2048)
-//  if err != nil {
-//   log.Fatalf("rsa.GenerateKey: %v", err)
-//  }
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to revoke session", "message": err.Error()})
+	}
 
-//  // Login route
-//  app.Post("/login", login)
-
-//  // Unauthenticated route
-//  app.Get("/", accessible)
-
-//  // JWT Middleware
-//  app.Use(jwtware.New(jwtware.Config{
-//   SigningKey: jwtware.SigningKey{
-//    JWTAlg: jwtware.RS256,
-//    Key:    privateKey.Public(),
-//   },
-//  }))
-
-//  // Restricted Routes
-//  app.Get("/restricted", restricted)
-
-//  app.Listen(":3000")
-// }
-
-// func login(c *fiber.Ctx) error {
-//  user := c.FormValue("user")
-//  pass := c.FormValue("pass")
-
-//  // Throws Unauthorized error
-//  if user != "john" || pass != "doe" {
-//   return c.SendStatus(fiber.StatusUnauthorized)
-//  }
-
-//  // Create the Claims
-//  claims := jwt.MapClaims{
-//   "name":  "John Doe",
-//   "admin": true,
-//   "exp":   time.Now().Add(time.Hour * 72).Unix(),
-//  }
-
-//  // Create token
-//  token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-
-//  // Generate encoded token and send it as response.
-//  t, err := token.SignedString(privateKey)
-//  if err != nil {
-//   log.Printf("token.SignedString: %v", err)
-//   return c.SendStatus(fiber.StatusInternalServerError)
-//  }
-
-//  return c.JSON(fiber.Map{"token": t})
-// }
-
-// func accessible(c *fiber.Ctx) error {
-//  return c.SendString("Accessible")
-// }
-
-// func restricted(c *fiber.Ctx) error {
-//  user := c.Locals("user").(*jwt.Token)
-//  claims := user.Claims.(jwt.MapClaims)
-//  name := claims["name"].(string)
-//  return c.SendString("Welcome " + name)
-// }
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{"message": "successfully revoked session"})
+}
