@@ -20,14 +20,14 @@ erDiagram
     tables {
         string table_id PK "テーブルID"
         table_status status "状態"
-        uuid current_orders_id FK "現在の注文グループID"
+        uuid current_table_session_id FK "現在のテーブルセッションID"
         timestamp last_updated "最終更新"
     }
 
     table_sessions {
         uuid table_session_id PK
         string table_id FK
-        uuid orders_id FK
+        boolean is_revoked
         timestamp created_at
         timestamp last_used
         timestamp expires_at
@@ -36,8 +36,8 @@ erDiagram
     order_groups {
         uuid orders_id PK
         uuid table_session_id FK
-        timestamp created_at
         order_group_status status
+        timestamp created_at
     }
 
     order_items {
@@ -84,12 +84,10 @@ erDiagram
     }
 
     sessions {
-        uuid session_id PK "セッションID"
+        string session_id PK "セッションID"
         uuid user_id FK "ユーザーID"
         timestamp created_at "作成時間"
         timestamp expires_at "有効期限"
-        string ip_address "IPアドレス"
-        string user_agent "ユーザーエージェント"
     }
 
     categories ||--o{ menus : "contains"
@@ -101,34 +99,36 @@ erDiagram
     tables ||--o{ table_sessions : "hosts"
     table_sessions ||--o{ order_groups : "initiates"
     order_groups ||--o{ order_items : "contains"
-    tables ||--|| order_groups : "now processing"
     users ||--o{ sessions : "has"
 ```
 
 ## 各テーブルの説明
 
 - **settings**: アプリケーション全体の設定を保存します（例：ロゴのURL、店舗のテーブル総数）。
-- **tables**: 店舗内の物理テーブルを表します。テーブルの状態（空席/使用中/会計済み）と現在の注文グループIDを管理します。
-- **order_tokens**: 顧客がQRコードを読み取った際に生成されるアクセストークンを管理します。group_idはUUIDv7で発行され、2時間未使用または会計時に無効化されます。
+- **tables**: 店舗内の物理テーブルを表します。テーブルの状態（空席/使用中/会計待ち）と現在のテーブルセッションID（current_table_session_id）を管理します。
+- **table_sessions**: 各テーブルのセッション（QR入店〜会計・有効期限まで）を表します。is_revoked, last_used, expires_at を持ちます。
+- **order_groups**: セッション配下の注文グループです。status で open/closed/cancelled を管理します。
 - **categories**: メニューの分類を管理します。
 - **menus**: 提供される各メニューの詳細情報を保存します。
 - **menu_options**: メニューに追加できるオプション（トッピング、サイズ変更など）を管理します。
 - **menu_option_assignments**: どのメニューにどのオプションが利用可能かを示す中間テーブルです。
-- **orders**: 各注文に含まれる個別のメニュー項目を管理します。どの注文グループに属し、どのメニューがいくつ注文されたかを記録します。
+- **order_items**: 各注文グループに含まれるメニュー項目を管理します。どの注文グループに属し、どのメニューがいくつ注文されたかを記録します。
 - **order_item_options**: 注文された各メニュー項目にどのオプションが選択されたかを記録する中間テーブルです。
-- **sessions**: ユーザーのログインセッション情報を管理します。ユーザーID、作成日時、有効期限、IPアドレス、ユーザーエージェントを記録します。
+- **users**: 従業員・管理者などのユーザーを表します。
+- **sessions**: ユーザーのログインセッション情報を管理します（session_id は string）。
 
 ## データ型 (ENUM)
 
-PostgreSQLのENUM型を利用して、特定カラムの値を制限し、データ整合性を高めます。
+PostgreSQL の ENUM 型で特定カラムの値を制限し、整合性を高めます。
 
 - **table_status**: テーブルの状態を管理します。
   - `('available', 'occupied', 'billing')`  `('空席', '使用中', '会計済み')`
 - **order_status**: 注文の状態を管理します。
   - `('pending', 'preparing', 'served', 'cancelled')` `('受付待ち', '調理中', '提供済み', 'キャンセル')`
+- **order_group_status**: 注文グループの状態を管理します。
+  - `('open', 'closed', 'cancelled')` `('オープン', 'クローズ', 'キャンセル')`
 
 ---
 
-- tables.current_orders_id, order_tokens.group_id, orders.orders_idはすべてUUIDv7で統一し、参照整合性を担保します。
-- order_tokens.is_activeで論理削除・無効化を明示できます。
-- 有効期限切れや会計時の自動クリーンアップ運用
+- tables.current_table_session_id と order_groups.orders_id は UUID で参照整合性を担保します。
+- 有効期限切れや会計時には、同一トランザクションで tables.current_table_session_id を NULL にし、当該セッション配下の open な order_groups を closed に更新する運用を推奨します。
