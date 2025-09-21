@@ -14,15 +14,27 @@ import { Input } from "@workspace/ui/components/input";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { useLogin } from "@/app/(auth)/hooks/useLogin";
 import { LoginFormSchema } from "@/app/(auth)/schema";
 
 export default function LoginPage() {
+  const { doLogin, loading, error } = useLogin();
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {},
   });
+
   function onSubmit(data: z.infer<typeof LoginFormSchema>) {
-    console.log(data);
+    const { userId, password } = data;
+
+    doLogin(userId, password)
+      .then(() => {
+        // Handle successful login
+      })
+      .catch(err => {
+        // Handle login error
+      });
   }
 
   return (
@@ -30,41 +42,48 @@ export default function LoginPage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='flex flex-col items-center justify-center gap-5'
+          className='flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]' // 10rem = h-40
+          style={{ minHeight: "calc(100vh - 10rem)" }} // ヘッダー分の高さを引く
         >
-          <h1 className='text-2xl font-bold'>Welcome back</h1>
-          <FormField
-            control={form.control}
-            name='userId'
-            render={({ field }) => (
-              <FormItem className='w-10/12 lg:w-2/12'>
-                <FormLabel>User ID</FormLabel>
-                <FormControl>
-                  <Input placeholder='userId' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='password'
-            render={({ field }) => (
-              <FormItem className='w-10/12 lg:w-2/12'>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder='password' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type='submit' className='w-10/12 lg:w-2/12'>
-            Login
-          </Button>
-          <Link href='/register' className='text-blue-500 hover:underline'>
-            Don't have an account? Sign up
-          </Link>
+          <h1 className='text-4xl font-bold mb-2'>Welcome back</h1>
+          <div className='mb-4 w-screen flex flex-col items-center gap-4'>
+            <FormField
+              control={form.control}
+              name='userId'
+              render={({ field }) => (
+                <FormItem className='w-10/12 lg:w-2/12'>
+                  <FormLabel>User ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder='userId' {...field} className='w-auto' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem className='w-10/12 lg:w-2/12'>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder='password' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className='flex flex-col items-center gap-2  w-full'>
+              <Button type='submit' className='w-10/12 lg:w-2/12'>
+                Login
+              </Button>
+              {/* アカウント未登録の場合のリンク */}
+              <Link href='/register' className='text-blue-500 hover:underline'>
+                アカウントをお持ちでないですか？新規登録
+              </Link>
+            </div>
+          </div>
         </form>
       </Form>
     </div>

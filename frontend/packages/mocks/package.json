@@ -1,0 +1,26 @@
+{
+  "name": "@workspace/mocks",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "lint": "biome check . --diagnostic-level=error"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.1",
+  "devDependencies": {
+    "msw": "^2.11.3"
+  },
+  "exports": {
+    "./browser": "./src/browser.ts",
+    "./handlers": "./src/handlers.ts"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public",
+      "..\\..\\apps\\client\\public"
+    ]
+  }
+}

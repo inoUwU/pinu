@@ -4,12 +4,14 @@ import CategoryCard from "@/app/category/components/CategoryCard";
 import PageHeader from "@/app/components/PageHeader";
 
 const CategorySection = () => {
+  // TODO: Fetch categories from API
+
   return (
     <div className='h-full w-full p-4 flex flex-col gap-2 justify-start overflow-auto'>
       <CategoryCard
         key={1}
         category={{
-          name: "飲み物aaaaaaaaaaaaaaaaaaaaaaa",
+          name: "飲み物",
           imageUrl: "https://placehold.jp/150x150.png",
           menuId: 1,
         }}
@@ -31,7 +33,7 @@ const CategorySection = () => {
 export default function CategoryPage() {
   return (
     <div className='flex flex-col h-full'>
-      <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center'>
+      <div className='w-full'>
         <PageHeader title='カテゴリー' />
       </div>
       <div className='basis-11/12 grow overflow-auto bg-gray-50 pt-2'>

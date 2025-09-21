@@ -1,6 +1,6 @@
 import ky from "ky";
 
-const apiClient = ky.create({
+const api = ky.create({
   // 環境変数からAPIのベースURLを設定
   prefixUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
   hooks: {
@@ -31,4 +31,4 @@ const apiClient = ky.create({
   },
 });
 
-export default apiClient;
+export default api;

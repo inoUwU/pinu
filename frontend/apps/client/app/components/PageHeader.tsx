@@ -23,7 +23,7 @@ export default function PageHeader({ title, showBackButton }: Props) {
       <div className='col-start-1 col-end-1'>
         {showBackButton ? <BackButton /> : null}
       </div>
-      <div className='col-start-2 col-end-12 flex items-center justify-center'>
+      <div className='col-start-2 col-end-12 flex items-center justify-center w-full'>
         <div className='text-3xl font-bold select-none'>{title}</div>
       </div>
     </div>
