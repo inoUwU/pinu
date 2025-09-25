@@ -8,6 +8,7 @@ import (
 
 	"github.com/samber/do"
 
+	"inoUwU/pinu/app/domain/analytics"
 	"inoUwU/pinu/app/domain/category"
 	"inoUwU/pinu/app/domain/menu"
 	"inoUwU/pinu/app/domain/menu_option"
@@ -15,6 +16,7 @@ import (
 	"inoUwU/pinu/app/domain/settings"
 	"inoUwU/pinu/app/domain/table"
 	"inoUwU/pinu/app/handlers"
+	analyticsRepo "inoUwU/pinu/app/infrastructure/repositories/analytics"
 	categoryRepo "inoUwU/pinu/app/infrastructure/repositories/category"
 	menuRepo "inoUwU/pinu/app/infrastructure/repositories/menu"
 	menuOptionRepo "inoUwU/pinu/app/infrastructure/repositories/menu_option"
@@ -22,6 +24,7 @@ import (
 	tableRepo "inoUwU/pinu/app/infrastructure/repositories/table"
 	userRepo "inoUwU/pinu/app/infrastructure/repositories/user"
 	"inoUwU/pinu/app/services"
+	analyticsUsecase "inoUwU/pinu/app/usecases/analytics"
 	categoryUsecase "inoUwU/pinu/app/usecases/category"
 	menuUsecase "inoUwU/pinu/app/usecases/menu"
 	menuOptionUsecase "inoUwU/pinu/app/usecases/menu_option"
@@ -109,6 +112,13 @@ func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	})
 	do.Provide(injector, settingsUsecase.NewSettingsUsecase)
 	do.Provide(injector, handlers.NewSettingsHandler)
+
+	// Analytics関連
+	do.Provide(injector, func(i *do.Injector) (analytics.IAnalyticsRepository, error) {
+		return analyticsRepo.NewAnalyticsRepository(i)
+	})
+	do.Provide(injector, analyticsUsecase.NewAnalyticsUsecase)
+	do.Provide(injector, handlers.NewAnalyticsHandler)
 
 	return injector
 }

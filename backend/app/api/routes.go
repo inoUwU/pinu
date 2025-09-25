@@ -132,6 +132,22 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 		orderGroup.Post("/", orderHandler.Order)
 	}
 
+	// 統計関連のルート
+	analyticsHandler, err := handlers.NewAnalyticsHandler(injector)
+	if err != nil {
+		panic("Failed to create AnalyticsHandler: " + err.Error())
+	}
+	analyticsGroup := api.Group("/analytics")
+	{
+		analyticsGroup.Get("/", analyticsHandler.GetAnalyticsData)
+		analyticsGroup.Get("/kpi", analyticsHandler.GetKPISummary)
+		analyticsGroup.Get("/top-menus", analyticsHandler.GetTopMenus)
+		analyticsGroup.Get("/category-sales", analyticsHandler.GetCategorySales)
+		analyticsGroup.Get("/menu-performance", analyticsHandler.GetMenuPerformance)
+		analyticsGroup.Get("/daily-sales", analyticsHandler.GetDailySales)
+		analyticsGroup.Get("/menu-daily-trends", analyticsHandler.GetMenuDailyTrends)
+	}
+
 	// TODO: SSEハンドラーではなく注文画面と支払い画面に分割する
 	// SSEハンドラーの設定
 	sseHandler, err := handlers.NewSSEHandler(injector)
