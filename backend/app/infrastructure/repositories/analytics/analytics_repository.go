@@ -175,9 +175,8 @@ func (r *AnalyticsRepositoryImpl) GetMenuDailyTrends(ctx context.Context, menuId
 	
 	if len(menuIds) > 0 {
 		// 特定のメニューIDに絞り込み
-		// PostgreSQL配列形式に変換: {id1,id2,id3}
-		pgArray := "{" + strings.Join(menuIds, ",") + "}"
-		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d WHERE menu_id = ANY(?::text[])", pgArray)
+		// IN句を使って安全にバインド
+		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d WHERE menu_id IN (?)", bun.In(menuIds))
 	} else {
 		// 全てのメニュー
 		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d")
