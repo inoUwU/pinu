@@ -9,6 +9,9 @@
     "lint": "biome check . --diagnostic-level=error"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^0.475.0",
     "next": "15.4.6",
