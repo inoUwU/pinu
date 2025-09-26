@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"inoUwU/pinu/app/domain/analytics"
+	"strings"
 	"time"
 
 	"github.com/samber/do"
@@ -174,7 +175,9 @@ func (r *AnalyticsRepositoryImpl) GetMenuDailyTrends(ctx context.Context, menuId
 	
 	if len(menuIds) > 0 {
 		// 特定のメニューIDに絞り込み
-		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d WHERE menu_id = ANY(?)", menuIds)
+		// PostgreSQL配列形式に変換: {id1,id2,id3}
+		pgArray := "{" + strings.Join(menuIds, ",") + "}"
+		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d WHERE menu_id = ANY(?::text[])", pgArray)
 	} else {
 		// 全てのメニュー
 		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d")
