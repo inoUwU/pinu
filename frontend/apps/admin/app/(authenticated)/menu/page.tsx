@@ -111,7 +111,6 @@ export default function MenuPage() {
   const handleEditMenu = (menuItem: MenuItem) => {
     selectMenu(menuItem.id);
     // TODO: メニューモーダルを開く
-    console.log("Edit menu:", menuItem);
   };
 
   const handleAddMenu = (categoryId: string) => {
