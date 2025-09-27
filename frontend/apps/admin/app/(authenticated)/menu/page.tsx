@@ -115,7 +115,6 @@ export default function MenuPage() {
 
   const handleAddMenu = (categoryId: string) => {
     // TODO: 新しいメニュー追加モーダルを開く
-    console.log("Add menu to category:", categoryId);
   };
 
   // 検索フィルタリング
