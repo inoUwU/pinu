@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"inoUwU/pinu/app/domain/analytics"
-	"strings"
 	"time"
 
 	"github.com/samber/do"
@@ -25,11 +24,11 @@ func NewAnalyticsRepository(i *do.Injector) (analytics.IAnalyticsRepository, err
 // GetKPISummary KPI指標のサマリーを取得する（v_kpi_orders_menuビューを使用）
 func (r *AnalyticsRepositoryImpl) GetKPISummary(ctx context.Context) (*analytics.KPISummary, error) {
 	type KPIResult struct {
-		TotalOrders      int64           `bun:"total_orders"`
-		OrdersToday      int64           `bun:"orders_today"`
-		TotalRevenue     sql.NullFloat64 `bun:"total_revenue"`
+		TotalOrders       int64           `bun:"total_orders"`
+		OrdersToday       int64           `bun:"orders_today"`
+		TotalRevenue      sql.NullFloat64 `bun:"total_revenue"`
 		AverageOrderValue sql.NullFloat64 `bun:"average_order_value"`
-		TotalItemsSold   int64           `bun:"total_items_sold"`
+		TotalItemsSold    int64           `bun:"total_items_sold"`
 	}
 
 	var result KPIResult
@@ -38,11 +37,11 @@ func (r *AnalyticsRepositoryImpl) GetKPISummary(ctx context.Context) (*analytics
 	}
 
 	return &analytics.KPISummary{
-		TotalOrders:      result.TotalOrders,
-		OrdersToday:      result.OrdersToday,
-		TotalRevenue:     result.TotalRevenue.Float64,
+		TotalOrders:       result.TotalOrders,
+		OrdersToday:       result.OrdersToday,
+		TotalRevenue:      result.TotalRevenue.Float64,
 		AverageOrderValue: result.AverageOrderValue.Float64,
-		TotalItemsSold:   result.TotalItemsSold,
+		TotalItemsSold:    result.TotalItemsSold,
 	}, nil
 }
 
@@ -149,7 +148,7 @@ func (r *AnalyticsRepositoryImpl) GetDailySales(ctx context.Context) ([]analytic
 	}
 
 	dailySales := make([]analytics.DailySales, len(results))
-	for i, result := range results {		
+	for i, result := range results {
 		dailySales[i] = analytics.DailySales{
 			Day:         result.Day,
 			OrdersCount: result.OrdersCount,
@@ -172,7 +171,7 @@ func (r *AnalyticsRepositoryImpl) GetMenuDailyTrends(ctx context.Context, menuId
 
 	var results []MenuDailyTrendResult
 	var query *bun.RawQuery
-	
+
 	if len(menuIds) > 0 {
 		// 特定のメニューIDに絞り込み
 		// IN句を使って安全にバインド
@@ -181,7 +180,7 @@ func (r *AnalyticsRepositoryImpl) GetMenuDailyTrends(ctx context.Context, menuId
 		// 全てのメニュー
 		query = r.db.NewRaw("SELECT * FROM v_menu_daily_trend_30d")
 	}
-	
+
 	if err := query.Scan(ctx, &results); err != nil {
 		return nil, err
 	}
@@ -237,7 +236,7 @@ func (r *AnalyticsRepositoryImpl) GetAnalyticsData(ctx context.Context) (*analyt
 	for i := 0; i < maxMenus; i++ {
 		topMenuIds[i] = topMenus[i].MenuID
 	}
-	
+
 	menuDailyTrends, err := r.GetMenuDailyTrends(ctx, topMenuIds)
 	if err != nil {
 		return nil, err
