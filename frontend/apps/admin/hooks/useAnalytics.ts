@@ -1,13 +1,13 @@
 import useSWR from "swr";
 import {
   getAnalyticsData,
-  getKPISummary,
-  getTopMenus,
   getCategorySales,
-  getMenuPerformance,
   getDailySales,
+  getKPISummary,
   getMenuDailyTrends,
-} from "../lib/api/analytics/analytics";
+  getMenuPerformance,
+  getTopMenus,
+} from "@/lib/api/analytics/analytics";
 
 // SWRキー定数
 const SWR_KEYS = {
@@ -17,7 +17,7 @@ const SWR_KEYS = {
   categorySales: "analytics/category-sales",
   menuPerformance: (limit: number) => `analytics/menu-performance/${limit}`,
   dailySales: "analytics/daily-sales",
-  menuDailyTrends: (menuIds?: string[]) => 
+  menuDailyTrends: (menuIds?: string[]) =>
     `analytics/menu-daily-trends${menuIds ? `/${menuIds.join(",")}` : ""}`,
 } as const;
 
@@ -28,30 +28,22 @@ const REFRESH_INTERVAL = 60000; // 1分
  * 統計データ全体を取得するフック
  */
 export const useAnalyticsData = () => {
-  return useSWR(
-    SWR_KEYS.analytics,
-    () => getAnalyticsData(),
-    {
-      refreshInterval: REFRESH_INTERVAL,
-      revalidateOnFocus: false,
-      dedupingInterval: 30000, // 30秒間のデータ重複排除
-    }
-  );
+  return useSWR(SWR_KEYS.analytics, () => getAnalyticsData(), {
+    refreshInterval: REFRESH_INTERVAL,
+    revalidateOnFocus: false,
+    dedupingInterval: 30000, // 30秒間のデータ重複排除
+  });
 };
 
 /**
  * KPIサマリーを取得するフック
  */
 export const useKPISummary = () => {
-  return useSWR(
-    SWR_KEYS.kpiSummary,
-    () => getKPISummary(),
-    {
-      refreshInterval: REFRESH_INTERVAL,
-      revalidateOnFocus: false,
-      dedupingInterval: 30000,
-    }
-  );
+  return useSWR(SWR_KEYS.kpiSummary, () => getKPISummary(), {
+    refreshInterval: REFRESH_INTERVAL,
+    revalidateOnFocus: false,
+    dedupingInterval: 30000,
+  });
 };
 
 /**
@@ -59,30 +51,22 @@ export const useKPISummary = () => {
  * @param limit 取得件数制限（デフォルト: 10）
  */
 export const useTopMenus = (limit = 10) => {
-  return useSWR(
-    SWR_KEYS.topMenus(limit),
-    () => getTopMenus(limit),
-    {
-      refreshInterval: REFRESH_INTERVAL,
-      revalidateOnFocus: false,
-      dedupingInterval: 30000,
-    }
-  );
+  return useSWR(SWR_KEYS.topMenus(limit), () => getTopMenus(limit), {
+    refreshInterval: REFRESH_INTERVAL,
+    revalidateOnFocus: false,
+    dedupingInterval: 30000,
+  });
 };
 
 /**
  * カテゴリ別売上を取得するフック
  */
 export const useCategorySales = () => {
-  return useSWR(
-    SWR_KEYS.categorySales,
-    () => getCategorySales(),
-    {
-      refreshInterval: REFRESH_INTERVAL,
-      revalidateOnFocus: false,
-      dedupingInterval: 30000,
-    }
-  );
+  return useSWR(SWR_KEYS.categorySales, () => getCategorySales(), {
+    refreshInterval: REFRESH_INTERVAL,
+    revalidateOnFocus: false,
+    dedupingInterval: 30000,
+  });
 };
 
 /**
@@ -97,7 +81,7 @@ export const useMenuPerformance = (limit = 20) => {
       refreshInterval: REFRESH_INTERVAL,
       revalidateOnFocus: false,
       dedupingInterval: 30000,
-    }
+    },
   );
 };
 
@@ -105,15 +89,11 @@ export const useMenuPerformance = (limit = 20) => {
  * 日次売上トレンドを取得するフック
  */
 export const useDailySales = () => {
-  return useSWR(
-    SWR_KEYS.dailySales,
-    () => getDailySales(),
-    {
-      refreshInterval: REFRESH_INTERVAL,
-      revalidateOnFocus: false,
-      dedupingInterval: 30000,
-    }
-  );
+  return useSWR(SWR_KEYS.dailySales, () => getDailySales(), {
+    refreshInterval: REFRESH_INTERVAL,
+    revalidateOnFocus: false,
+    dedupingInterval: 30000,
+  });
 };
 
 /**
@@ -128,6 +108,6 @@ export const useMenuDailyTrends = (menuIds?: string[]) => {
       refreshInterval: REFRESH_INTERVAL,
       revalidateOnFocus: false,
       dedupingInterval: 30000,
-    }
+    },
   );
 };

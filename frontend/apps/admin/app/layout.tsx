@@ -17,7 +17,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang='ja'>
-      <body className="antialiased font-sans">
+      <body className='antialiased font-sans'>
         <NextTopLoader crawl={false} />
         <Toaster />
         <ThemeProvider

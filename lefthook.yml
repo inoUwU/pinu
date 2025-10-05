@@ -51,6 +51,6 @@ pre-commit:
         --diagnostic-level=error \
         --colors=off {staged_files}
       exclude:
-        - frontend/apps/ui/src/components/ui/*.tsx
+        - packages\ui\src\components\*.tsx
       stage_fixed: true
       root: "frontend/"

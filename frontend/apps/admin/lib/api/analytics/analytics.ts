@@ -2,12 +2,12 @@ import api from "../api";
 import type {
   AnalyticsData,
   GetAnalyticsResponse,
-  GetKPISummaryResponse,
-  GetTopMenusResponse,
   GetCategorySalesResponse,
-  GetMenuPerformanceResponse,
   GetDailySalesResponse,
+  GetKPISummaryResponse,
   GetMenuDailyTrendsResponse,
+  GetMenuPerformanceResponse,
+  GetTopMenusResponse,
 } from "./types";
 
 const ANALYTICS_ENDPOINTS = {
@@ -15,7 +15,7 @@ const ANALYTICS_ENDPOINTS = {
   kpi: "analytics/kpi",
   topMenus: "analytics/top-menus",
   categorySales: "analytics/category-sales",
-  menuPerformance: "analytics/menu-performance", 
+  menuPerformance: "analytics/menu-performance",
   dailySales: "analytics/daily-sales",
   menuDailyTrends: "analytics/menu-daily-trends",
 } as const;
@@ -24,7 +24,9 @@ const ANALYTICS_ENDPOINTS = {
  * 統計データ全体を取得する
  */
 export const getAnalyticsData = async (): Promise<AnalyticsData> => {
-  const response: GetAnalyticsResponse = await api.get(ANALYTICS_ENDPOINTS.analytics).json();
+  const response: GetAnalyticsResponse = await api
+    .get(ANALYTICS_ENDPOINTS.analytics)
+    .json();
   return response.data;
 };
 
@@ -32,7 +34,9 @@ export const getAnalyticsData = async (): Promise<AnalyticsData> => {
  * KPIサマリーを取得する
  */
 export const getKPISummary = async () => {
-  const response: GetKPISummaryResponse = await api.get(ANALYTICS_ENDPOINTS.kpi).json();
+  const response: GetKPISummaryResponse = await api
+    .get(ANALYTICS_ENDPOINTS.kpi)
+    .json();
   return response.kpiSummary;
 };
 
@@ -53,7 +57,9 @@ export const getTopMenus = async (limit = 10) => {
  * カテゴリ別売上を取得する
  */
 export const getCategorySales = async () => {
-  const response: GetCategorySalesResponse = await api.get(ANALYTICS_ENDPOINTS.categorySales).json();
+  const response: GetCategorySalesResponse = await api
+    .get(ANALYTICS_ENDPOINTS.categorySales)
+    .json();
   return response.categorySales;
 };
 
@@ -74,7 +80,9 @@ export const getMenuPerformance = async (limit = 20) => {
  * 日次売上トレンドを取得する
  */
 export const getDailySales = async () => {
-  const response: GetDailySalesResponse = await api.get(ANALYTICS_ENDPOINTS.dailySales).json();
+  const response: GetDailySalesResponse = await api
+    .get(ANALYTICS_ENDPOINTS.dailySales)
+    .json();
   return response.dailySales;
 };
 

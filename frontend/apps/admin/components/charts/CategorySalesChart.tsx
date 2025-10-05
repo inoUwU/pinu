@@ -1,8 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import type { CategorySales } from "../../lib/api/analytics/types";
+import type { CategorySales } from "@/lib/api/analytics/types";
 
 interface CategorySalesChartProps {
   data: CategorySales[];
@@ -17,7 +22,10 @@ const CHART_COLORS = [
   "hsl(var(--chart-5))",
 ];
 
-export function CategorySalesChart({ data, isLoading }: CategorySalesChartProps) {
+export function CategorySalesChart({
+  data,
+  isLoading,
+}: CategorySalesChartProps) {
   if (isLoading) {
     return (
       <Card>
@@ -25,7 +33,7 @@ export function CategorySalesChart({ data, isLoading }: CategorySalesChartProps)
           <CardTitle>カテゴリ別売上</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
             読み込み中...
           </div>
         </CardContent>
@@ -40,7 +48,7 @@ export function CategorySalesChart({ data, isLoading }: CategorySalesChartProps)
           <CardTitle>カテゴリ別売上</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
             データがありません
           </div>
         </CardContent>
@@ -63,23 +71,29 @@ export function CategorySalesChart({ data, isLoading }: CategorySalesChartProps)
         <CardTitle>カテゴリ別売上（過去30日）</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className='h-[300px]'>
+          <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="rounded-lg border bg-background p-2 shadow-md">
-                        <div className="grid grid-cols-1 gap-2">
-                          <div className="flex flex-col">
-                            <span className="text-xs text-muted-foreground">カテゴリ</span>
-                            <span className="font-bold">{data.name}</span>
+                      <div className='rounded-lg border bg-background p-2 shadow-md'>
+                        <div className='grid grid-cols-1 gap-2'>
+                          <div className='flex flex-col'>
+                            <span className='text-xs text-muted-foreground'>
+                              カテゴリ
+                            </span>
+                            <span className='font-bold'>{data.name}</span>
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-xs text-muted-foreground">売上</span>
-                            <span className="font-bold">¥{data.value.toLocaleString()}</span>
+                          <div className='flex flex-col'>
+                            <span className='text-xs text-muted-foreground'>
+                              売上
+                            </span>
+                            <span className='font-bold'>
+                              ¥{data.value.toLocaleString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -90,34 +104,39 @@ export function CategorySalesChart({ data, isLoading }: CategorySalesChartProps)
               />
               <Pie
                 data={chartData}
-                cx="50%"
-                cy="50%"
+                cx='50%'
+                cy='50%'
                 innerRadius={60}
                 outerRadius={120}
                 paddingAngle={5}
-                dataKey="value"
+                dataKey='value'
               >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                {chartData.map(entry => (
+                  <Cell key={`cell-${entry.name}`} fill={entry.fill} />
                 ))}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
         </div>
-        
-        <div className="mt-4 space-y-2">
-          {chartData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between text-sm">
-              <div className="flex items-center">
+
+        <div className='mt-4 space-y-2'>
+          {chartData.map(item => (
+            <div
+              key={item.name}
+              className='flex items-center justify-between text-sm'
+            >
+              <div className='flex items-center'>
                 <div
-                  className="w-3 h-3 rounded-full mr-2"
+                  className='w-3 h-3 rounded-full mr-2'
                   style={{ backgroundColor: item.fill }}
                 />
                 <span>{item.name}</span>
               </div>
-              <div className="text-right">
-                <div className="font-medium">¥{item.value.toLocaleString()}</div>
-                <div className="text-muted-foreground text-xs">
+              <div className='text-right'>
+                <div className='font-medium'>
+                  ¥{item.value.toLocaleString()}
+                </div>
+                <div className='text-muted-foreground text-xs'>
                   {((item.value / totalRevenue) * 100).toFixed(1)}%
                 </div>
               </div>

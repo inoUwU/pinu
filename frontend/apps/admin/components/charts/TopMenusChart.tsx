@@ -1,30 +1,25 @@
 "use client";
 
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@workspace/ui/components/chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { TopMenu } from "../../lib/api/analytics/types";
 
 interface TopMenusChartProps {
   data: TopMenu[];
   isLoading?: boolean;
 }
-
-const chartConfig = {
-  quantitySold: {
-    label: "販売数量",
-    color: "hsl(var(--chart-1))",
-  },
-  revenue: {
-    label: "売上",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig;
 
 export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
   if (isLoading) {
@@ -34,7 +29,7 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
           <CardTitle>トップメニュー</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
             読み込み中...
           </div>
         </CardContent>
@@ -49,7 +44,7 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
           <CardTitle>トップメニュー</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
             データがありません
           </div>
         </CardContent>
@@ -57,8 +52,9 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
     );
   }
 
-  const chartData = data.map((menu) => ({
-    name: menu.name.length > 10 ? `${menu.name.substring(0, 10)}...` : menu.name,
+  const chartData = data.map(menu => ({
+    name:
+      menu.name.length > 10 ? `${menu.name.substring(0, 10)}...` : menu.name,
     fullName: menu.name,
     quantitySold: menu.quantitySold,
     revenue: Math.round(menu.revenue),
@@ -70,8 +66,8 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
         <CardTitle>トップメニュー（過去30日）</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className='h-[300px]'>
+          <ResponsiveContainer width='100%' height='100%'>
             <BarChart
               data={chartData}
               margin={{
@@ -82,12 +78,12 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
               }}
             >
               <XAxis
-                dataKey="name"
+                dataKey='name'
                 tickLine={false}
                 axisLine={false}
                 tick={{ fontSize: 12 }}
                 angle={-45}
-                textAnchor="end"
+                textAnchor='end'
                 height={60}
               />
               <YAxis
@@ -96,19 +92,25 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
                 tick={{ fontSize: 12 }}
               />
               <Tooltip
-                content={({ active, payload, label }) => {
+                content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="rounded-lg border bg-background p-2 shadow-md">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="flex flex-col">
-                            <span className="text-xs text-muted-foreground">メニュー</span>
-                            <span className="font-bold">{data.fullName}</span>
+                      <div className='rounded-lg border bg-background p-2 shadow-md'>
+                        <div className='grid grid-cols-2 gap-2'>
+                          <div className='flex flex-col'>
+                            <span className='text-xs text-muted-foreground'>
+                              メニュー
+                            </span>
+                            <span className='font-bold'>{data.fullName}</span>
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-xs text-muted-foreground">販売数量</span>
-                            <span className="font-bold">{data.quantitySold}</span>
+                          <div className='flex flex-col'>
+                            <span className='text-xs text-muted-foreground'>
+                              販売数量
+                            </span>
+                            <span className='font-bold'>
+                              {data.quantitySold}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -118,8 +120,8 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
                 }}
               />
               <Bar
-                dataKey="quantitySold"
-                fill="hsl(var(--chart-1))"
+                dataKey='quantitySold'
+                fill='hsl(var(--chart-1))'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
