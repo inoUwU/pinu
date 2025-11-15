@@ -1,260 +1,194 @@
 # AGENTS.md
 
-このファイルは、GitHub CopilotやOpenAI Codexなどの AI コーディングエージェント向けのプロジェクトガイドです。
+## Project
 
-## プロジェクト概要
+- **Name**: Pinu
+- **Type**: QR Order System for small restaurants
+- **Target**: Single-operator small restaurant businesses
+- **Backend**: Go 1.22+ + Fiber
+- **Frontend**: Next.js + TypeScript + Shadcn UI + Tailwind CSS
+- **Database**: PostgreSQL 17.5
+- **Infrastructure**: Docker + Task runner
+- **Architecture**: Port & Adapter (Hexagonal)
 
-**Pinu** は、町中華などの小規模個人経営店舗向けのQRオーダーシステムです。店主一人でも運用可能な、シンプルで直感的なフルスタックアプリケーションです。
+## Setup
 
-- **バックエンド**: Go + Fiber (ポート&アダプターアーキテクチャ)
-- **フロントエンド**: Next.js + TypeScript + Shadcn UI + Tailwind CSS
-- **データベース**: PostgreSQL
-- **開発環境**: Docker + Task runner
+### Requirements
 
-### プロジェクトスローガン
+- Docker
+- Task (`sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d`)
+- Go 1.22+
+- Node.js 18+ + pnpm
 
-**日本語**: 「PINU ― piっとメニュー、らくらくオーダー！」  
-**英語**: "PINU — Tap the menu, order with ease!"
-
-## 開発環境のセットアップ
-
-### 前提条件
-
-- [Docker](https://www.docker.com/get-started)
-- [Task](https://taskfile.dev) (インストール: `sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d`)
-- Go 1.22以降
-- Node.js 18以降 & pnpm
-
-### 初期セットアップ
+### Commands
 
 ```bash
-# Taskツールをインストール（初回のみ）
-task install:task
-
-# プロジェクトのセットアップ（環境変数、依存関係）
-task setup
+task install:task  # Install Task runner
+task setup         # Setup environment and dependencies
+task start         # Start dev environment (DB + Backend + Frontend)
+task dev           # Start with adminer
+task stop          # Stop environment
+task db:reset      # Reset database
+task clean         # Full cleanup
+task fresh         # Clean + setup + start
 ```
 
-### 開発環境の起動
+### URLs
+
+- Backend: http://localhost:8000
+- Frontend: http://localhost:3000
+- Adminer: http://localhost:8080
+
+## Build/Test/Lint
+
+### All
 
 ```bash
-# 開発環境を起動（データベース、バックエンド、フロントエンド）
-task start
-
-# 開発環境一式を起動（adminer含む）
-task dev
+task build       # Build all
+task test        # Test all
+task lint        # Lint all
+task deploy:prep # Build + test
 ```
 
-アクセスURL:
-- **バックエンド**: http://localhost:8000
-- **フロントエンド**: http://localhost:3000
-- **Adminer (DB管理)**: http://localhost:8080
-
-### その他の便利なコマンド
+### Backend (Go)
 
 ```bash
-# 開発環境を停止
-task stop
-
-# データベースをリセット
-task db:reset
-
-# 完全クリーンアップ
-task clean
-
-# 完全に新しい状態で起動
-task fresh
-```
-
-## ビルド・テスト・Lintコマンド
-
-### 全体
-
-```bash
-# 全体をビルド
-task build
-
-# 全体のテストを実行
-task test
-
-# 全体のLintを実行
-task lint
-
-# デプロイ準備（ビルド + テスト）
-task deploy:prep
-```
-
-### バックエンド（Go）
-
-```bash
-# 依存関係のインストール
 cd backend && go mod tidy && go mod download
-
-# 開発モードで起動
 cd backend && go run cmd/server/main.go
-
-# ビルド
 cd backend && go build -o ../bin/backend cmd/server/main.go
-
-# テスト実行
 cd backend && go test ./... -v
-
-# Lint実行（golangci-lint必要）
 cd backend && golangci-lint run
 ```
 
-### フロントエンド（Next.js + TypeScript）
+### Frontend (Next.js + TypeScript)
 
 ```bash
-# 依存関係のインストール
 cd frontend && pnpm install
-
-# 開発モードで起動
 cd frontend && pnpm dev
-
-# ビルド
 cd frontend && pnpm build
-
-# テスト実行
 cd frontend && pnpm test
-
-# Lint実行
 cd frontend && pnpm lint
-
-# フォーマット（Biome）
-cd frontend && pnpm format
+cd frontend && pnpm format  # Biome
 ```
 
-## アーキテクチャとコードスタイル
+## Architecture
 
-### バックエンドアーキテクチャ
-
-**ポート&アダプター（ヘキサゴナルアーキテクチャ）** を採用しています。
+### Backend: Port & Adapter (Hexagonal)
 
 ```
-Controllers (Primary Adapter)
+Controllers (Primary Adapter)       → app/handlers/
     ↓
-UseCases (Application Layer)
+UseCases (Application Layer)        → app/usecases/
     ↓
-Repository Interface (Domain Port)
+Repository Interface (Domain Port)  → app/domain/repositories/
     ↓
-Repository Implementation (Secondary Adapter)
+Repository Implementation           → app/infrastructure/repositories/
     ↓
-Database
+Database (PostgreSQL)
 ```
 
-#### レイヤー別の責任
+### Layer Responsibilities
 
-1. **Controllers** (`app/handlers/`)
-   - HTTPリクエスト/レスポンスの処理
-   - ユースケースの呼び出し
-   - プレゼンテーション層
+**Controllers** (`app/handlers/`)
+- HTTP request/response handling
+- UseCase invocation
+- Presentation layer
 
-2. **UseCases** (`app/usecases/`)
-   - ビジネスロジックの実装
-   - バリデーション処理
-   - アプリケーション固有のロジック
-   - Input/Output DTOの使用
+**UseCases** (`app/usecases/`)
+- Business logic
+- Validation
+- Application logic
+- Input/Output DTO usage
 
-3. **Domain** (`app/domain/`)
-   - エンティティ定義 (`entities/`)
-   - リポジトリインターフェース (`repositories/`)
+**Domain** (`app/domain/`)
+- Entity definitions (`entities/`)
+- Repository interfaces (`repositories/`)
 
-4. **Infrastructure** (`app/infrastructure/`)
-   - リポジトリ実装 (`repositories/`)
-   - データベース接続・操作
+**Infrastructure** (`app/infrastructure/`)
+- Repository implementations (`repositories/`)
+- Database operations
 
-#### アーキテクチャの重要原則
+### Principles
 
-- **依存性逆転の原則**: 内側の層は外側の層に依存しない
-- **サービス層の削除**: 不要な抽象化を排除し、ユースケースに直接実装
-- **ポインタ型の使用**: サービス・リポジトリはポインタ型で統一
-- **インターフェース**: `*Interface` ではなく `Interface` 型を使用
+- Dependency Inversion: Inner layers do not depend on outer layers
+- No service layer: Direct UseCase implementation
+- Pointer types: Services and repositories use pointer types
+- Interface types: Use `Interface` not `*Interface`
 
-### フロントエンドアーキテクチャ
+### Frontend
 
-- **Next.js App Router** を使用
-- **Turbo Repo** によるモノレポ構成
-- **apps/**: 個別アプリケーション（client, admin）
-- **packages/**: 共有パッケージ・コンポーネント
+- Next.js App Router
+- Turbo Repo monorepo
+- `apps/`: client, admin applications
+- `packages/`: shared packages
 
-### コーディング規約（全般）
+## Code Conventions
 
-詳細は `.github/instructions/general.instructions.md` を参照してください。
+Reference: `.github/instructions/general.instructions.md`
 
-主な原則:
-- **命名**: 意味のある変数名・関数名を使用
-- **コメント**: 簡潔で具体的に記述
-- **マジックナンバー禁止**: 定数として定義
-- **可読性優先**: コードの読みやすさを重視
-- **DRY原則**: コードの重複を避ける
-- **SOLID・KISS原則** に従う
-- **型安全性**: 型定義・アノテーションを積極的に使用
-- **エラーハンドリング**: 例外や失敗ケースを慎重に扱う
-- **単一責任の原則**: 関数・クラスは単一の責任を持つ
-- **セキュリティ意識**: インジェクション、XSSなどのリスクを考慮
+### General
 
-### Go言語の特記事項
+- Meaningful variable/function names
+- Concise, specific comments
+- Constants for magic numbers
+- DRY principle
+- SOLID and KISS principles
+- Type safety: use type definitions and annotations
+- Error handling: handle exceptions and failure cases
+- Single Responsibility Principle
+- Security: prevent injection, XSS
 
-- **構造体名**: 公開する構造体は大文字で始める（例: `UserUsecaseImpl`）
-- **インターフェース型**: ポインタを使わない（例: `repositories.IUserRepository`）
-- **依存性注入**: DIコンテナを使用 (`app/middleware/injection.go`)
+### Go
 
-### TypeScript/Next.jsの特記事項
+- Struct names: Public structs start with uppercase (e.g., `UserUsecaseImpl`)
+- Interface types: No pointers (e.g., `repositories.IUserRepository`)
+- Dependency Injection: Use DI container (`app/middleware/injection.go`)
 
-- **Strict モード**: TypeScript strict mode を使用
-- **Validation**: Zodを使用
-- **Form**: Conformを使用
-- **API通信**: SWRを使用
-- **UI**: Shadcn UI + Tailwind CSS
+### TypeScript/Next.js
 
-## データベース
+- TypeScript strict mode
+- Validation: Zod
+- Forms: Conform
+- API: SWR
+- UI: Shadcn UI + Tailwind CSS
 
-### 接続情報（デフォルト）
+## Database
 
-- **データベース名**: `pinu`
-- **ユーザー名**: `pinu_user`
-- **パスワード**: `pinu_pass`
-- **ポート**: `5432`
+### Connection (Default)
 
-環境変数は `.env` で設定可能（`.env.example` を参照）。
+- Database: `pinu`
+- User: `pinu_user`
+- Password: `pinu_pass`
+- Port: `5432`
+- Config: `.env` (see `.env.example`)
 
-### データベース操作
+### Operations
 
 ```bash
-# PostgreSQL起動
-task db:start
-
-# PostgreSQL停止
-task db:stop
-
-# データベースリセット（全データ削除）
-task db:reset
-
-# ログ表示
-task db:logs
+task db:start  # Start PostgreSQL
+task db:stop   # Stop PostgreSQL
+task db:reset  # Reset (delete all data)
+task db:logs   # Show logs
 ```
 
-### ER図とスキーマ
+### Schema
 
-詳細は `.docs/database/er_diagram.md` を参照してください。
+Reference: `.docs/database/er_diagram.md`
 
-主なテーブル:
-- `tables`: 店舗内の物理テーブル管理
-- `table_sessions`: テーブルのセッション（QR入店〜会計）
-- `order_groups`: セッション配下の注文グループ
-- `order_items`: 各注文項目
-- `menus`: メニュー情報
-- `categories`: メニューカテゴリ
-- `users`: 従業員・管理者
+Main tables:
+- `tables`: Physical table management
+- `table_sessions`: Session (QR entry to checkout)
+- `order_groups`: Order groups per session
+- `order_items`: Order items
+- `menus`: Menu items
+- `categories`: Menu categories
+- `users`: Staff/admins
 
-## コミット・PRガイドライン
+## Commits/PRs
 
-### Conventional Commits を使用
+### Format: Conventional Commits
 
-詳細は `.docs/commit-guidelines.md` を参照してください。
-
-#### フォーマット
+Reference: `.docs/commit-guidelines.md`
 
 ```
 <type>(<scope>): <description>
@@ -264,22 +198,22 @@ task db:logs
 [optional footer(s)]
 ```
 
-#### 主な type とgitmoji
+### Types
 
-| Emoji | Type      | 説明                       |
-|-------|-----------|----------------------------|
-| ✨    | feat      | 新機能追加                 |
-| 🐛    | fix       | バグ修正                   |
-| 📝    | docs      | ドキュメント追加・更新     |
-| 🎨    | style     | コードスタイル改善         |
-| ♻️    | refactor  | リファクタリング           |
-| ⚡️    | perf      | パフォーマンス改善         |
-| ✅    | test      | テスト追加・更新           |
-| 🔧    | chore     | ビルド・ツール関連         |
+| Emoji | Type     | Description                |
+|-------|----------|----------------------------|
+| ✨    | feat     | New feature                |
+| 🐛    | fix      | Bug fix                    |
+| 📝    | docs     | Documentation              |
+| 🎨    | style    | Code style                 |
+| ♻️    | refactor | Refactoring                |
+| ⚡️    | perf     | Performance                |
+| ✅    | test     | Tests                      |
+| 🔧    | chore    | Build/tools                |
 
-#### Breaking Change
+### Breaking Changes
 
-Breaking Changeがある場合は `!` を追加するか、フッターに `BREAKING CHANGE:` を記載。
+Add `!` or footer `BREAKING CHANGE:`
 
 ```
 feat(api)!: drop support for legacy v1 endpoints
@@ -287,115 +221,110 @@ feat(api)!: drop support for legacy v1 endpoints
 BREAKING CHANGE: API clients must now use the v2 endpoints.
 ```
 
-### PRのルール
+### PR Rules
 
-- コミットメッセージはConventional Commitsに従う
-- テストが通ることを確認してからPR作成
-- Lintエラーがないことを確認
-- PRには関連するissue番号を記載（Closes: #XX）
+- Follow Conventional Commits
+- Tests pass
+- No lint errors
+- Reference issue (Closes: #XX)
 
-## プロジェクト構造
+## Project Structure
 
 ```
 .
-├── backend/                 # Goバックエンドコード
+├── backend/
 │   ├── app/
-│   │   ├── handlers/        # Controllers (HTTPハンドラー)
-│   │   ├── usecases/        # Application Layer (ビジネスロジック)
+│   │   ├── handlers/        # Controllers (HTTP handlers)
+│   │   ├── usecases/        # Application Layer
 │   │   ├── domain/          # Domain Layer
-│   │   │   ├── entities/    # エンティティ
-│   │   │   └── repositories/# リポジトリインターフェース
+│   │   │   ├── entities/
+│   │   │   └── repositories/
 │   │   ├── infrastructure/  # Infrastructure Layer
-│   │   │   └── repositories/# リポジトリ実装
-│   │   └── middleware/      # DI、認証など
-│   ├── cmd/server/          # エントリポイント
+│   │   │   └── repositories/
+│   │   └── middleware/      # DI, auth
+│   ├── cmd/server/          # Entry point
 │   ├── go.mod
 │   └── go.sum
-├── frontend/                # Next.js フロントエンド（Turbo Repo）
+├── frontend/                # Next.js (Turbo Repo)
 │   ├── apps/
-│   │   ├── client/          # 顧客向けアプリ
-│   │   └── admin/           # 管理者向けアプリ
-│   ├── packages/            # 共有パッケージ
+│   │   ├── client/          # Client app
+│   │   └── admin/           # Admin app
+│   ├── packages/            # Shared packages
 │   ├── package.json
 │   └── turbo.json
-├── database/                # データベース関連ファイル
-│   ├── init/                # 初期化SQL
-│   └── postgresql.conf      # PostgreSQL設定
-├── .docs/                   # プロジェクトドキュメント
+├── database/
+│   ├── init/                # Init SQL
+│   └── postgresql.conf
+├── .docs/
 │   ├── current-architecture.md
 │   ├── architecture-decisions.md
 │   ├── technology_selection.md
 │   ├── commit-guidelines.md
-│   ├── spec/                # 要件定義・仕様書
-│   └── database/            # ER図
-├── docker/                  # Dockerfiles
-├── compose.yml              # Docker Compose設定
-├── Taskfile.yml             # Task runner設定
-├── .env                     # 環境変数（git管理外）
-└── .env.example             # 環境変数テンプレート
+│   ├── spec/
+│   └── database/
+├── docker/
+├── compose.yml
+├── Taskfile.yml
+├── .env                     # Excluded from git
+└── .env.example
 ```
 
-## ドキュメント参照
+## Documentation
 
-プロジェクトの詳細な情報は `.docs/` ディレクトリを参照してください:
+- Architecture: `.docs/current-architecture.md`
+- Architecture decisions: `.docs/architecture-decisions.md`
+- Technology selection: `.docs/technology_selection.md`
+- Commit guidelines: `.docs/commit-guidelines.md`
+- Requirements: `.docs/spec/requirements_definition.md`
+- Features: `.docs/spec/feature_draft.md`
+- ER diagram: `.docs/database/er_diagram.md`
 
-- **アーキテクチャ**: `.docs/current-architecture.md`
-- **アーキテクチャ決定記録**: `.docs/architecture-decisions.md`
-- **技術選定**: `.docs/technology_selection.md`
-- **コミットガイドライン**: `.docs/commit-guidelines.md`
-- **要件定義**: `.docs/spec/requirements_definition.md`
-- **機能一覧**: `.docs/spec/feature_draft.md`
-- **ER図**: `.docs/database/er_diagram.md`
+## Security
 
-## セキュリティ
+- No secrets in commits
+- `.env` excluded via `.gitignore`
+- Create `.env` from `.env.example`
+- Password hashing: bcrypt
+- SQL injection prevention: ORM or prepared statements
 
-- シークレット情報をコミットしない
-- `.env` ファイルは `.gitignore` で除外済み
-- 環境変数は `.env.example` を参考に `.env` を作成
-- パスワードはハッシュ化して保存（bcrypt使用）
-- SQLインジェクション対策としてORMまたはプリペアドステートメントを使用
+## Troubleshooting
 
-## トラブルシューティング
-
-### データベース接続エラー
+### Database connection error
 
 ```bash
-# PostgreSQLの状態確認
 docker ps
 task db:logs
-
-# データベースの再起動
 task db:stop
 task db:start
 ```
 
-### ポートが既に使用されている
+### Port conflicts
 
-デフォルトポート:
+Default ports:
 - `5432`: PostgreSQL
-- `8000`: バックエンド
-- `3000`: フロントエンド
+- `8000`: Backend
+- `3000`: Frontend
 
-`.env` で変更可能:
+Change in `.env`:
 ```
 DB_PORT=5433
 BACKEND_PORT=8001
 FRONTEND_PORT=3001
 ```
 
-### 依存関係のエラー
+### Dependency errors
 
 ```bash
-# バックエンド
+# Backend
 cd backend && go mod tidy && go mod download
 
-# フロントエンド
+# Frontend
 cd frontend && rm -rf node_modules pnpm-lock.yaml && pnpm install
 ```
 
-## 追加情報
+## Constraints
 
-- **ライセンス**: MIT License
-- **言語**: コードは英語、ドキュメント・コメントは日本語を推奨
-- **対象ユーザー**: 町中華などの小規模個人経営店舗の店主
-- **UI/UX**: 高齢の店主でも直感的に操作できるシンプル設計を重視
+- License: MIT
+- Code language: English
+- Documentation/comments: Japanese
+- UI/UX: Simple design for elderly operators
