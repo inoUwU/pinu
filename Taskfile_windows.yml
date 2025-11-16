@@ -48,10 +48,10 @@ tasks:
       - echo 🚀 開発環境を起動中...
       - echo ⚠️  Windows環境では、バックエンドとフロントエンドを別々のターミナルで起動してください
       - echo ""
-      - echo "ターミナル1: task backend:dev"
-      - echo "ターミナル2: task frontend:dev"
+      - echo "ターミナル1 - task backend:dev"
+      - echo "ターミナル2 - task frontend:dev"
       - echo ""
-      - echo または Docker環境を使用: task dev
+      - echo "または Docker環境を使用 - task dev"
 
   # 開発環境一式（Docker全サービス）
   dev:
@@ -59,11 +59,11 @@ tasks:
     cmds:
       - docker compose up -d
       - echo ✨ 開発環境が起動しました！
-      - echo 📊 Adminer: http://localhost:8080
-      - echo ⚡ バックエンド: http://localhost:8000 (Docker内)
-      - echo 🚀 フロントエンド: task frontend:dev で起動してください
+      - echo "📊 Adminer - http://localhost:8080"
+      - echo "⚡ バックエンド - http://localhost:8000 (Docker内)"
+      - echo "🚀 フロントエンド - task frontend:dev で起動してください"
       - echo ""
-      - echo 停止するには: task stop
+      - echo "停止するには - task stop"
 
   # 開発環境の停止
   stop:
@@ -100,7 +100,7 @@ tasks:
     desc: PostgreSQLを起動
     cmds:
       - docker compose up -d postgres
-      - echo 🐘 PostgreSQL started at localhost:5432
+      - echo "🐘 PostgreSQL started at localhost - 5432"
 
   db:stop:
     desc: PostgreSQLを停止
@@ -147,7 +147,7 @@ tasks:
     cmds:
       - powershell -Command "if (!(Test-Path ../{{.BIN_DIR}})) { New-Item -ItemType Directory -Path ../{{.BIN_DIR}} }"
       - go build -o ../{{.BIN_DIR}}/backend.exe app/cmd/main.go
-      - echo ✅ バックエンドがビルドされました: {{.BIN_DIR}}/backend.exe
+      - echo "✅ バックエンドがビルドされました -" {{.BIN_DIR}}/backend.exe
 
   backend:test:
     desc: バックエンドのテストを実行

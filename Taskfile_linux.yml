@@ -61,11 +61,11 @@ tasks:
         FRONTEND_PID=$!
         echo $FRONTEND_PID > /tmp/pinu_frontend.pid
       - echo "✨ 開発環境が起動しました！"
-      - echo "⚡ バックエンド: http://localhost:8000"
-      - echo "🚀 フロントエンド: http://localhost:3000"
-      - echo "🐘 データベース: localhost:5432"
+      - echo "⚡ バックエンド - http://localhost:8000"
+      - echo "🚀 フロントエンド - http://localhost:3000"
+      - echo "🐘 データベース - localhost:5432"
       - echo ""
-      - echo "停止するには: task stop"
+      - echo "停止するには - task stop"
 
   # 開発環境一式（adminer含む）
   dev:
@@ -73,11 +73,11 @@ tasks:
     cmds:
       - docker compose up -d
       - echo "✨ 開発環境が起動しました！"
-      - echo "📊 Adminer: http://localhost:8080"
-      - echo "⚡ バックエンド: http://localhost:8000 (Docker内)"
-      - echo "🚀 フロントエンド: task frontend:dev で起動してください"
+      - echo "📊 Adminer - http://localhost:8080"
+      - echo "⚡ バックエンド - http://localhost:8000 (Docker内)"
+      - echo "🚀 フロントエンド - task frontend:dev で起動してください"
       - echo ""
-      - echo "停止するには: task stop"
+      - echo "停止するには - task stop"
 
   # 開発環境の停止
   stop:
@@ -124,7 +124,7 @@ tasks:
     desc: PostgreSQLを起動
     cmds:
       - docker compose up -d postgres
-      - echo "🐘 PostgreSQL started at localhost:5432"
+      - echo "🐘 PostgreSQL started at localhost - 5432"
 
   db:stop:
     desc: PostgreSQLを停止
@@ -171,7 +171,7 @@ tasks:
     cmds:
       - mkdir -p ../{{.BIN_DIR}}
       - go build -o ../{{.BIN_DIR}}/backend app/cmd/main.go
-      - echo "✅ バックエンドがビルドされました: {{.BIN_DIR}}/backend"
+      - echo '✅ バックエンドがビルドされました:' {{.BIN_DIR}}/backend
 
   backend:test:
     desc: バックエンドのテストを実行
