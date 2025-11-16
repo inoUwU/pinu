@@ -1,5 +1,5 @@
 # https://taskfile.dev
-# Windows用Taskfile
+# Unix/Linux/macOS用Taskfile
 
 version: "3"
 
@@ -18,81 +18,105 @@ tasks:
 
   # Task ランナーのインストール
   install:task:
-    desc: Task ランナーをインストール（管理者権限が必要）
+    desc: Task ランナーをインストール
     cmds:
-      - powershell -Command "Invoke-WebRequest -Uri https://github.com/go-task/task/releases/latest/download/task_windows_amd64.zip -OutFile task.zip; Expand-Archive -Path task.zip -DestinationPath $env:LOCALAPPDATA\\Programs\\task -Force; Remove-Item task.zip"
-      - echo "⚠️  Path環境変数に %LOCALAPPDATA%\\Programs\\task を追加してください"
+      - sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
     status:
-      - where task
+      - command -v task
 
   # 初期セットアップ
   setup:
     desc: 環境変数と依存関係をセットアップ
     cmds:
-      - powershell -Command "if (!(Test-Path .env)) { Copy-Item .env.example .env; Write-Host '📝 .envファイルを作成しました' } else { Write-Host '✅ .envファイルは既に存在します' }"
-      - echo 🐘 PostgreSQLを起動中...
+      - |
+        if [ ! -f .env ]; then
+          echo "📝 .envファイルを作成中..."
+          cp .env.example .env
+          echo "✅ .envファイルが作成されました"
+        else
+          echo "✅ .envファイルは既に存在します"
+        fi
+      - echo "🐘 PostgreSQLを起動中..."
       - docker compose up -d postgres
-      - echo ⏳ PostgreSQLの起動を待機中...
-      - timeout /t 5 /nobreak >nul
-      - echo 📦 バックエンドの依存関係をインストール中...
+      - echo "⏳ PostgreSQLの起動を待機中..."
+      - sleep 5
+      - echo "📦 バックエンドの依存関係をインストール中..."
       - task: backend:deps
-      - echo 📦 フロントエンドの依存関係をインストール中...
+      - echo "📦 フロントエンドの依存関係をインストール中..."
       - task: frontend:deps
-      - echo ✨ セットアップが完了しました！
+      - echo "✨ セットアップが完了しました！"
 
   # 開発環境の起動
   start:
     desc: 開発環境を起動（DB + バックエンド + フロントエンド）
     deps: [db:start]
     cmds:
-      - echo 🚀 開発環境を起動中...
-      - echo ⚠️  Windows環境では、バックエンドとフロントエンドを別々のターミナルで起動してください
+      - echo "🚀 開発環境を起動中..."
+      - |
+        (cd {{.BACKEND_DIR}} && go run app/cmd/main.go) &
+        BACKEND_PID=$!
+        echo $BACKEND_PID > /tmp/pinu_backend.pid
+      - |
+        (cd {{.FRONTEND_DIR}} && pnpm dev) &
+        FRONTEND_PID=$!
+        echo $FRONTEND_PID > /tmp/pinu_frontend.pid
+      - echo "✨ 開発環境が起動しました！"
+      - echo "⚡ バックエンド: http://localhost:8000"
+      - echo "🚀 フロントエンド: http://localhost:3000"
+      - echo "🐘 データベース: localhost:5432"
       - echo ""
-      - echo "ターミナル1: task backend:dev"
-      - echo "ターミナル2: task frontend:dev"
-      - echo ""
-      - echo または Docker環境を使用: task dev
+      - echo "停止するには: task stop"
 
-  # 開発環境一式（Docker全サービス）
+  # 開発環境一式（adminer含む）
   dev:
     desc: 開発環境一式起動（Docker全サービス）
     cmds:
       - docker compose up -d
-      - echo ✨ 開発環境が起動しました！
-      - echo 📊 Adminer: http://localhost:8080
-      - echo ⚡ バックエンド: http://localhost:8000 (Docker内)
-      - echo 🚀 フロントエンド: task frontend:dev で起動してください
+      - echo "✨ 開発環境が起動しました！"
+      - echo "📊 Adminer: http://localhost:8080"
+      - echo "⚡ バックエンド: http://localhost:8000 (Docker内)"
+      - echo "🚀 フロントエンド: task frontend:dev で起動してください"
       - echo ""
-      - echo 停止するには: task stop
+      - echo "停止するには: task stop"
 
   # 開発環境の停止
   stop:
     desc: 開発環境を停止
     cmds:
-      - echo 🛑 開発環境を停止中...
+      - echo "🛑 開発環境を停止中..."
       - docker compose down
-      - taskkill /F /IM go.exe 2>nul || echo ""
-      - taskkill /F /IM node.exe 2>nul || echo ""
-      - echo ✅ 開発環境が停止されました
+      - |
+        if [ -f /tmp/pinu_backend.pid ]; then
+          kill $(cat /tmp/pinu_backend.pid) 2>/dev/null || true
+          rm /tmp/pinu_backend.pid
+        fi
+      - |
+        if [ -f /tmp/pinu_frontend.pid ]; then
+          kill $(cat /tmp/pinu_frontend.pid) 2>/dev/null || true
+          rm /tmp/pinu_frontend.pid
+        fi
+      - pkill -f "go run app/cmd/main.go" || true
+      - pkill -f "pnpm dev" || true
+      - echo "✅ 開発環境が停止されました"
 
   # 完全クリーンアップ
   clean:
     desc: データベースを含めて完全に削除
     cmds:
-      - echo 🧹 クリーンアップ中...
+      - echo "🧹 クリーンアップ中..."
       - task: stop
       - docker compose down -v
       - docker system prune -f
-      - echo ✅ クリーンアップが完了しました
+      - echo "✅ クリーンアップが完了しました"
 
   # 完全リセット
   fresh:
     desc: 完全に新しい状態で環境を起動
     cmds:
-      - echo 🔄 環境を完全リセット中...
+      - echo "🔄 環境を完全リセット中..."
       - task: clean
       - task: setup
-      - echo ⚠️  'task start' または 'task dev' で環境を起動してください
+      - task: start
 
   # ==================== データベース関連 ====================
 
@@ -100,23 +124,23 @@ tasks:
     desc: PostgreSQLを起動
     cmds:
       - docker compose up -d postgres
-      - echo 🐘 PostgreSQL started at localhost:5432
+      - echo "🐘 PostgreSQL started at localhost:5432"
 
   db:stop:
     desc: PostgreSQLを停止
     cmds:
       - docker compose stop postgres
-      - echo 🛑 PostgreSQL stopped
+      - echo "🛑 PostgreSQL stopped"
 
   db:reset:
     desc: データベースをリセット（全データ削除）
     cmds:
-      - echo ⚠️  データベースをリセット中...
+      - echo "⚠️  データベースをリセット中..."
       - docker compose down postgres -v
       - docker compose up -d postgres
-      - echo ⏳ PostgreSQLの起動を待機中...
-      - timeout /t 5 /nobreak >nul
-      - echo 🔄 Database reset completed
+      - echo "⏳ PostgreSQLの起動を待機中..."
+      - sleep 5
+      - echo "🔄 Database reset completed"
 
   db:logs:
     desc: PostgreSQLのログを表示
@@ -131,7 +155,7 @@ tasks:
     cmds:
       - go mod tidy
       - go mod download
-      - echo ✅ バックエンドの依存関係がインストールされました
+      - echo "✅ バックエンドの依存関係がインストールされました"
 
   backend:dev:
     desc: バックエンドを開発モードで起動
@@ -145,9 +169,9 @@ tasks:
     desc: バックエンドをビルド
     dir: "{{.BACKEND_DIR}}"
     cmds:
-      - powershell -Command "if (!(Test-Path ../{{.BIN_DIR}})) { New-Item -ItemType Directory -Path ../{{.BIN_DIR}} }"
-      - go build -o ../{{.BIN_DIR}}/backend.exe app/cmd/main.go
-      - echo ✅ バックエンドがビルドされました: {{.BIN_DIR}}/backend.exe
+      - mkdir -p ../{{.BIN_DIR}}
+      - go build -o ../{{.BIN_DIR}}/backend app/cmd/main.go
+      - echo "✅ バックエンドがビルドされました: {{.BIN_DIR}}/backend"
 
   backend:test:
     desc: バックエンドのテストを実行
@@ -159,7 +183,13 @@ tasks:
     desc: バックエンドのLintを実行
     dir: "{{.BACKEND_DIR}}"
     cmds:
-      - powershell -Command "if (Get-Command golangci-lint -ErrorAction SilentlyContinue) { golangci-lint run } else { Write-Host '⚠️  golangci-lint がインストールされていません'; Write-Host 'インストール: https://golangci-lint.run/usage/install/' }"
+      - |
+        if command -v golangci-lint >/dev/null 2>&1; then
+          golangci-lint run
+        else
+          echo "⚠️  golangci-lint がインストールされていません"
+          echo "インストール: https://golangci-lint.run/usage/install/"
+        fi
 
   # ==================== フロントエンド関連 ====================
 
@@ -168,7 +198,7 @@ tasks:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - pnpm install
-      - echo ✅ フロントエンドの依存関係がインストールされました
+      - echo "✅ フロントエンドの依存関係がインストールされました"
 
   frontend:dev:
     desc: フロントエンドを開発モードで起動
@@ -181,7 +211,7 @@ tasks:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - pnpm build
-      - echo ✅ フロントエンドがビルドされました
+      - echo "✅ フロントエンドがビルドされました"
 
   frontend:test:
     desc: フロントエンドのテストを実行
@@ -206,34 +236,34 @@ tasks:
   test:
     desc: 全体のテストを実行
     cmds:
-      - echo 🧪 全体のテストを実行中...
+      - echo "🧪 全体のテストを実行中..."
       - task: backend:test
       - task: frontend:test
-      - echo ✅ 全テスト完了
+      - echo "✅ 全テスト完了"
 
   lint:
     desc: 全体のLintを実行
     cmds:
-      - echo 🔍 全体のLintを実行中...
+      - echo "🔍 全体のLintを実行中..."
       - task: backend:lint
       - task: frontend:lint
-      - echo ✅ 全Lint完了
+      - echo "✅ 全Lint完了"
 
   build:
     desc: 全体をビルド
     cmds:
-      - echo 🔨 全体をビルド中...
+      - echo "🔨 全体をビルド中..."
       - task: backend:build
       - task: frontend:build
-      - echo ✅ 全ビルド完了
+      - echo "✅ 全ビルド完了"
 
   deploy:prep:
     desc: デプロイ準備（ビルド + テスト）
     cmds:
-      - echo 📦 デプロイ準備中...
+      - echo "📦 デプロイ準備中..."
       - task: build
       - task: test
-      - echo ✅ デプロイ準備完了
+      - echo "✅ デプロイ準備完了"
 
   # ==================== ログ関連 ====================
 
