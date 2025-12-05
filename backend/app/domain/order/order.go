@@ -18,14 +18,14 @@ const (
 
 // OrderGroup 注文グループエンティティ
 type OrderGroup struct {
-	OrdersID       uuid.UUID `json:"orders_id" bun:",pk"`
+	OrdersID       uuid.UUID `json:"orders_id"`
 	TableSessionID uuid.UUID `json:"table_session_id"`
 	CreatedAt      time.Time `json:"created_at"`
 }
 
 // OrderItem 注文アイテムエンティティ
 type OrderItem struct {
-	OrderItemID  OrderItemID `json:"order_item_id" bun:",pk"`
+	OrderItemID  OrderItemID `json:"order_item_id"`
 	OrdersID     uuid.UUID   `json:"orders_id"`
 	MenuID       string      `json:"menu_id"`
 	Quantity     int         `json:"quantity"`

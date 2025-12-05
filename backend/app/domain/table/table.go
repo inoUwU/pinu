@@ -17,7 +17,7 @@ const (
 
 // Table テーブルエンティティ
 type Table struct {
-	TableID         TableID     `json:"table_id" bun:",pk"`
+	TableID         TableID     `json:"table_id"`
 	Status          TableStatus `json:"status"`
 	CurrentOrdersID *uuid.UUID  `json:"current_orders_id,omitempty"`
 	LastUpdated     time.Time   `json:"last_updated"`
