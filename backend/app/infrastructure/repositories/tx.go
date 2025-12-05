@@ -4,20 +4,24 @@ import (
 	"context"
 	"database/sql"
 
+	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/infrastructure/ctx"
 
 	"github.com/uptrace/bun"
 )
 
+// TxRepository トランザクション管理リポジトリ（port.TransactionManagerの実装）
 type TxRepository struct {
 	db *bun.DB
 }
 
-func NewTxRepository(db *bun.DB) *TxRepository {
+// NewTxRepository トランザクション管理リポジトリを生成する
+func NewTxRepository(db *bun.DB) port.TransactionManager {
 	return &TxRepository{db: db}
 }
 
-func (r *TxRepository) DoInTx(ctx context.Context, opts *sql.TxOptions, fn func(ctx context.Context, tx bun.Tx) error) error {
+// DoInTx トランザクション内で関数を実行する
+func (r *TxRepository) DoInTx(ctx context.Context, opts *sql.TxOptions, fn func(ctx context.Context) error) error {
 	tx, err := r.db.BeginTx(ctx, opts)
 	if err != nil {
 		return err
@@ -34,7 +38,7 @@ func (r *TxRepository) DoInTx(ctx context.Context, opts *sql.TxOptions, fn func(
 		}
 	}()
 
-	if err := fn(c, tx); err != nil {
+	if err := fn(c); err != nil {
 		return err
 	}
 

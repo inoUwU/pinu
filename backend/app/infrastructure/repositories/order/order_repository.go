@@ -8,6 +8,7 @@ import (
 	"github.com/uptrace/bun"
 	"inoUwU/pinu/app/domain/order"
 	"inoUwU/pinu/app/infrastructure/ctx"
+	"inoUwU/pinu/app/infrastructure/models"
 )
 
 func NewOrderRepository(i *do.Injector) (order.IOrderRepository, error) {
@@ -24,23 +25,23 @@ type OrderRepositoryImpl struct {
 
 // CreateOrderGroup オーダーグループを作成します
 func (r *OrderRepositoryImpl) CreateOrderGroup(ctx context.Context, orderGroup *order.OrderGroup) error {
-	modelOrderGroup := &OrderGroup{
-		ORDER_GROUP_ID:   orderGroup.ORDER_GROUP_ID,
-		TABLE_SESSION_ID: orderGroup.TABLE_SESSION_ID,
-		ORDER_ITEMS:      make([]*OrderItem, 0),
+	modelOrderGroup := &models.OrderGroupModel{
+		OrdersID:       orderGroup.OrdersID.String(),
+		TableSessionID: orderGroup.TableSessionID.String(),
+		CreatedAt:      orderGroup.CreatedAt,
 	}
 
-	var inserter *bun.UpdateQuery
+	var inserter *bun.InsertQuery
 	// contextからトランザクションオブジェクトを取得する
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
 		// トランザクションオブジェクトが存在する場合はそれを使用
-		inserter = tx.NewUpdate()
+		inserter = tx.NewInsert()
 	} else {
 		// トランザクションオブジェクトが存在しない場合はDBオブジェクトを使用
-		inserter = r.db.NewUpdate()
+		inserter = r.db.NewInsert()
 	}
 
-	if _, err := inserter.Model(modelOrderGroup).WherePK().Exec(ctx); err != nil {
+	if _, err := inserter.Model(modelOrderGroup).Exec(ctx); err != nil {
 		return err
 	}
 	return nil

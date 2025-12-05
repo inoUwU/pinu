@@ -2,17 +2,14 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/user/input"
 	"inoUwU/pinu/app/usecases/user/output"
 	"inoUwU/pinu/pkg"
 	"inoUwU/pinu/pkg/security"
 
 	"github.com/samber/do"
-	"github.com/uptrace/bun"
 )
 
 // IUserUsecase ユーザーユースケースのインターフェース
@@ -25,40 +22,28 @@ type IUserUsecase interface {
 
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
-	txRepo   *repositories.TxRepository
-	userRepo user.IUserRepository
-	logger   port.Logger
+	txManager port.TransactionManager
+	userRepo  user.IUserRepository
+	logger    port.Logger
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
 func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
 	repository := do.MustInvoke[user.IUserRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
+	txManager := do.MustInvokeNamed[port.TransactionManager](i, "tx")
 
 	return &UserUsecaseImpl{
-		userRepo: repository,
-		logger:   logger,
-		txRepo:   txRepo,
+		userRepo:  repository,
+		logger:    logger,
+		txManager: txManager,
 	}, nil
 }
 
 // GetAllUsers 全てのユーザーを取得する
 func (u *UserUsecaseImpl) GetAllUsers(ctx context.Context, input *input.GetUsersInput) (*output.GetUsersOutput, error) {
-	var users []user.User = nil
-
-	// ユーザー一覧を取得するトランザクション処理
-	err := u.txRepo.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
-		// userRepoを使ってユーザー一覧を取得
-		var err error
-		users, err = u.userRepo.GetAllUsers(ctx)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	// 読み取り専用操作のため、トランザクションは不要
+	users, err := u.userRepo.GetAllUsers(ctx)
 	if err != nil {
 		return nil, err
 	}

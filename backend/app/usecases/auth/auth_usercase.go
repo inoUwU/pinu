@@ -7,7 +7,6 @@ import (
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/session"
 	"inoUwU/pinu/app/domain/user"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/auth/input"
 	"inoUwU/pinu/app/usecases/auth/output"
 	"inoUwU/pinu/pkg/security"
@@ -15,7 +14,6 @@ import (
 	"time"
 
 	"github.com/samber/do"
-	"github.com/uptrace/bun"
 )
 
 type IAuthUsecase interface {
@@ -26,7 +24,7 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecaseImpl struct {
-	txRepo     *repositories.TxRepository
+	txManager  port.TransactionManager
 	authRepo   session.ISessionRepository
 	userRepo   user.IUserRepository
 	logger     port.Logger
@@ -41,14 +39,14 @@ func NewAuthUsecase(i *do.Injector) (IAuthUsecase, error) {
 	repository := do.MustInvoke[session.ISessionRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 	userRepo := do.MustInvoke[user.IUserRepository](i)
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
+	txManager := do.MustInvokeNamed[port.TransactionManager](i, "tx")
 	tokenMaker := do.MustInvokeNamed[*token.JWTMaker](i, "jwtMaker")
 
 	return &AuthUsecaseImpl{
 		authRepo:   repository,
 		logger:     logger,
 		userRepo:   userRepo,
-		txRepo:     txRepo,
+		txManager:  txManager,
 		tokenMaker: tokenMaker,
 	}, nil
 }
@@ -90,7 +88,7 @@ func (u *AuthUsecaseImpl) Login(ctx context.Context, input *input.Login) (*outpu
 		return nil, err
 	}
 
-	err = u.txRepo.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+	err = u.txManager.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context) error {
 		modelSession := &session.Session{
 			SessionID:    refreshClaims.RegisteredClaims.ID,
 			UserID:       loginUser.USER_ID,

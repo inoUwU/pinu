@@ -56,7 +56,8 @@ func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	})
 
 	// トランザクション
-	do.ProvideNamed(injector, "tx", func(i *do.Injector) (*repositories.TxRepository, error) {
+	do.ProvideNamed(injector, "tx", func(i *do.Injector) (port.TransactionManager, error) {
+		db := do.MustInvokeNamed[*bun.DB](i, "db")
 		tx := repositories.NewTxRepository(db)
 		return tx, nil
 	})
