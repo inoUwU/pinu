@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-// IUserRepository ユーザーリポジトリのインターフェース（ポート）
-type IUserRepository interface {
+// UserRepository ユーザーリポジトリのインターフェース（ポート）
+type UserRepository interface {
 	// GetAllUsers 全てのユーザーを取得する
 	GetAllUsers(ctx context.Context) ([]User, error)
 

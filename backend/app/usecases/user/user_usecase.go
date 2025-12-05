@@ -23,13 +23,13 @@ type IUserUsecase interface {
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
 	txManager port.TransactionManager
-	userRepo  user.IUserRepository
+	userRepo  user.UserRepository
 	logger    port.Logger
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
 func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
-	repository := do.MustInvoke[user.IUserRepository](i)
+	repository := do.MustInvoke[user.UserRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 	txManager := do.MustInvokeNamed[port.TransactionManager](i, "tx")
 

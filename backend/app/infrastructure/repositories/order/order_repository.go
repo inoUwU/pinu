@@ -11,7 +11,7 @@ import (
 	"inoUwU/pinu/app/infrastructure/models"
 )
 
-func NewOrderRepository(i *do.Injector) (order.IOrderRepository, error) {
+func NewOrderRepository(i *do.Injector) (order.OrderRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &OrderRepositoryImpl{
 		db: db,
@@ -47,47 +47,47 @@ func (r *OrderRepositoryImpl) CreateOrderGroup(ctx context.Context, orderGroup *
 	return nil
 }
 
-// AddOrderItemOption implements order.IOrderRepository.
+// AddOrderItemOption implements order.OrderRepository.
 func (o *OrderRepositoryImpl) AddOrderItemOption(ctx context.Context, orderItemOption *order.OrderItemOption) error {
 	panic("unimplemented")
 }
 
-// CreateOrderItem implements order.IOrderRepository.
+// CreateOrderItem implements order.OrderRepository.
 func (o *OrderRepositoryImpl) CreateOrderItem(ctx context.Context, orderItem *order.OrderItem) error {
 	panic("unimplemented")
 }
 
-// GetOrderGroupByID implements order.IOrderRepository.
+// GetOrderGroupByID implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderGroupByID(ctx context.Context, id uuid.UUID) (*order.OrderGroup, error) {
 	panic("unimplemented")
 }
 
-// GetOrderGroupsByTableSession implements order.IOrderRepository.
+// GetOrderGroupsByTableSession implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderGroupsByTableSession(ctx context.Context, tableSessionID uuid.UUID) ([]*order.OrderGroup, error) {
 	panic("unimplemented")
 }
 
-// GetOrderItemByID implements order.IOrderRepository.
+// GetOrderItemByID implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemByID(ctx context.Context, id order.OrderItemID) (*order.OrderItem, error) {
 	panic("unimplemented")
 }
 
-// GetOrderItemOptions implements order.IOrderRepository.
+// GetOrderItemOptions implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemOptions(ctx context.Context, orderItemID order.OrderItemID) ([]*order.OrderItemOption, error) {
 	panic("unimplemented")
 }
 
-// GetOrderItemsByOrderGroup implements order.IOrderRepository.
+// GetOrderItemsByOrderGroup implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemsByOrderGroup(ctx context.Context, ordersID uuid.UUID) ([]*order.OrderItem, error) {
 	panic("unimplemented")
 }
 
-// RemoveOrderItemOption implements order.IOrderRepository.
+// RemoveOrderItemOption implements order.OrderRepository.
 func (o *OrderRepositoryImpl) RemoveOrderItemOption(ctx context.Context, orderItemID order.OrderItemID, menuOptionID string) error {
 	panic("unimplemented")
 }
 
-// UpdateOrderItemStatus implements order.IOrderRepository.
+// UpdateOrderItemStatus implements order.OrderRepository.
 func (o *OrderRepositoryImpl) UpdateOrderItemStatus(ctx context.Context, id order.OrderItemID, status order.OrderStatus) error {
 	panic("unimplemented")
 }

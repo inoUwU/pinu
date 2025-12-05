@@ -18,7 +18,7 @@ type SessionRepositoryImpl struct {
 }
 
 // NewSessionRepository セッションリポジトリの実装を生成する
-func NewSessionRepository(i *do.Injector) (session.ISessionRepository, error) {
+func NewSessionRepository(i *do.Injector) (session.SessionRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &SessionRepositoryImpl{
 		db: db,

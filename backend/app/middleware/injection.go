@@ -115,7 +115,7 @@ func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	do.Provide(injector, handlers.NewSettingsHandler)
 
 	// Analytics関連
-	do.Provide(injector, func(i *do.Injector) (analytics.IAnalyticsRepository, error) {
+	do.Provide(injector, func(i *do.Injector) (analytics.AnalyticsRepository, error) {
 		return analyticsRepo.NewAnalyticsRepository(i)
 	})
 	do.Provide(injector, analyticsUsecase.NewAnalyticsUsecase)

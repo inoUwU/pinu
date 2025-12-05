@@ -4,7 +4,6 @@ import (
 	"context"
 	"inoUwU/pinu/app/domain/analytics"
 	"inoUwU/pinu/app/domain/port"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/analytics/input"
 	"inoUwU/pinu/app/usecases/analytics/output"
 
@@ -37,21 +36,21 @@ type IAnalyticsUsecase interface {
 
 // AnalyticsUsecaseImpl 統計データユースケースの実装
 type AnalyticsUsecaseImpl struct {
-	analyticsRepo analytics.IAnalyticsRepository
+	analyticsRepo analytics.AnalyticsRepository
 	logger        port.Logger
-	txRepo        *repositories.TxRepository
+	txManager     port.TransactionManager
 }
 
 // NewAnalyticsUsecase 統計データユースケースを生成する
 func NewAnalyticsUsecase(i *do.Injector) (IAnalyticsUsecase, error) {
-	repository := do.MustInvoke[analytics.IAnalyticsRepository](i)
+	repository := do.MustInvoke[analytics.AnalyticsRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
+	txManager := do.MustInvokeNamed[port.TransactionManager](i, "tx")
 
 	return &AnalyticsUsecaseImpl{
 		analyticsRepo: repository,
 		logger:        logger,
-		txRepo:        txRepo,
+		txManager:     txManager,
 	}, nil
 }
 

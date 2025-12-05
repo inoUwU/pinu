@@ -25,8 +25,8 @@ type IAuthUsecase interface {
 
 type AuthUsecaseImpl struct {
 	txManager  port.TransactionManager
-	authRepo   session.ISessionRepository
-	userRepo   user.IUserRepository
+	authRepo   session.SessionRepository
+	userRepo   user.UserRepository
 	logger     port.Logger
 	tokenMaker *token.JWTMaker
 }
@@ -36,9 +36,9 @@ var ErrInvalidPassword = errors.New("invalid password")
 
 // NewAuthUsecase 認証ユースケースを生成する
 func NewAuthUsecase(i *do.Injector) (IAuthUsecase, error) {
-	repository := do.MustInvoke[session.ISessionRepository](i)
+	repository := do.MustInvoke[session.SessionRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	userRepo := do.MustInvoke[user.IUserRepository](i)
+	userRepo := do.MustInvoke[user.UserRepository](i)
 	txManager := do.MustInvokeNamed[port.TransactionManager](i, "tx")
 	tokenMaker := do.MustInvokeNamed[*token.JWTMaker](i, "jwtMaker")
 

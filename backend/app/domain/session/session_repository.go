@@ -7,7 +7,7 @@ import (
 )
 
 // SessionRepository セッションリポジトリのインターface
-type ISessionRepository interface {
+type SessionRepository interface {
 	// Session関連
 	CreateSession(ctx context.Context, session *Session) error
 	GetSessionByID(ctx context.Context, id string) (*Session, error)
