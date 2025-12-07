@@ -36,9 +36,9 @@ tasks:
         else
           echo "✅ .envファイルは既に存在します"
         fi
-      - echo "🐘 PostgreSQLを起動中..."
-      - docker compose up -d postgres
-      - echo "⏳ PostgreSQLの起動を待機中..."
+      - echo "🐳 Docker Composeサービスを起動中..."
+      - docker compose up -d postgres air
+      - echo "⏳ サービスの起動を待機中..."
       - sleep 5
       - echo "📦 バックエンドの依存関係をインストール中..."
       - task: backend:deps
@@ -84,7 +84,7 @@ tasks:
     desc: 開発環境を停止
     cmds:
       - echo "🛑 開発環境を停止中..."
-      - docker compose down
+      - docker compose stop
       - |
         if [ -f /tmp/pinu_backend.pid ]; then
           kill $(cat /tmp/pinu_backend.pid) 2>/dev/null || true
