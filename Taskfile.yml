@@ -1,22 +1,174 @@
 # https://taskfile.dev
+# ルートTaskfile - OS別のタスクをインクルード
 
 version: "3"
 
 includes:
-  os: Taskfile_{{OS}}.yml
+  # OS別のTaskfileをインクルード
+  # Linux/macOS: Taskfile_linux.yml
+  # Windows: Taskfile_windows.yml
+  # Darwin (macOS): Taskfile_linux.yml (Unixライクなので)
+  os:
+    taskfile: Taskfile_{{if eq OS "windows"}}windows{{else}}linux{{end}}.yml
+    optional: false
 
 vars:
   BACKEND_DIR: backend
   FRONTEND_DIR: frontend
 
 tasks:
+  # デフォルトタスク - OS別タスク一覧を表示
   default:
+    desc: 利用可能なタスクを一覧表示
     cmds:
       - task --list
+    silent: true
 
-  run:
+  # 以下のタスクはOS別のTaskfileに委譲
+  install:task:
+    desc: Task ランナーをインストール
     cmds:
-      - task: os:run
+      - task: os:install:task
+
+  setup:
+    desc: 環境変数と依存関係をセットアップ
+    cmds:
+      - task: os:setup
+
+  start:
+    desc: 開発環境を起動（DB + バックエンド + フロントエンド）
+    cmds:
+      - task: os:start
+
+  dev:
+    desc: 開発環境一式起動（Docker全サービス）
+    cmds:
+      - task: os:dev
+
+  stop:
+    desc: 開発環境を停止
+    cmds:
+      - task: os:stop
+
+  clean:
+    desc: データベースを含めて完全に削除
+    cmds:
+      - task: os:clean
+
+  fresh:
+    desc: 完全に新しい状態で環境を起動
+    cmds:
+      - task: os:fresh
+
+  # データベース関連
+  db:start:
+    desc: PostgreSQLを起動
+    cmds:
+      - task: os:db:start
+
+  db:stop:
+    desc: PostgreSQLを停止
+    cmds:
+      - task: os:db:stop
+
+  db:reset:
+    desc: データベースをリセット（全データ削除）
+    cmds:
+      - task: os:db:reset
+
+  db:logs:
+    desc: PostgreSQLのログを表示
+    cmds:
+      - task: os:db:logs
+
+  # バックエンド関連
+  backend:deps:
+    desc: バックエンドの依存関係をインストール
+    cmds:
+      - task: os:backend:deps
+
+  backend:dev:
+    desc: バックエンドを開発モードで起動
+    cmds:
+      - task: os:backend:dev
+
+  backend:build:
+    desc: バックエンドをビルド
+    cmds:
+      - task: os:backend:build
+
+  backend:test:
+    desc: バックエンドのテストを実行
+    cmds:
+      - task: os:backend:test
+
+  backend:lint:
+    desc: バックエンドのLintを実行
+    cmds:
+      - task: os:backend:lint
+
+  # フロントエンド関連
+  frontend:deps:
+    desc: フロントエンドの依存関係をインストール
+    cmds:
+      - task: os:frontend:deps
+
+  frontend:dev:
+    desc: フロントエンドを開発モードで起動
+    cmds:
+      - task: os:frontend:dev
+
+  frontend:build:
+    desc: フロントエンドをビルド
+    cmds:
+      - task: os:frontend:build
+
+  frontend:test:
+    desc: フロントエンドのテストを実行
+    cmds:
+      - task: os:frontend:test
+
+  frontend:lint:
+    desc: フロントエンドのLintを実行
+    cmds:
+      - task: os:frontend:lint
+
+  frontend:format:
+    desc: フロントエンドのフォーマットを実行
+    cmds:
+      - task: os:frontend:format
+
+  # 統合タスク
+  test:
+    desc: 全体のテストを実行
+    cmds:
+      - task: os:test
+
+  lint:
+    desc: 全体のLintを実行
+    cmds:
+      - task: os:lint
+
+  build:
+    desc: 全体をビルド
+    cmds:
+      - task: os:build
+
+  deploy:prep:
+    desc: デプロイ準備（ビルド + テスト）
+    cmds:
+      - task: os:deploy:prep
+
+  # ログ関連
+  logs:
+    desc: 全サービスのログを表示
+    cmds:
+      - task: os:logs
+
+  logs:backend:
+    desc: バックエンドのログを表示
+    cmds:
+      - task: os:logs:backend
 
   # setup:
   #   cmds:
