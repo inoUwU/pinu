@@ -90,11 +90,25 @@ task db:logs     # PostgreSQLのログを表示
 ├── database/        # データベース関連ファイル
 │   ├── init/        # 初期化SQL
 │   └── postgresql.conf  # PostgreSQL設定
+├── .docs/           # プロジェクトドキュメント
+│   ├── ACCESSIBILITY_INDEX.md  # アクセシビリティドキュメント索引
+│   └── accessibility-*.md      # アクセシビリティ関連ドキュメント
 ├── bin/             # ビルド生成物
 ├── compose.yml      # Docker Compose設定
 ├── Taskfile.yml     # Taskランナー設定
 └── .env             # 環境変数（セットアップ時に作成）
 ```
+
+## ドキュメント
+
+### アクセシビリティ
+
+フロントエンドのアクセシビリティに関する包括的なドキュメントは [.docs/ACCESSIBILITY_INDEX.md](.docs/ACCESSIBILITY_INDEX.md) を参照してください。
+
+- 📊 [詳細監査レポート](.docs/accessibility-audit-report.md) - 42件の問題と推奨対応
+- ✅ [実装チェックリスト](.docs/accessibility-improvements-checklist.md) - すぐに使えるコードスニペット
+- 📘 [クイックリファレンス](.docs/accessibility-quick-reference.md) - 開発時のベストプラクティス
+- 📝 [エグゼクティブサマリー](.docs/accessibility-audit-summary.md) - 概要と対応計画
 
 ## ライセンス
 
