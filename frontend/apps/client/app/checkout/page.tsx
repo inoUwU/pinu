@@ -15,9 +15,9 @@ export default function checkoutPage() {
       <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center'>
         <PageHeader title='チェックアウト' />
       </div>
-      <div className='basis-11/12 grow overflow-auto bg-gray-50 pt-2'>
+      <main className='basis-11/12 grow overflow-auto bg-gray-50 pt-2' id='main-content'>
         <MainSection />
-      </div>
+      </main>
     </div>
   );
 }

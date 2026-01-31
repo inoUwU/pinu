@@ -29,7 +29,11 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
           <CardTitle>トップメニュー</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
+          <div
+            className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'
+            role='status'
+            aria-live='polite'
+          >
             読み込み中...
           </div>
         </CardContent>
@@ -66,7 +70,11 @@ export function TopMenusChart({ data, isLoading }: TopMenusChartProps) {
         <CardTitle>トップメニュー（過去30日）</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='h-[300px]'>
+        <div
+          className='h-[300px]'
+          role='img'
+          aria-label={`トップメニュー売上棒グラフ：過去30日間で最も売れたメニューの販売数と売上を表示。`}
+        >
           <ResponsiveContainer width='100%' height='100%'>
             <BarChart
               data={chartData}

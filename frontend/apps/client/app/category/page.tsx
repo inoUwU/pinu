@@ -36,9 +36,9 @@ export default function CategoryPage() {
       <div className='w-full'>
         <PageHeader title='カテゴリー' />
       </div>
-      <div className='basis-11/12 grow overflow-auto bg-gray-50 pt-2'>
+      <main className='basis-11/12 grow overflow-auto bg-gray-50 pt-2' id='main-content'>
         <CategorySection />
-      </div>
+      </main>
     </div>
   );
 }

@@ -37,7 +37,7 @@ export default function CategoryDetailsPage({
         <div className='basis-1/12 flex-shrink-0 flex align-middle justify-center'>
           <PageHeader title='メニュー' showBackButton={true} />
         </div>
-        <main className='basis-11/12 grow overflow-auto bg-gray-50 pt-2'>
+        <main className='basis-11/12 grow overflow-auto bg-gray-50 pt-2' id='main-content'>
           {/* メニューのコンテンツをここに追加 */}
           <div className='text-center'>
             <CategoryMenuListSection id={categoryId} />

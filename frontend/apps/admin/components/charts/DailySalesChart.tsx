@@ -29,7 +29,11 @@ export function DailySalesChart({ data, isLoading }: DailySalesChartProps) {
           <CardTitle>日次売上トレンド</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
+          <div
+            className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'
+            role='status'
+            aria-live='polite'
+          >
             読み込み中...
           </div>
         </CardContent>
@@ -68,7 +72,11 @@ export function DailySalesChart({ data, isLoading }: DailySalesChartProps) {
         <CardTitle>日次売上トレンド（過去30日）</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='h-[300px]'>
+        <div
+          className='h-[300px]'
+          role='img'
+          aria-label={`日次売上トレンドグラフ：過去30日間の注文数と売上額の推移を表示。最新の売上は${chartData[chartData.length - 1]?.revenue.toLocaleString()}円です。`}
+        >
           <ResponsiveContainer width='100%' height='100%'>
             <LineChart
               data={chartData}
