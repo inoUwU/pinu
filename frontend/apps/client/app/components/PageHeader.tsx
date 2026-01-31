@@ -11,8 +11,13 @@ const BackButton = () => {
     window.history.back();
   };
   return (
-    <Button onClick={onClick} className='p-6 w-20 relative' variant='ghost'>
-      <ChevronLeft className='absolute left-3 top-1/2 transform -translate-y-1/2' />
+    <Button
+      onClick={onClick}
+      className='p-6 w-20 relative'
+      variant='ghost'
+      aria-label='前のページに戻る'
+    >
+      <ChevronLeft className='absolute left-3 top-1/2 transform -translate-y-1/2' aria-hidden='true' />
     </Button>
   );
 };

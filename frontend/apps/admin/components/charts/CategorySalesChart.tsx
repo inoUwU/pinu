@@ -33,7 +33,11 @@ export function CategorySalesChart({
           <CardTitle>カテゴリ別売上</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'>
+          <div
+            className='h-[300px] flex items-center justify-center text-sm text-muted-foreground'
+            role='status'
+            aria-live='polite'
+          >
             読み込み中...
           </div>
         </CardContent>
@@ -71,7 +75,11 @@ export function CategorySalesChart({
         <CardTitle>カテゴリ別売上（過去30日）</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='h-[300px]'>
+        <div
+          className='h-[300px]'
+          role='img'
+          aria-label={`カテゴリ別売上円グラフ：過去30日間のカテゴリ別売上構成比。合計売上は${totalRevenue.toLocaleString()}円です。`}
+        >
           <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
               <Tooltip

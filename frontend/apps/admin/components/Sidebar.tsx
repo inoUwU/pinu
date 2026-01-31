@@ -32,27 +32,27 @@ const items = [
   {
     title: "Home",
     url: "/",
-    icon: <Home />,
+    icon: <Home aria-hidden='true' />,
   },
   {
     title: "User",
     url: "user",
-    icon: <User />,
+    icon: <User aria-hidden='true' />,
   },
   {
     title: "Menu",
     url: "menu",
-    icon: <CookingPot />,
+    icon: <CookingPot aria-hidden='true' />,
   },
   {
     title: "Settings",
     url: "settings",
-    icon: <Wrench />,
+    icon: <Wrench aria-hidden='true' />,
   },
   {
     title: "Qr Code",
     url: "qrcode",
-    icon: <QrCode />,
+    icon: <QrCode aria-hidden='true' />,
   },
 ];
 
@@ -96,9 +96,9 @@ const AppSidebar = async () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 />
+                  <User2 aria-hidden='true' />
                   John Doe
-                  <ChevronUp className='ml-auto' />
+                  <ChevronUp className='ml-auto' aria-hidden='true' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='align-end'>

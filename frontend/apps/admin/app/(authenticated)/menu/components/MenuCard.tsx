@@ -56,7 +56,7 @@ export function MenuCard({ menuItem, onEdit }: MenuCardProps) {
           <CardTitle className='text-lg font-medium leading-tight pr-2'>
             {menuItem.name}
             {menuItem.isSoldOut && (
-              <AlertCircle className='inline-block ml-1 h-4 w-4 text-red-500' />
+              <AlertCircle className='inline-block ml-1 h-4 w-4 text-red-500' aria-label='売り切れ' role='img' />
             )}
           </CardTitle>
           <Button
@@ -64,8 +64,9 @@ export function MenuCard({ menuItem, onEdit }: MenuCardProps) {
             size='sm'
             className='h-6 w-6 p-0 shrink-0'
             onClick={handleEditClick}
+            aria-label={`${menuItem.name}を編集`}
           >
-            <Pencil className='h-3 w-3' />
+            <Pencil className='h-3 w-3' aria-hidden='true' />
           </Button>
         </div>
       </CardHeader>
@@ -79,7 +80,7 @@ export function MenuCard({ menuItem, onEdit }: MenuCardProps) {
 
         <div className='flex items-center justify-between'>
           <div className='flex items-center text-sm font-medium'>
-            <DollarSign className='h-4 w-4 mr-1' />¥
+            <DollarSign className='h-4 w-4 mr-1' aria-hidden='true' />¥
             {menuItem.price.toLocaleString()}
           </div>
 
@@ -101,7 +102,8 @@ export function MenuCard({ menuItem, onEdit }: MenuCardProps) {
             {/* biome-ignore lint/performance/noImgElement: Using placeholder image */}
             <img
               src={menuItem.imageUrl}
-              alt={menuItem.name}
+              alt=''
+              aria-hidden='true'
               className='w-full h-20 object-cover rounded-md'
               loading='lazy'
             />
