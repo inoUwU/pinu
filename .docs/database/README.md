@@ -9,9 +9,11 @@ PinuはQR Order Systemのためのデータベースで、PostgreSQL 17.5を使�
 ## スキーマファイル
 
 ### schema.dbml
+
 **DBML (Database Markup Language)** 形式で記述されたデータベーススキーマ定義ファイルです。
 
 #### DBMLの特徴
+
 - **可読性**: 人間が読みやすく、編集しやすい形式
 - **ツールサポート**: [dbdiagram.io](https://dbdiagram.io/) などのツールで視覚化可能
 - **自動生成**: SQL DDLやドキュメントの自動生成が可能
@@ -20,11 +22,13 @@ PinuはQR Order Systemのためのデータベースで、PostgreSQL 17.5を使�
 #### schema.dbmlの使用方法
 
 ##### 1. オンラインでER図を表示
+
 1. [dbdiagram.io](https://dbdiagram.io/) にアクセス
 2. `schema.dbml` の内容をコピー&ペースト
 3. 自動的にER図が生成されます
 
 ##### 2. SQL DDLの生成
+
 [DBML CLI](https://www.dbml.org/cli/) を使用してPostgreSQL用のDDLを生成できます：
 
 ```bash
@@ -36,7 +40,9 @@ dbml2sql schema.dbml --postgres -o schema.sql
 ```
 
 ##### 3. ドキュメント生成
+
 DBMLファイルから自動的にドキュメントを生成するツールもあります：
+
 - [dbdocs.io](https://dbdocs.io/) - オンラインデータベースドキュメント
 
 ## データベース構造
@@ -46,9 +52,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 #### 設定テーブル
 
 ##### settings
+
 アプリケーション全体の設定を保存します（例：ロゴのURL、店舗のテーブル総数）。
 
 **主要カラム:**
+
 - `key` (varchar(255), PK): 設定キー
 - `value` (text): 設定値
 - `created_at` (timestamptz): 作成時間
@@ -57,9 +65,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 #### ユーザー管理テーブル
 
 ##### users
+
 従業員・管理者などのユーザーを表します。
 
 **主要カラム:**
+
 - `user_id` (uuid, PK): ユーザーID
 - `login_id` (varchar(255), UNIQUE): ログインID
 - `password_hash` (varchar(255)): パスワードハッシュ
@@ -70,9 +80,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `updated_at` (timestamptz): 更新時間
 
 ##### sessions
+
 ユーザーのログインセッション情報を管理します。
 
 **主要カラム:**
+
 - `session_id` (varchar(255), PK): セッションID
 - `user_id` (uuid, FK → users): ユーザーID
 - `refresh_token` (varchar(512)): リフレッシュトークン
@@ -83,9 +95,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 #### メニュー管理テーブル
 
 ##### categories
+
 メニューの分類を管理します。
 
 **主要カラム:**
+
 - `category_id` (varchar(255), PK): カテゴリID
 - `name` (varchar(255)): カテゴリ名
 - `display_order` (integer): 表示順
@@ -94,9 +108,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `updated_at` (timestamptz): 更新時間
 
 ##### menus
+
 提供される各メニューの詳細情報を保存します。
 
 **主要カラム:**
+
 - `menu_id` (varchar(255), PK): メニューID
 - `name` (varchar(255)): メニュー名
 - `description` (text): 説明
@@ -108,9 +124,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `updated_at` (timestamptz): 更新時間
 
 ##### menu_options
+
 メニューに追加できるオプション（トッピング、サイズ変更など）を管理します。
 
 **主要カラム:**
+
 - `menu_option_id` (varchar(255), PK): オプションID
 - `name` (varchar(255)): オプション名
 - `price` (decimal(10,2)): 追加価格
@@ -118,27 +136,33 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `updated_at` (timestamptz): 更新時間
 
 ##### menu_option_assignments
+
 どのメニューにどのオプションが利用可能かを示す中間テーブルです。
 
 **主要カラム:**
+
 - `menu_id` (varchar(255), PK, FK → menus): メニューID
 - `menu_option_id` (varchar(255), PK, FK → menu_options): オプションID
 
 #### テーブル・注文管理テーブル
 
 ##### tables
+
 店舗内の物理テーブルを表します。テーブルの状態（空席/使用中/会計待ち）と現在のテーブルセッションIDを管理します。
 
 **主要カラム:**
+
 - `table_id` (varchar(255), PK): テーブルID
 - `status` (table_status): 状態（available/occupied/billing）
 - `current_table_session_id` (uuid, FK → table_sessions): 現在のテーブルセッションID
 - `last_updated` (timestamptz): 最終更新
 
 ##### table_sessions
+
 各テーブルのセッション（QR入店〜会計・有効期限まで）を表します。
 
 **主要カラム:**
+
 - `table_session_id` (uuid, PK): テーブルセッションID
 - `table_id` (varchar(255), FK → tables): テーブルID
 - `is_revoked` (boolean): 無効化フラグ
@@ -147,21 +171,26 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `expires_at` (timestamptz): 有効期限
 
 ##### order_groups
+
 セッション配下の注文グループです。statusでopen/closed/cancelledを管理します。
 
 **主要カラム:**
+
 - `orders_id` (uuid, PK): 注文グループID
 - `table_session_id` (uuid, FK → table_sessions): テーブルセッションID
 - `status` (order_group_status): グループ状態（open/closed/cancelled）
 - `created_at` (timestamptz): 作成時間
 
 **特記事項:**
+
 - 同一セッション内で開いている注文グループは高々1つ（ユニーク部分インデックス: `ux_order_groups_session_open`）
 
 ##### order_items
+
 各注文グループに含まれるメニュー項目を管理します。どの注文グループに属し、どのメニューがいくつ注文されたかを記録します。
 
 **主要カラム:**
+
 - `order_item_id` (varchar(255), PK): 注文明細ID
 - `orders_id` (uuid, FK → order_groups): 注文グループID
 - `menu_id` (varchar(255), FK → menus): メニューID
@@ -171,9 +200,11 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `created_at` (timestamptz): 作成時間
 
 ##### order_item_options
+
 注文された各メニュー項目にどのオプションが選択されたかを記録する中間テーブルです。
 
 **主要カラム:**
+
 - `order_item_id` (varchar(255), PK, FK → order_items): 注文明細ID
 - `menu_option_id` (varchar(255), PK, FK → menu_options): オプションID
 
@@ -182,26 +213,32 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 PostgreSQL の ENUM 型で特定カラムの値を制限し、データの整合性を高めます。
 
 #### table_status
+
 テーブルの状態を管理します。
 
 **値:**
+
 - `available`: 空席
 - `occupied`: 使用中
 - `billing`: 会計待ち
 
 #### order_status
+
 注文の状態を管理します。
 
 **値:**
+
 - `pending`: 受付待ち
 - `preparing`: 調理中
 - `served`: 提供済み
 - `cancelled`: キャンセル
 
 #### order_group_status
+
 注文グループの状態を管理します。
 
 **値:**
+
 - `open`: オープン（追加注文可能）
 - `closed`: クローズ（確定済み）
 - `cancelled`: キャンセル
@@ -240,7 +277,7 @@ PostgreSQL の ENUM 型で特定カラムの値を制限し、データの整合
 パフォーマンス最適化のために以下のインデックスが定義されています：
 
 - **主キーインデックス**: すべてのテーブル
-- **外部キーインデックス**: 
+- **外部キーインデックス**:
   - `idx_table_sessions_table_id`
   - `idx_tables_current_table_session_id`
   - `idx_order_items_orders_id`
@@ -336,6 +373,7 @@ COMMIT;
 ## 実装ファイル
 
 実際のデータベース初期化スクリプトは以下にあります：
+
 - `/database/init/init.sql`: PostgreSQL初期化SQL（DDL、インデックス、ビュー定義）
 - `/database/postgresql.conf`: PostgreSQL設定ファイル
 
@@ -360,12 +398,14 @@ COMMIT;
 ## 参考リンク
 
 ### DBML関連
+
 - [DBML公式ドキュメント](https://www.dbml.org/docs/)
 - [dbdiagram.io](https://dbdiagram.io/) - オンラインER図ツール
 - [DBML CLI](https://www.dbml.org/cli/) - コマンドラインツール
 - [dbdocs.io](https://dbdocs.io/) - オンラインドキュメント生成
 
 ### PostgreSQL関連
+
 - [PostgreSQL 17.5 Documentation](https://www.postgresql.org/docs/17/)
 - [PostgreSQL ENUM Types](https://www.postgresql.org/docs/current/datatype-enum.html)
 - [PostgreSQL Indexes](https://www.postgresql.org/docs/current/indexes.html)
@@ -375,10 +415,12 @@ COMMIT;
 ### よくある問題
 
 #### 循環参照エラー
+
 **症状**: テーブル作成時に外部キー制約のエラーが発生
 **解決**: `init.sql` では、循環参照を避けるため外部キー制約を `ALTER TABLE` で後から追加しています
 
 #### ENUM型の値変更
+
 **症状**: ENUM型の値を変更したいが直接変更できない
 **解決**: PostgreSQLのENUM型は値の追加は可能ですが、削除や変更には特別な手順が必要です
 
@@ -393,8 +435,10 @@ ALTER TYPE order_status ADD VALUE 'new_status';
 ```
 
 #### インデックスのパフォーマンス
+
 **症状**: クエリが遅い
-**解決**: 
+**解決**:
+
 1. `EXPLAIN ANALYZE` でクエリプランを確認
 2. 頻繁に検索されるカラムにインデックスを追加
 3. 複合インデックスの検討
