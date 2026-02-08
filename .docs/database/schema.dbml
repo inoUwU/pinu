@@ -1,0 +1,241 @@
+// Pinu - QR Order System Database Schema
+// Database: PostgreSQL 17.5
+// Generated: 2026-02-02
+
+// ============================================================================
+// ENUM Types
+// ============================================================================
+
+Enum table_status {
+  available  // 空席
+  occupied   // 使用中
+  billing    // 会計待ち
+}
+
+Enum order_status {
+  pending    // 受付待ち
+  preparing  // 調理中
+  served     // 提供済み
+  cancelled  // キャンセル
+}
+
+Enum order_group_status {
+  open       // オープン
+  closed     // クローズ
+  cancelled  // キャンセル
+}
+
+// ============================================================================
+// Tables
+// ============================================================================
+
+Table settings {
+  key varchar(255) [pk, note: '設定キー']
+  value text [not null, note: '設定値']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  
+  Note: 'アプリケーション全体の設定を保存（例：ロゴのURL、店舗のテーブル総数）'
+}
+
+Table users {
+  user_id uuid [pk, note: 'ユーザーID']
+  login_id varchar(255) [unique, not null, note: 'ログインID']
+  password_hash varchar(255) [not null, note: 'パスワードハッシュ']
+  password_salt varchar(255) [not null, note: 'パスワードソルト']
+  name varchar(255) [not null, note: '表示名']
+  is_admin boolean [not null, default: false, note: '管理者フラグ']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`, note: '作成時間']
+  updated_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  
+  Note: '従業員・管理者などのユーザーを表す'
+}
+
+Table categories {
+  category_id varchar(255) [pk, note: 'カテゴリID']
+  name varchar(255) [not null, note: 'カテゴリ名']
+  display_order integer [not null, default: 0, note: '表示順']
+  image_url varchar(255) [note: '画像URL']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  
+  Indexes {
+    display_order
+  }
+  
+  Note: 'メニューの分類を管理'
+}
+
+Table menus {
+  menu_id varchar(255) [pk, note: 'メニューID']
+  name varchar(255) [not null, note: 'メニュー名']
+  description text [note: '説明']
+  price decimal(10,2) [not null, note: '価格']
+  image_url varchar(255) [note: '画像URL']
+  is_sold_out boolean [not null, default: false, note: '売り切れフラグ']
+  category_id varchar(255) [not null, ref: > categories.category_id, note: 'カテゴリID']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  
+  Indexes {
+    category_id [name: 'idx_menus_category_id']
+    is_sold_out [name: 'idx_menus_is_sold_out']
+  }
+  
+  Note: '提供される各メニューの詳細情報を保存'
+}
+
+Table menu_options {
+  menu_option_id varchar(255) [pk, note: 'オプションID']
+  name varchar(255) [not null, note: 'オプション名']
+  price decimal(10,2) [not null, note: '追加価格']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [default: `CURRENT_TIMESTAMP`]
+  
+  Note: 'メニューに追加できるオプション（トッピング、サイズ変更など）を管理'
+}
+
+Table menu_option_assignments {
+  menu_id varchar(255) [not null, ref: > menus.menu_id]
+  menu_option_id varchar(255) [not null, ref: > menu_options.menu_option_id]
+  
+  Indexes {
+    (menu_id, menu_option_id) [pk]
+  }
+  
+  Note: 'どのメニューにどのオプションが利用可能かを示す中間テーブル'
+}
+
+Table tables {
+  table_id varchar(255) [pk, note: 'テーブルID']
+  status table_status [not null, default: 'available', note: '状態（available: 空席 / occupied: 使用中 / billing: 会計待ち）']
+  current_table_session_id uuid [ref: > table_sessions.table_session_id, note: '現在のテーブルセッションID']
+  last_updated timestamptz [default: `CURRENT_TIMESTAMP`, note: '最終更新']
+  
+  Indexes {
+    current_table_session_id [name: 'idx_tables_current_table_session_id']
+  }
+  
+  Note: '店舗内の物理テーブルを表す。テーブルの状態と現在のテーブルセッションIDを管理'
+}
+
+Table table_sessions {
+  table_session_id uuid [pk, note: 'テーブルセッションID']
+  table_id varchar(255) [not null, ref: > tables.table_id, note: 'テーブルID']
+  is_revoked boolean [not null, default: false, note: '無効化フラグ']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`, note: '作成時間']
+  last_used timestamptz [default: `CURRENT_TIMESTAMP`, note: '最終利用時刻']
+  expires_at timestamptz [not null, note: '有効期限']
+  
+  Indexes {
+    table_id [name: 'idx_table_sessions_table_id']
+  }
+  
+  Note: '各テーブルのセッション（QR入店〜会計・有効期限まで）を表す'
+}
+
+Table order_groups {
+  orders_id uuid [pk, note: '注文グループID']
+  table_session_id uuid [not null, ref: > table_sessions.table_session_id, note: 'テーブルセッションID']
+  status order_group_status [not null, default: 'open', note: 'グループ状態（open/closed/cancelled）']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`, note: '作成時間']
+  
+  Indexes {
+    table_session_id [name: 'idx_order_groups_table_session_id']
+    created_at [name: 'idx_order_groups_created_at']
+    (table_session_id) [unique, name: 'ux_order_groups_session_open', note: 'WHERE status = open（同一セッション内で開いている注文グループは高々1つ）']
+  }
+  
+  Note: 'セッション配下の注文グループ。statusでopen/closed/cancelledを管理'
+}
+
+Table order_items {
+  order_item_id varchar(255) [pk, note: '注文明細ID']
+  orders_id uuid [not null, ref: > order_groups.orders_id, note: '注文グループID']
+  menu_id varchar(255) [not null, ref: > menus.menu_id, note: 'メニューID']
+  quantity integer [not null, note: '数量']
+  price_at_order decimal(10,2) [not null, note: '注文時の価格（後の価格変更に影響されない）']
+  status order_status [not null, default: 'pending', note: '注文ステータス（pending, preparing, served, cancelled）']
+  created_at timestamptz [default: `CURRENT_TIMESTAMP`, note: '作成時間']
+  
+  Indexes {
+    orders_id [name: 'idx_order_items_orders_id']
+    menu_id [name: 'idx_order_items_menu_id']
+    created_at [name: 'idx_order_items_created_at']
+  }
+  
+  Note: '各注文グループに含まれるメニュー項目を管理'
+}
+
+Table order_item_options {
+  order_item_id varchar(255) [not null, ref: > order_items.order_item_id]
+  menu_option_id varchar(255) [not null, ref: > menu_options.menu_option_id]
+  
+  Indexes {
+    (order_item_id, menu_option_id) [pk]
+    order_item_id [name: 'idx_order_item_options_order_item_id']
+    menu_option_id [name: 'idx_order_item_options_menu_option_id']
+  }
+  
+  Note: '注文された各メニュー項目にどのオプションが選択されたかを記録する中間テーブル'
+}
+
+Table sessions {
+  session_id varchar(255) [pk, note: 'セッションID']
+  user_id uuid [not null, ref: > users.user_id, note: 'ユーザーID']
+  refresh_token varchar(512) [not null, note: 'リフレッシュトークン']
+  is_revoked boolean [not null, default: false, note: '無効化フラグ']
+  created_at timestamptz [not null, default: `NOW()`, note: '作成時間']
+  expires_at timestamptz [not null, note: '有効期限']
+  
+  Note: 'ユーザーのログインセッション情報を管理'
+}
+
+// ============================================================================
+// Views (KPI & Analytics)
+// ============================================================================
+
+// Note: DBMLではビューの完全な定義はサポートされていませんが、
+// 以下のビューがinit.sqlで定義されています：
+//
+// - v_kpi_orders_menu: 注文・収益指標（注文数・総収益・平均注文額・販売アイテム数）
+// - v_top_menus_30d: トップメニュー（過去30日、数量順）
+// - v_sales_by_category_30d: カテゴリ別売上（過去30日）
+// - v_menu_performance: メニュー別パフォーマンス（累計）
+// - v_menu_daily_trend_30d: メニュー日次トレンド（過去30日）
+// - v_orders_daily_30d: 日次トレンド（過去30日：日ごとの注文数・収益）
+
+// ============================================================================
+// Relationships Summary
+// ============================================================================
+
+// categories (1) -> (N) menus
+// menus (1) -> (N) order_items
+// menus (N) <-> (N) menu_options (through menu_option_assignments)
+// menu_options (N) <-> (N) order_items (through order_item_options)
+// tables (1) -> (N) table_sessions
+// table_sessions (1) -> (N) order_groups
+// order_groups (1) -> (N) order_items
+// users (1) -> (N) sessions
+
+// ============================================================================
+// Important Notes
+// ============================================================================
+
+// 1. 循環参照の回避:
+//    - tables.current_table_session_id と table_sessions.table_id の関係は
+//      ALTER TABLEで後から外部キー制約を追加することで実現
+//
+// 2. データ整合性:
+//    - tables.current_table_session_id と order_groups.orders_id は UUID で
+//      参照整合性を担保
+//
+// 3. 運用推奨事項:
+//    - 有効期限切れや会計時には、同一トランザクションで
+//      tables.current_table_session_id を NULL にし、
+//      当該セッション配下の open な order_groups を closed に更新する
+//
+// 4. パフォーマンス最適化:
+//    - 頻繁にアクセスされるカラムにはインデックスが設定されています
+//    - 部分インデックス（ux_order_groups_session_open）により、
+//      同一セッション内で開いている注文グループの一意性を保証
