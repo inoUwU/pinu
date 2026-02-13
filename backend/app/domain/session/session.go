@@ -22,7 +22,7 @@ type Session struct {
 type TableSession struct {
 	TableSessionID uuid.UUID
 	TableID        string
-	OrdersID       uuid.UUID
+	IsRevoked      bool
 	CreatedAt      time.Time
 	LastUsed       time.Time
 	ExpiresAt      time.Time

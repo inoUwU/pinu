@@ -21,7 +21,7 @@ type TableModel struct {
 
 	TableID         string    `bun:"table_id,pk"`
 	Status          string    `bun:"status,notnull"`
-	CurrentOrdersID *string   `bun:"current_orders_id"`
+	CurrentOrdersID *string   `bun:"current_table_session_id"`
 	LastUpdated     time.Time `bun:"last_updated,notnull,default:current_timestamp"`
 }
 
@@ -65,7 +65,7 @@ type TableSessionModel struct {
 
 	TableSessionID string    `bun:"table_session_id,pk"`
 	TableID        string    `bun:"table_id,notnull"`
-	OrdersID       string    `bun:"orders_id,notnull"`
+	IsRevoked      bool      `bun:"is_revoked,notnull,default:false"`
 	CreatedAt      time.Time `bun:"created_at,notnull,default:current_timestamp"`
 	LastUsed       time.Time `bun:"last_used,notnull,default:current_timestamp"`
 	ExpiresAt      time.Time `bun:"expires_at,notnull"`

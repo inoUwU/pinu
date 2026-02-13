@@ -23,9 +23,9 @@ type Session struct {
 type TableSession struct {
 	bun.BaseModel `bun:"table:table_sessions,alias:ts"`
 
-	TableSessionID uuid.UUID `bun:"table_session_id" bun:",pk"`
+	TableSessionID uuid.UUID `bun:"table_session_id,pk"`
 	TableID        string    `bun:"table_id"`
-	OrdersID       uuid.UUID `bun:"orders_id"`
+	IsRevoked      bool      `bun:"is_revoked"`
 	CreatedAt      time.Time `bun:"created_at"`
 	LastUsed       time.Time `bun:"last_used"`
 	ExpiresAt      time.Time `bun:"expires_at"`

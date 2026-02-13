@@ -2,7 +2,9 @@ package session
 
 import (
 	"context"
+	"database/sql"
 	ctxkey "inoUwU/pinu/app/infrastructure/ctx"
+	"time"
 
 	"inoUwU/pinu/app/domain/session"
 	"inoUwU/pinu/app/infrastructure/models"
@@ -18,7 +20,7 @@ type SessionRepositoryImpl struct {
 }
 
 // NewSessionRepository セッションリポジトリの実装を生成する
-func NewSessionRepository(i *do.Injector) (session.ISessionRepository, error) {
+func NewSessionRepository(i *do.Injector) (session.SessionStore, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &SessionRepositoryImpl{
 		db: db,
@@ -121,31 +123,134 @@ func (r SessionRepositoryImpl) DeleteSession(ctx context.Context, id string) err
 }
 
 func (r SessionRepositoryImpl) CreateTableSession(ctx context.Context, tableSession *session.TableSession) error {
-	//TODO implement me
-	panic("implement me")
+	newTableSession := &models.TableSession{
+		TableSessionID: tableSession.TableSessionID,
+		TableID:        tableSession.TableID,
+		IsRevoked:      tableSession.IsRevoked,
+		CreatedAt:      tableSession.CreatedAt,
+		LastUsed:       tableSession.LastUsed,
+		ExpiresAt:      tableSession.ExpiresAt,
+	}
+
+	var inserter *bun.InsertQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		inserter = tx.NewInsert()
+	} else {
+		inserter = r.db.NewInsert()
+	}
+
+	if _, err := inserter.Model(newTableSession).Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r SessionRepositoryImpl) GetTableSessionByID(ctx context.Context, id uuid.UUID) (*session.TableSession, error) {
-	//TODO implement me
-	panic("implement me")
+	tableSession := &models.TableSession{}
+
+	var selector *bun.SelectQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		selector = tx.NewSelect()
+	} else {
+		selector = r.db.NewSelect()
+	}
+
+	err := selector.Model(tableSession).Where("table_session_id = ?", id).Scan(ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &session.TableSession{
+		TableSessionID: tableSession.TableSessionID,
+		TableID:        tableSession.TableID,
+		IsRevoked:      tableSession.IsRevoked,
+		CreatedAt:      tableSession.CreatedAt,
+		LastUsed:       tableSession.LastUsed,
+		ExpiresAt:      tableSession.ExpiresAt,
+	}, nil
 }
 
 func (r SessionRepositoryImpl) GetTableSessionByTableID(ctx context.Context, tableID string) (*session.TableSession, error) {
-	//TODO implement me
-	panic("implement me")
+	tableSession := &models.TableSession{}
+
+	var selector *bun.SelectQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		selector = tx.NewSelect()
+	} else {
+		selector = r.db.NewSelect()
+	}
+
+	err := selector.Model(tableSession).
+		Where("table_id = ?", tableID).
+		Where("is_revoked = ?", false).
+		Order("created_at DESC").
+		Limit(1).
+		Scan(ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &session.TableSession{
+		TableSessionID: tableSession.TableSessionID,
+		TableID:        tableSession.TableID,
+		IsRevoked:      tableSession.IsRevoked,
+		CreatedAt:      tableSession.CreatedAt,
+		LastUsed:       tableSession.LastUsed,
+		ExpiresAt:      tableSession.ExpiresAt,
+	}, nil
 }
 
 func (r SessionRepositoryImpl) UpdateTableSessionLastUsed(ctx context.Context, id uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
+	var updater *bun.UpdateQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		updater = tx.NewUpdate()
+	} else {
+		updater = r.db.NewUpdate()
+	}
+
+	if _, err := updater.Model((*models.TableSession)(nil)).
+		Set("last_used = ?", time.Now()).
+		Where("table_session_id = ?", id).
+		Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r SessionRepositoryImpl) DeleteTableSession(ctx context.Context, id uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
+	var deleter *bun.DeleteQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		deleter = tx.NewDelete()
+	} else {
+		deleter = r.db.NewDelete()
+	}
+
+	if _, err := deleter.Model((*models.TableSession)(nil)).Where("table_session_id = ?", id).Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r SessionRepositoryImpl) DeleteExpiredTableSessions(ctx context.Context) error {
-	//TODO implement me
-	panic("implement me")
+	var deleter *bun.DeleteQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		deleter = tx.NewDelete()
+	} else {
+		deleter = r.db.NewDelete()
+	}
+
+	if _, err := deleter.Model((*models.TableSession)(nil)).Where("expires_at < ?", time.Now()).Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
