@@ -102,6 +102,11 @@ tasks:
     cmds:
       - task: os:backend:test
 
+  backend:smoke:
+    desc: バックエンドAPIスモークテストを実行
+    cmds:
+      - task: os:backend:smoke
+
   backend:lint:
     desc: バックエンドのLintを実行
     cmds:

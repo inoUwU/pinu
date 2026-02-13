@@ -179,6 +179,12 @@ tasks:
     cmds:
       - go test ./... -v
 
+  backend:smoke:
+    desc: バックエンドAPIスモークテストを実行
+    dir: "{{.BACKEND_DIR}}"
+    cmds:
+      - SMOKE_BASE_URL={{default "http://localhost:8000" .SMOKE_BASE_URL}} go test ./... -run TestAPISmoke -v
+
   backend:lint:
     desc: バックエンドのLintを実行
     dir: "{{.BACKEND_DIR}}"
