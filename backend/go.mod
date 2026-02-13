@@ -3,7 +3,7 @@ module inoUwU/pinu
 go 1.25.1
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.11
 	github.com/gofiber/swagger v1.1.1
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1

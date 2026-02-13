@@ -36,8 +36,8 @@ github.com/go-openapi/swag/typeutils v0.24.0 h1:d3szEGzGDf4L2y1gYOSSLeK6h46F+zib
 github.com/go-openapi/swag/typeutils v0.24.0/go.mod h1:q8C3Kmk/vh2VhpCLaoR2MVWOGP8y7Jc8l82qCTd1DYI=
 github.com/go-openapi/swag/yamlutils v0.24.0 h1:bhw4894A7Iw6ne+639hsBNRHg9iZg/ISrOVr+sJGp4c=
 github.com/go-openapi/swag/yamlutils v0.24.0/go.mod h1:DpKv5aYuaGm/sULePoeiG8uwMpZSfReo1HR3Ik0yaG8=
-github.com/gofiber/fiber/v2 v2.52.9 h1:YjKl5DOiyP3j0mO61u3NTmK7or8GzzWzCFzkboyP5cw=
-github.com/gofiber/fiber/v2 v2.52.9/go.mod h1:YEcBbO/FB+5M1IZNBP9FO3J9281zgPAreiI1oqg8nDw=
+github.com/gofiber/fiber/v2 v2.52.11 h1:5f4yzKLcBcF8ha1GQTWB+mpblWz3Vz6nSAbTL31HkWs=
+github.com/gofiber/fiber/v2 v2.52.11/go.mod h1:YEcBbO/FB+5M1IZNBP9FO3J9281zgPAreiI1oqg8nDw=
 github.com/gofiber/swagger v1.1.1 h1:FZVhVQQ9s1ZKLHL/O0loLh49bYB5l1HEAgxDlcTtkRA=
 github.com/gofiber/swagger v1.1.1/go.mod h1:vtvY/sQAMc/lGTUCg0lqmBL7Ht9O7uzChpbvJeJQINw=
 github.com/golang-jwt/jwt/v5 v5.3.0 h1:pv4AsKCKKZuqlgs5sUmn4x8UlGa0kEVt/puTpKx9vvo=
