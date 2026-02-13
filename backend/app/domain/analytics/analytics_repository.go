@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-// IAnalyticsRepository 統計データリポジトリのインターフェース（ポート）
-type IAnalyticsRepository interface {
+// AnalyticsStore 統計データ永続化のポート
+type AnalyticsStore interface {
 	// GetKPISummary KPI指標のサマリーを取得する
 	GetKPISummary(ctx context.Context) (*KPISummary, error)
 

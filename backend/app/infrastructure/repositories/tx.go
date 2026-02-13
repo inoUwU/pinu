@@ -17,6 +17,12 @@ func NewTxRepository(db *bun.DB) *TxRepository {
 	return &TxRepository{db: db}
 }
 
+func (r *TxRepository) Run(ctx context.Context, fn func(ctx context.Context) error) error {
+	return r.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, _ bun.Tx) error {
+		return fn(ctx)
+	})
+}
+
 func (r *TxRepository) DoInTx(ctx context.Context, opts *sql.TxOptions, fn func(ctx context.Context, tx bun.Tx) error) error {
 	tx, err := r.db.BeginTx(ctx, opts)
 	if err != nil {

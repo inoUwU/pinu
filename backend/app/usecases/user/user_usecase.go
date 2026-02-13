@@ -2,21 +2,18 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/user/input"
 	"inoUwU/pinu/app/usecases/user/output"
 	"inoUwU/pinu/pkg"
 	"inoUwU/pinu/pkg/security"
 
 	"github.com/samber/do"
-	"github.com/uptrace/bun"
 )
 
-// IUserUsecase ユーザーユースケースのインターフェース
-type IUserUsecase interface {
+// UserService ユーザーユースケースのポート
+type UserService interface {
 	GetAllUsers(ctx context.Context, input *input.GetUsersInput) (*output.GetUsersOutput, error)
 	CreateUser(ctx context.Context, input *input.CreateUserInput) (*output.CreateUserOutput, error)
 	UpdateUser(ctx context.Context, input *input.UpdateUserInput) (*output.UpdateUserOutput, error)
@@ -25,21 +22,21 @@ type IUserUsecase interface {
 
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
-	txRepo   *repositories.TxRepository
-	userRepo user.IUserRepository
-	logger   port.Logger
+	unitOfWork port.UnitOfWork
+	userRepo   user.UserStore
+	logger     port.Logger
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
-func NewUserUsecase(i *do.Injector) (IUserUsecase, error) {
-	repository := do.MustInvoke[user.IUserRepository](i)
+func NewUserUsecase(i *do.Injector) (UserService, error) {
+	repository := do.MustInvoke[user.UserStore](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
+	unitOfWork := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
 
 	return &UserUsecaseImpl{
-		userRepo: repository,
-		logger:   logger,
-		txRepo:   txRepo,
+		userRepo:   repository,
+		logger:     logger,
+		unitOfWork: unitOfWork,
 	}, nil
 }
 
@@ -48,7 +45,7 @@ func (u *UserUsecaseImpl) GetAllUsers(ctx context.Context, input *input.GetUsers
 	var users []user.User = nil
 
 	// ユーザー一覧を取得するトランザクション処理
-	err := u.txRepo.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+	err := u.unitOfWork.Run(ctx, func(ctx context.Context) error {
 		// userRepoを使ってユーザー一覧を取得
 		var err error
 		users, err = u.userRepo.GetAllUsers(ctx)

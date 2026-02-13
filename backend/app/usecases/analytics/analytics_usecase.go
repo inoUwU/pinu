@@ -4,15 +4,14 @@ import (
 	"context"
 	"inoUwU/pinu/app/domain/analytics"
 	"inoUwU/pinu/app/domain/port"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/analytics/input"
 	"inoUwU/pinu/app/usecases/analytics/output"
 
 	"github.com/samber/do"
 )
 
-// IAnalyticsUsecase 統計データユースケースのインターフェース
-type IAnalyticsUsecase interface {
+// AnalyticsService 統計データユースケースのポート
+type AnalyticsService interface {
 	// GetAnalyticsData 統計データ全体を取得する
 	GetAnalyticsData(ctx context.Context, input *input.GetAnalyticsInput) (*output.GetAnalyticsOutput, error)
 
@@ -37,21 +36,18 @@ type IAnalyticsUsecase interface {
 
 // AnalyticsUsecaseImpl 統計データユースケースの実装
 type AnalyticsUsecaseImpl struct {
-	analyticsRepo analytics.IAnalyticsRepository
+	analyticsRepo analytics.AnalyticsStore
 	logger        port.Logger
-	txRepo        *repositories.TxRepository
 }
 
 // NewAnalyticsUsecase 統計データユースケースを生成する
-func NewAnalyticsUsecase(i *do.Injector) (IAnalyticsUsecase, error) {
-	repository := do.MustInvoke[analytics.IAnalyticsRepository](i)
+func NewAnalyticsUsecase(i *do.Injector) (AnalyticsService, error) {
+	repository := do.MustInvoke[analytics.AnalyticsStore](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
 
 	return &AnalyticsUsecaseImpl{
 		analyticsRepo: repository,
 		logger:        logger,
-		txRepo:        txRepo,
 	}, nil
 }
 

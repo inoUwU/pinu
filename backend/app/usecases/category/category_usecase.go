@@ -12,8 +12,8 @@ import (
 	"inoUwU/pinu/app/usecases/category/output"
 )
 
-// ICategoryUsecase カテゴリユースケースのインターフェース
-type ICategoryUsecase interface {
+// CategoryService カテゴリユースケースのポート
+type CategoryService interface {
 	GetAllCategories(ctx context.Context, input *input.GetCategoriesInput) (*output.GetCategoriesOutput, error)
 	GetCategoryByID(ctx context.Context, input *input.GetCategoryByIDInput) (*output.GetCategoryByIDOutput, error)
 	CreateCategory(ctx context.Context, input *input.CreateCategoryInput) (*output.CreateCategoryOutput, error)
@@ -28,7 +28,7 @@ type CategoryUsecaseImpl struct {
 }
 
 // NewCategoryUsecase カテゴリユースケースを生成する
-func NewCategoryUsecase(i *do.Injector) (ICategoryUsecase, error) {
+func NewCategoryUsecase(i *do.Injector) (CategoryService, error) {
 	repository := do.MustInvoke[category.CategoryRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 

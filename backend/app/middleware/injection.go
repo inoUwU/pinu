@@ -12,6 +12,7 @@ import (
 	"inoUwU/pinu/app/domain/category"
 	"inoUwU/pinu/app/domain/menu"
 	"inoUwU/pinu/app/domain/menu_option"
+	"inoUwU/pinu/app/domain/order"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/settings"
 	"inoUwU/pinu/app/domain/table"
@@ -20,6 +21,7 @@ import (
 	categoryRepo "inoUwU/pinu/app/infrastructure/repositories/category"
 	menuRepo "inoUwU/pinu/app/infrastructure/repositories/menu"
 	menuOptionRepo "inoUwU/pinu/app/infrastructure/repositories/menu_option"
+	orderRepo "inoUwU/pinu/app/infrastructure/repositories/order"
 	settingsRepo "inoUwU/pinu/app/infrastructure/repositories/settings"
 	tableRepo "inoUwU/pinu/app/infrastructure/repositories/table"
 	userRepo "inoUwU/pinu/app/infrastructure/repositories/user"
@@ -28,6 +30,7 @@ import (
 	categoryUsecase "inoUwU/pinu/app/usecases/category"
 	menuUsecase "inoUwU/pinu/app/usecases/menu"
 	menuOptionUsecase "inoUwU/pinu/app/usecases/menu_option"
+	orderUsecase "inoUwU/pinu/app/usecases/order"
 	settingsUsecase "inoUwU/pinu/app/usecases/settings"
 	tableUsecase "inoUwU/pinu/app/usecases/table"
 	usecases "inoUwU/pinu/app/usecases/user"
@@ -56,7 +59,7 @@ func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	})
 
 	// トランザクション
-	do.ProvideNamed(injector, "tx", func(i *do.Injector) (*repositories.TxRepository, error) {
+	do.ProvideNamed(injector, "uow", func(i *do.Injector) (port.UnitOfWork, error) {
 		tx := repositories.NewTxRepository(db)
 		return tx, nil
 	})
@@ -114,11 +117,18 @@ func Injection(db *bun.DB, logger port.Logger, secret string) (i *do.Injector) {
 	do.Provide(injector, handlers.NewSettingsHandler)
 
 	// Analytics関連
-	do.Provide(injector, func(i *do.Injector) (analytics.IAnalyticsRepository, error) {
+	do.Provide(injector, func(i *do.Injector) (analytics.AnalyticsStore, error) {
 		return analyticsRepo.NewAnalyticsRepository(i)
 	})
 	do.Provide(injector, analyticsUsecase.NewAnalyticsUsecase)
 	do.Provide(injector, handlers.NewAnalyticsHandler)
+
+	// Order関連
+	do.Provide(injector, func(i *do.Injector) (order.OrderStore, error) {
+		return orderRepo.NewOrderRepository(i)
+	})
+	do.Provide(injector, orderUsecase.NewOrderUsecase)
+	do.Provide(injector, handlers.NewOrderHandler)
 
 	return injector
 }

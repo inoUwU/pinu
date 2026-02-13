@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// SessionRepository セッションリポジトリのインターface
-type ISessionRepository interface {
+// SessionStore セッション永続化のポート
+type SessionStore interface {
 	// Session関連
 	CreateSession(ctx context.Context, session *Session) error
 	GetSessionByID(ctx context.Context, id string) (*Session, error)

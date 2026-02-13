@@ -12,8 +12,8 @@ import (
 	"inoUwU/pinu/app/usecases/menu_option/output"
 )
 
-// IMenuOptionUsecase メニューオプションユースケースのインターフェース
-type IMenuOptionUsecase interface {
+// MenuOptionService メニューオプションユースケースのポート
+type MenuOptionService interface {
 	GetAllMenuOptions(ctx context.Context, input *input.GetMenuOptionsInput) (*output.GetMenuOptionsOutput, error)
 	GetMenuOptionByID(ctx context.Context, input *input.GetMenuOptionByIDInput) (*output.GetMenuOptionByIDOutput, error)
 	CreateMenuOption(ctx context.Context, input *input.CreateMenuOptionInput) (*output.CreateMenuOptionOutput, error)
@@ -28,7 +28,7 @@ type MenuOptionUsecaseImpl struct {
 }
 
 // NewMenuOptionUsecase メニューオプションユースケースを生成する
-func NewMenuOptionUsecase(i *do.Injector) (IMenuOptionUsecase, error) {
+func NewMenuOptionUsecase(i *do.Injector) (MenuOptionService, error) {
 	repository := do.MustInvoke[menu_option.MenuOptionRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 

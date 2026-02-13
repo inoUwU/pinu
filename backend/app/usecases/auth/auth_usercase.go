@@ -2,12 +2,10 @@ package auth
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/session"
 	"inoUwU/pinu/app/domain/user"
-	"inoUwU/pinu/app/infrastructure/repositories"
 	"inoUwU/pinu/app/usecases/auth/input"
 	"inoUwU/pinu/app/usecases/auth/output"
 	"inoUwU/pinu/pkg/security"
@@ -15,10 +13,9 @@ import (
 	"time"
 
 	"github.com/samber/do"
-	"github.com/uptrace/bun"
 )
 
-type IAuthUsecase interface {
+type AuthService interface {
 	Login(ctx context.Context, input *input.Login) (*output.Login, error)
 	Logout(ctx context.Context, token string) error
 	RenewAccessToken(ctx context.Context, input *input.RenewAccessToken) (*output.RenewAccessToken, error)
@@ -26,9 +23,9 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecaseImpl struct {
-	txRepo     *repositories.TxRepository
-	authRepo   session.ISessionRepository
-	userRepo   user.IUserRepository
+	unitOfWork port.UnitOfWork
+	authRepo   session.SessionStore
+	userRepo   user.UserStore
 	logger     port.Logger
 	tokenMaker *token.JWTMaker
 }
@@ -37,18 +34,18 @@ var ErrUserNotFound = errors.New("user not found")
 var ErrInvalidPassword = errors.New("invalid password")
 
 // NewAuthUsecase 認証ユースケースを生成する
-func NewAuthUsecase(i *do.Injector) (IAuthUsecase, error) {
-	repository := do.MustInvoke[session.ISessionRepository](i)
+func NewAuthUsecase(i *do.Injector) (AuthService, error) {
+	repository := do.MustInvoke[session.SessionStore](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	userRepo := do.MustInvoke[user.IUserRepository](i)
-	txRepo := do.MustInvokeNamed[*repositories.TxRepository](i, "tx")
+	userRepo := do.MustInvoke[user.UserStore](i)
+	unitOfWork := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
 	tokenMaker := do.MustInvokeNamed[*token.JWTMaker](i, "jwtMaker")
 
 	return &AuthUsecaseImpl{
 		authRepo:   repository,
 		logger:     logger,
 		userRepo:   userRepo,
-		txRepo:     txRepo,
+		unitOfWork: unitOfWork,
 		tokenMaker: tokenMaker,
 	}, nil
 }
@@ -90,7 +87,7 @@ func (u *AuthUsecaseImpl) Login(ctx context.Context, input *input.Login) (*outpu
 		return nil, err
 	}
 
-	err = u.txRepo.DoInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+	err = u.unitOfWork.Run(ctx, func(ctx context.Context) error {
 		modelSession := &session.Session{
 			SessionID:    refreshClaims.RegisteredClaims.ID,
 			UserID:       loginUser.USER_ID,

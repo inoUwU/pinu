@@ -11,24 +11,14 @@ import (
 	"github.com/samber/do"
 )
 
-type IAnalyticsHandler interface {
-	GetAnalyticsData(c *fiber.Ctx) error
-	GetKPISummary(c *fiber.Ctx) error
-	GetTopMenus(c *fiber.Ctx) error
-	GetCategorySales(c *fiber.Ctx) error
-	GetMenuPerformance(c *fiber.Ctx) error
-	GetDailySales(c *fiber.Ctx) error
-	GetMenuDailyTrends(c *fiber.Ctx) error
-}
-
 // AnalyticsHandler 統計データハンドラー
 type AnalyticsHandler struct {
-	analyticsUsecase analytics.IAnalyticsUsecase
+	analyticsUsecase analytics.AnalyticsService
 }
 
 // NewAnalyticsHandler 統計データハンドラーを生成する
-func NewAnalyticsHandler(i *do.Injector) (IAnalyticsHandler, error) {
-	analyticsUsecase := do.MustInvoke[analytics.IAnalyticsUsecase](i)
+func NewAnalyticsHandler(i *do.Injector) (*AnalyticsHandler, error) {
+	analyticsUsecase := do.MustInvoke[analytics.AnalyticsService](i)
 	return &AnalyticsHandler{
 		analyticsUsecase: analyticsUsecase,
 	}, nil

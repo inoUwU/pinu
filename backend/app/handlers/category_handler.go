@@ -10,21 +10,13 @@ import (
 	"inoUwU/pinu/app/usecases/category/input"
 )
 
-type ICategoryHandler interface {
-	GetAllCategories(c *fiber.Ctx) error
-	GetCategory(c *fiber.Ctx) error
-	CreateCategory(c *fiber.Ctx) error
-	UpdateCategory(c *fiber.Ctx) error
-	DeleteCategory(c *fiber.Ctx) error
-}
-
 type CategoryHandler struct {
-	categoryUsecase categoryUsecase.ICategoryUsecase
+	categoryUsecase categoryUsecase.CategoryService
 }
 
 // NewCategoryHandler カテゴリハンドラーの新規作成
-func NewCategoryHandler(i *do.Injector) (ICategoryHandler, error) {
-	categoryUC := do.MustInvoke[categoryUsecase.ICategoryUsecase](i)
+func NewCategoryHandler(i *do.Injector) (*CategoryHandler, error) {
+	categoryUC := do.MustInvoke[categoryUsecase.CategoryService](i)
 	return &CategoryHandler{
 		categoryUsecase: categoryUC,
 	}, nil

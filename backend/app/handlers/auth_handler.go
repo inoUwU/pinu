@@ -9,21 +9,14 @@ import (
 	"github.com/samber/do"
 )
 
-type IAuthHandler interface {
-	Login(c *fiber.Ctx) error
-	Logout(c *fiber.Ctx) error
-	RenewAccessToken(c *fiber.Ctx) error
-	RevokeSession(c *fiber.Ctx) error
-}
-
 // AuthHandler UserAuthHandler ユーザー認証ハンドラー
 type AuthHandler struct {
-	authUsecase auth.IAuthUsecase
+	authUsecase auth.AuthService
 }
 
 // NewAuthHandler ユーザー認証ハンドラーを生成する
-func NewAuthHandler(i *do.Injector) (IAuthHandler, error) {
-	authUsecase := do.MustInvoke[auth.IAuthUsecase](i)
+func NewAuthHandler(i *do.Injector) (*AuthHandler, error) {
+	authUsecase := do.MustInvoke[auth.AuthService](i)
 
 	return &AuthHandler{
 		authUsecase: authUsecase,

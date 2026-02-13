@@ -10,22 +10,14 @@ import (
 	"github.com/samber/do"
 )
 
-type IUserHandler interface {
-	GetUsers(c *fiber.Ctx) error
-	GetUserByID(c *fiber.Ctx) error
-	Register(c *fiber.Ctx) error
-	Update(c *fiber.Ctx) error
-	Delete(c *fiber.Ctx) error
-}
-
 // UserController ユーザーコントローラー
 type UserHandler struct {
-	userUsecase user.IUserUsecase
+	userUsecase user.UserService
 }
 
 // NewUserHandler ユーザーコントローラーを生成する
-func NewUserHandler(i *do.Injector) (IUserHandler, error) {
-	userUsecase := do.MustInvoke[user.IUserUsecase](i)
+func NewUserHandler(i *do.Injector) (*UserHandler, error) {
+	userUsecase := do.MustInvoke[user.UserService](i)
 	return &UserHandler{
 		userUsecase: userUsecase,
 	}, nil

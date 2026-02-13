@@ -11,12 +11,12 @@ import (
 
 // TableHandler テーブルハンドラー
 type TableHandler struct {
-	tableUsecase tableUsecase.ITableUsecase
+	tableUsecase tableUsecase.TableService
 }
 
 // NewTableHandler 新しいテーブルハンドラーを生成
 func NewTableHandler(i *do.Injector) (*TableHandler, error) {
-	tableUsecase := do.MustInvoke[tableUsecase.ITableUsecase](i)
+	tableUsecase := do.MustInvoke[tableUsecase.TableService](i)
 
 	return &TableHandler{
 		tableUsecase: tableUsecase,

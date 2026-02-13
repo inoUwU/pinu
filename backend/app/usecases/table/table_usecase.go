@@ -12,8 +12,8 @@ import (
 	"inoUwU/pinu/app/usecases/table/output"
 )
 
-// ITableUsecase テーブルユースケースのインターフェース
-type ITableUsecase interface {
+// TableService テーブルユースケースのポート
+type TableService interface {
 	GetAllTables(ctx context.Context, input *input.GetTablesInput) (*output.GetTablesOutput, error)
 	GetTableByID(ctx context.Context, input *input.GetTableByIDInput) (*output.GetTableByIDOutput, error)
 	GetTablesByStatus(ctx context.Context, input *input.GetTablesByStatusInput) (*output.GetTablesByStatusOutput, error)
@@ -30,7 +30,7 @@ type TableUsecaseImpl struct {
 }
 
 // NewTableUsecase テーブルユースケースを生成する
-func NewTableUsecase(i *do.Injector) (ITableUsecase, error) {
+func NewTableUsecase(i *do.Injector) (TableService, error) {
 	repository := do.MustInvoke[table.TableRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 

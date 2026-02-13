@@ -11,21 +11,13 @@ import (
 	"inoUwU/pinu/app/usecases/menu_option/input"
 )
 
-type IMenuOptionHandler interface {
-	GetAllMenuOptions(c *fiber.Ctx) error
-	GetMenuOption(c *fiber.Ctx) error
-	CreateMenuOption(c *fiber.Ctx) error
-	UpdateMenuOption(c *fiber.Ctx) error
-	DeleteMenuOption(c *fiber.Ctx) error
-}
-
 type MenuOptionHandler struct {
-	menuOptionUsecase menuOptionUsecase.IMenuOptionUsecase
+	menuOptionUsecase menuOptionUsecase.MenuOptionService
 }
 
 // NewMenuOptionHandler メニューオプションハンドラーの新規作成
-func NewMenuOptionHandler(i *do.Injector) (IMenuOptionHandler, error) {
-	menuOptionUC := do.MustInvoke[menuOptionUsecase.IMenuOptionUsecase](i)
+func NewMenuOptionHandler(i *do.Injector) (*MenuOptionHandler, error) {
+	menuOptionUC := do.MustInvoke[menuOptionUsecase.MenuOptionService](i)
 	return &MenuOptionHandler{
 		menuOptionUsecase: menuOptionUC,
 	}, nil

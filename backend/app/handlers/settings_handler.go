@@ -10,12 +10,12 @@ import (
 
 // SettingsHandler 設定ハンドラー
 type SettingsHandler struct {
-	settingsUsecase settingsUsecase.ISettingsUsecase
+	settingsUsecase settingsUsecase.SettingsService
 }
 
 // NewSettingsHandler 新しい設定ハンドラーを生成
 func NewSettingsHandler(i *do.Injector) (*SettingsHandler, error) {
-	settingsUsecase := do.MustInvoke[settingsUsecase.ISettingsUsecase](i)
+	settingsUsecase := do.MustInvoke[settingsUsecase.SettingsService](i)
 
 	return &SettingsHandler{
 		settingsUsecase: settingsUsecase,

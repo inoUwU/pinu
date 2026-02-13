@@ -12,8 +12,8 @@ import (
 	"inoUwU/pinu/app/usecases/menu/output"
 )
 
-// IMenuUsecase メニューユースケースのインターフェース
-type IMenuUsecase interface {
+// MenuService メニューユースケースのポート
+type MenuService interface {
 	GetAllMenus(ctx context.Context, input *input.GetMenusInput) (*output.GetMenusOutput, error)
 	GetMenuByID(ctx context.Context, input *input.GetMenuByIDInput) (*output.GetMenuByIDOutput, error)
 	GetMenusByCategory(ctx context.Context, input *input.GetMenusByCategoryInput) (*output.GetMenusByCategoryOutput, error)
@@ -29,7 +29,7 @@ type MenuUsecaseImpl struct {
 }
 
 // NewMenuUsecase メニューユースケースを生成する
-func NewMenuUsecase(i *do.Injector) (IMenuUsecase, error) {
+func NewMenuUsecase(i *do.Injector) (MenuService, error) {
 	repository := do.MustInvoke[menu.MenuRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 

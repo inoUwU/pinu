@@ -12,8 +12,8 @@ import (
 	"inoUwU/pinu/app/usecases/settings/output"
 )
 
-// ISettingsUsecase 設定ユースケースのインターフェース
-type ISettingsUsecase interface {
+// SettingsService 設定ユースケースのポート
+type SettingsService interface {
 	GetAllSettings(ctx context.Context, input *input.GetSettingsInput) (*output.GetSettingsOutput, error)
 	GetSettingByKey(ctx context.Context, input *input.GetSettingByKeyInput) (*output.GetSettingByKeyOutput, error)
 	SetSetting(ctx context.Context, input *input.SetSettingInput) (*output.SetSettingOutput, error)
@@ -27,7 +27,7 @@ type SettingsUsecaseImpl struct {
 }
 
 // NewSettingsUsecase 設定ユースケースを生成する
-func NewSettingsUsecase(i *do.Injector) (ISettingsUsecase, error) {
+func NewSettingsUsecase(i *do.Injector) (SettingsService, error) {
 	repository := do.MustInvoke[settings.SettingsRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 
