@@ -1,330 +1,40 @@
-# AGENTS.md
+# Project Guidelines
 
-## Project
-
-- **Name**: Pinu
-- **Type**: QR Order System for small restaurants
-- **Target**: Single-operator small restaurant businesses
-- **Backend**: Go 1.22+ + Fiber
-- **Frontend**: Next.js + TypeScript + Shadcn UI + Tailwind CSS
-- **Database**: PostgreSQL 17.5
-- **Infrastructure**: Docker + Task runner
-- **Architecture**: Port & Adapter (Hexagonal)
-
-## Setup
-
-### Requirements
-
-- Docker
-- Task (`sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d`)
-- Go 1.22+
-- Node.js 18+ + pnpm
-
-### Commands
-
-```bash
-task install:task  # Install Task runner
-task setup         # Setup environment and dependencies
-task start         # Start dev environment (DB + Backend + Frontend)
-task dev           # Start with adminer
-task stop          # Stop environment
-task db:reset      # Reset database
-task clean         # Full cleanup
-task fresh         # Clean + setup + start
-```
-
-### URLs
-
-- Backend: http://localhost:8000
-- Frontend: http://localhost:3000
-- Adminer: http://localhost:8080
-
-## Build/Test/Lint
-
-### All
-
-```bash
-task build       # Build all
-task test        # Test all
-task lint        # Lint all
-task deploy:prep # Build + test
-```
-
-### Backend (Go)
-
-```bash
-cd backend && go mod tidy && go mod download
-cd backend && go run cmd/server/main.go
-cd backend && go build -o ../bin/backend cmd/server/main.go
-cd backend && go test ./... -v
-cd backend && golangci-lint run
-```
-
-### Frontend (Next.js + TypeScript)
-
-```bash
-cd frontend && pnpm install
-cd frontend && pnpm dev
-cd frontend && pnpm build
-cd frontend && pnpm test
-cd frontend && pnpm lint
-cd frontend && pnpm format  # Biome
-```
+## Code Style
+- まず `.github/instructions/general.instructions.md` を最優先で適用し、重複ルールはこのファイルに再記載しない。
+- コードは英語（識別子・コード内コメント）、エージェント向け説明文は日本語で記述する。
+- Frontend は Biome で lint/format を実行する（root と各 app の `package.json` スクリプトに準拠）。
+- Go の domain port は `*Store` / `UnitOfWork` 命名が実装実態。`I*` 接頭辞前提で新規命名しない。
 
 ## Architecture
+- Backend の依存解決は DI コンテナ（`do`）で一元管理し、ルート組み立て時に Handler を注入する。
+- HTTP は `routes -> handlers -> usecases -> repositories` の流れで接続する。
+- UseCase は `Store`、`UnitOfWork`、`Logger`（必要なら token maker）を受け取り、業務ロジックを担当する。
+- トランザクション境界は `UnitOfWork.Run` を利用し、複数更新をまたぐ処理をまとめる。
 
-### Backend: Port & Adapter (Hexagonal)
+## Build and Test
+- 標準実行は `task` を入口にする（OS 別 Taskfile に委譲される）。
+- 初期化/起動: `task setup`、`task start`、`task dev`、停止は `task stop`。
+- Backend: `cd backend && go test ./... -v`、`go build`、`go run app/cmd/main.go`。
+- Frontend: `cd frontend && pnpm dev`、`pnpm build`、`pnpm lint`、`pnpm format`。
+- 注意: 現状 `frontend` root に `pnpm test` スクリプトは未定義。`task test` 実行時は失敗可能性を前提に確認する。
+- 注意: Windows Taskfile では `backend:lint` が未有効。`task lint` 実行時は事前に Taskfile 定義を確認する。
 
-```
-Controllers (Primary Adapter)       → app/handlers/
-    ↓
-UseCases (Application Layer)        → app/usecases/
-    ↓
-Repository Interface (Domain Port)  → app/domain/repositories/
-    ↓
-Repository Implementation           → app/infrastructure/repositories/
-    ↓
-Database (PostgreSQL)
-```
+## Project Conventions
+- モノレポ運用では「編集対象に最も近い指示ファイル」を優先する。
+- 実装・ドキュメントの不整合がある場合、推測で合わせず実コードを正として更新する。
+- backend エントリポイントは `app/cmd/main.go` 前提で扱い、`cmd/server/main.go` 前提の記述を増やさない。
+- ドキュメント参照は `docs/` を正とし、古い `.docs/` 参照は新規に追加しない。
 
-### Layer Responsibilities
-
-**Controllers** (`app/handlers/`)
-- HTTP request/response handling
-- UseCase invocation
-- Presentation layer
-
-**UseCases** (`app/usecases/`)
-- Business logic
-- Validation
-- Application logic
-- Input/Output DTO usage
-
-**Domain** (`app/domain/`)
-- Entity definitions (`entities/`)
-- Repository interfaces (`repositories/`)
-
-**Infrastructure** (`app/infrastructure/`)
-- Repository implementations (`repositories/`)
-- Database operations
-
-### Principles
-
-- Dependency Inversion: Inner layers do not depend on outer layers
-- No service layer: Direct UseCase implementation
-- Pointer types: Services and repositories use pointer types
-- Interface types: Use `Interface` not `*Interface`
-
-### Frontend
-
-- Next.js App Router
-- Turbo Repo monorepo
-- `apps/`: client, admin applications
-- `packages/`: shared packages
-
-## Code Conventions
-
-Reference: `.github/instructions/general.instructions.md`
-
-### General
-
-- Meaningful variable/function names
-- Concise, specific comments
-- Constants for magic numbers
-- DRY principle
-- SOLID and KISS principles
-- Type safety: use type definitions and annotations
-- Error handling: handle exceptions and failure cases
-- Single Responsibility Principle
-- Security: prevent injection, XSS
-
-### Go
-
-- Struct names: Public structs start with uppercase (e.g., `UserUsecaseImpl`)
-- Interface types: No pointers (e.g., `repositories.IUserRepository`)
-- Dependency Injection: Use DI container (`app/middleware/injection.go`)
-
-### TypeScript/Next.js
-
-- TypeScript strict mode
-- Validation: Zod
-- Forms: Conform
-- API: SWR
-- UI: Shadcn UI + Tailwind CSS
-
-## Database
-
-### Connection (Default)
-
-- Database: `pinu`
-- User: `pinu_user`
-- Password: `pinu_pass`
-- Port: `5432`
-- Config: `.env` (see `.env.example`)
-
-### Operations
-
-```bash
-task db:start  # Start PostgreSQL
-task db:stop   # Stop PostgreSQL
-task db:reset  # Reset (delete all data)
-task db:logs   # Show logs
-```
-
-### Schema
-
-Reference: `.docs/database/er_diagram.md`
-
-Main tables:
-- `tables`: Physical table management
-- `table_sessions`: Session (QR entry to checkout)
-- `order_groups`: Order groups per session
-- `order_items`: Order items
-- `menus`: Menu items
-- `categories`: Menu categories
-- `users`: Staff/admins
-
-## Commits/PRs
-
-### Format: Conventional Commits
-
-Reference: `.docs/commit-guidelines.md`
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-### Types
-
-| Emoji | Type     | Description                |
-|-------|----------|----------------------------|
-| ✨    | feat     | New feature                |
-| 🐛    | fix      | Bug fix                    |
-| 📝    | docs     | Documentation              |
-| 🎨    | style    | Code style                 |
-| ♻️    | refactor | Refactoring                |
-| ⚡️    | perf     | Performance                |
-| ✅    | test     | Tests                      |
-| 🔧    | chore    | Build/tools                |
-
-### Breaking Changes
-
-Add `!` or footer `BREAKING CHANGE:`
-
-```
-feat(api)!: drop support for legacy v1 endpoints
-
-BREAKING CHANGE: API clients must now use the v2 endpoints.
-```
-
-### PR Rules
-
-- Follow Conventional Commits
-- Tests pass
-- No lint errors
-- Reference issue (Closes: #XX)
-
-## Project Structure
-
-```
-.
-├── backend/
-│   ├── app/
-│   │   ├── handlers/        # Controllers (HTTP handlers)
-│   │   ├── usecases/        # Application Layer
-│   │   ├── domain/          # Domain Layer
-│   │   │   ├── entities/
-│   │   │   └── repositories/
-│   │   ├── infrastructure/  # Infrastructure Layer
-│   │   │   └── repositories/
-│   │   └── middleware/      # DI, auth
-│   ├── cmd/server/          # Entry point
-│   ├── go.mod
-│   └── go.sum
-├── frontend/                # Next.js (Turbo Repo)
-│   ├── apps/
-│   │   ├── client/          # Client app
-│   │   └── admin/           # Admin app
-│   ├── packages/            # Shared packages
-│   ├── package.json
-│   └── turbo.json
-├── database/
-│   ├── init/                # Init SQL
-│   └── postgresql.conf
-├── .docs/
-│   ├── current-architecture.md
-│   ├── architecture-decisions.md
-│   ├── technology_selection.md
-│   ├── commit-guidelines.md
-│   ├── spec/
-│   └── database/
-├── docker/
-├── compose.yml
-├── Taskfile.yml
-├── .env                     # Excluded from git
-└── .env.example
-```
-
-## Documentation
-
-- Architecture: `.docs/current-architecture.md`
-- Architecture decisions: `.docs/architecture-decisions.md`
-- Technology selection: `.docs/technology_selection.md`
-- Commit guidelines: `.docs/commit-guidelines.md`
-- Requirements: `.docs/spec/requirements_definition.md`
-- Features: `.docs/spec/feature_draft.md`
-- ER diagram: `.docs/database/er_diagram.md`
+## Integration Points
+- API は `/api` 配下で提供され、auth/user/menu/order/analytics 系エンドポイントを Fiber ルートで公開する。
+- SSE は API グループに統合されるため、関連変更時はルーティングとイベント配信の両方を確認する。
+- Frontend は `apps/client` と `apps/admin` を分離し、共有要素は workspace package で再利用する。
+- DB は PostgreSQL + Bun を利用。Repository 実装でクエリ責務を持たせる。
 
 ## Security
-
-- No secrets in commits
-- `.env` excluded via `.gitignore`
-- Create `.env` from `.env.example`
-- Password hashing: bcrypt
-- SQL injection prevention: ORM or prepared statements
-
-## Troubleshooting
-
-### Database connection error
-
-```bash
-docker ps
-task db:logs
-task db:stop
-task db:start
-```
-
-### Port conflicts
-
-Default ports:
-- `5432`: PostgreSQL
-- `8000`: Backend
-- `3000`: Frontend
-
-Change in `.env`:
-```
-DB_PORT=5433
-BACKEND_PORT=8001
-FRONTEND_PORT=3001
-```
-
-### Dependency errors
-
-```bash
-# Backend
-cd backend && go mod tidy && go mod download
-
-# Frontend
-cd frontend && rm -rf node_modules pnpm-lock.yaml && pnpm install
-```
-
-## Constraints
-
-- License: MIT
-- Code language: English
-- Documentation/comments: Japanese
-- UI/UX: Simple design for elderly operators
+- 認証情報は `.env` 経由で管理し、シークレットをコミットしない。
+- パスワードは `bcrypt + salt + PEPPER` の既存方式に合わせる。
+- JWT は HS256 を使用し、署名方式検証を維持する。
+- SQL は Bun のプレースホルダ/クエリビルダを使い、文字列連結での動的クエリ生成を避ける。
+- 環境変数名（例: `SECRET_KEY` と `JWT_SECRET`）に差異があるため、認証周辺変更時は両 `.env.example` と実装参照名を必ず突合する。
