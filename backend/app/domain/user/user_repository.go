@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-// UserStore ユーザー永続化のポート
-type UserStore interface {
+// UserRepository ユーザー永続化のポート
+type UserRepository interface {
 	// GetAllUsers 全てのユーザーを取得する
 	GetAllUsers(ctx context.Context) ([]User, error)
 

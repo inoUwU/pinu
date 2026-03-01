@@ -36,13 +36,13 @@ type AnalyticsService interface {
 
 // AnalyticsUsecaseImpl 統計データユースケースの実装
 type AnalyticsUsecaseImpl struct {
-	analyticsRepo analytics.AnalyticsStore
+	analyticsRepo analytics.AnalyticsRepository
 	logger        port.Logger
 }
 
 // NewAnalyticsUsecase 統計データユースケースを生成する
 func NewAnalyticsUsecase(i *do.Injector) (AnalyticsService, error) {
-	repository := do.MustInvoke[analytics.AnalyticsStore](i)
+	repository := do.MustInvoke[analytics.AnalyticsRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 
 	return &AnalyticsUsecaseImpl{

@@ -23,13 +23,13 @@ type UserService interface {
 // UserUsecaseImpl ユーザーユースケースの実装
 type UserUsecaseImpl struct {
 	unitOfWork port.UnitOfWork
-	userRepo   user.UserStore
+	userRepo   user.UserRepository
 	logger     port.Logger
 }
 
 // NewUserUsecase ユーザーユースケースを生成する
 func NewUserUsecase(i *do.Injector) (UserService, error) {
-	repository := do.MustInvoke[user.UserStore](i)
+	repository := do.MustInvoke[user.UserRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 	unitOfWork := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
 
@@ -82,18 +82,18 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 		return nil, err
 	}
 
-	hash, err := security.HashPassword("user_input_password", salt)
+	hash, err := security.HashPassword(input.PassWord, salt)
 	if err != nil {
 		return nil, err
 	}
 
 	modelUser := &user.User{
-		USER_ID:       user.UserID(id),
-		LOGIN_ID:      user.LoginID(input.LoginId),
-		PASSWORD_HASH: hash,
-		PASSWORD_SALT: salt,
-		NAME:          input.Name,
-		IS_ADMIN:      input.IsAdmin,
+		UserID:       user.UserID(id),
+		LoginID:      user.LoginID(input.LoginId),
+		PasswordHash: hash,
+		PasswordSalt: salt,
+		Name:         input.Name,
+		IsAdmin:      input.IsAdmin,
 	}
 
 	if err := u.userRepo.CreateUser(ctx, modelUser); err != nil {
@@ -111,12 +111,12 @@ func (u *UserUsecaseImpl) CreateUser(ctx context.Context, input *input.CreateUse
 
 	return &output.CreateUserOutput{
 		User:      *createdUser,
-		LoginId:   user.LoginID(createdUser.LOGIN_ID),
-		PassWord:  createdUser.PASSWORD_HASH,
-		UserId:    user.UserID(createdUser.USER_ID),
-		Name:      createdUser.NAME,
-		IsAdmin:   createdUser.IS_ADMIN,
-		CreatedAt: createdUser.CREATED_AT,
+		LoginId:   user.LoginID(createdUser.LoginID),
+		PassWord:  createdUser.PasswordHash,
+		UserId:    user.UserID(createdUser.UserID),
+		Name:      createdUser.Name,
+		IsAdmin:   createdUser.IsAdmin,
+		CreatedAt: createdUser.CreatedAt,
 	}, nil
 }
 

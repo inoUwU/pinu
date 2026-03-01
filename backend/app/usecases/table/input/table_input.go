@@ -22,16 +22,16 @@ type GetTablesByStatusInput struct {
 
 // CreateTableInput テーブル作成の入力
 type CreateTableInput struct {
-	TableID         table.TableID     `json:"table_id" validate:"required"`
-	Status          table.TableStatus `json:"status" validate:"required"`
-	CurrentOrdersID *uuid.UUID        `json:"current_orders_id"`
+	TableID               table.TableID     `json:"table_id" validate:"required"`
+	Status                table.TableStatus `json:"status" validate:"required"`
+	CurrentTableSessionID *uuid.UUID        `json:"current_table_session_id"`
 }
 
 // UpdateTableInput テーブル更新の入力
 type UpdateTableInput struct {
-	TableID         table.TableID     `json:"table_id" validate:"required"`
-	Status          table.TableStatus `json:"status" validate:"required"`
-	CurrentOrdersID *uuid.UUID        `json:"current_orders_id"`
+	TableID               table.TableID     `json:"table_id" validate:"required"`
+	Status                table.TableStatus `json:"status" validate:"required"`
+	CurrentTableSessionID *uuid.UUID        `json:"current_table_session_id"`
 }
 
 // UpdateTableStatusInput テーブルステータス更新の入力
@@ -42,5 +42,10 @@ type UpdateTableStatusInput struct {
 
 // DeleteTableInput テーブル削除の入力
 type DeleteTableInput struct {
+	TableID table.TableID `json:"table_id" validate:"required"`
+}
+
+// CheckoutTableInput テーブル会計処理の入力
+type CheckoutTableInput struct {
 	TableID table.TableID `json:"table_id" validate:"required"`
 }

@@ -13,4 +13,6 @@ type TableRepository interface {
 	Update(ctx context.Context, table *Table) error
 	Delete(ctx context.Context, id TableID) error
 	UpdateStatus(ctx context.Context, id TableID, status TableStatus) error
+	// ClearTableSession テーブルの current_table_session_id をクリアする
+	ClearTableSession(ctx context.Context, id TableID) error
 }

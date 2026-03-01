@@ -13,7 +13,7 @@ import (
 	"inoUwU/pinu/app/infrastructure/models"
 )
 
-func NewOrderRepository(i *do.Injector) (order.OrderStore, error) {
+func NewOrderRepository(i *do.Injector) (order.OrderRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &OrderRepositoryImpl{
 		db: db,
@@ -25,18 +25,12 @@ type OrderRepositoryImpl struct {
 	db *bun.DB
 }
 
-type orderItemOptionModel struct {
-	bun.BaseModel `bun:"table:order_item_options"`
-
-	OrderItemID  string `bun:"order_item_id,pk"`
-	MenuOptionID string `bun:"menu_option_id,pk"`
-}
-
 // CreateOrderGroup オーダーグループを作成します
 func (r *OrderRepositoryImpl) CreateOrderGroup(ctx context.Context, orderGroup *order.OrderGroup) error {
 	modelOrderGroup := &models.OrderGroupModel{
 		OrdersID:       orderGroup.OrdersID.String(),
 		TableSessionID: orderGroup.TableSessionID.String(),
+		Status:         string(orderGroup.Status),
 		CreatedAt:      orderGroup.CreatedAt,
 	}
 
@@ -56,9 +50,9 @@ func (r *OrderRepositoryImpl) CreateOrderGroup(ctx context.Context, orderGroup *
 	return nil
 }
 
-// AddOrderItemOption implements order.OrderStore.
+// AddOrderItemOption implements order.OrderRepository.
 func (o *OrderRepositoryImpl) AddOrderItemOption(ctx context.Context, orderItemOption *order.OrderItemOption) error {
-	model := &orderItemOptionModel{
+	model := &models.OrderItemOptionModel{
 		OrderItemID:  string(orderItemOption.OrderItemID),
 		MenuOptionID: orderItemOption.MenuOptionID,
 	}
@@ -77,7 +71,7 @@ func (o *OrderRepositoryImpl) AddOrderItemOption(ctx context.Context, orderItemO
 	return nil
 }
 
-// CreateOrderItem implements order.OrderStore.
+// CreateOrderItem implements order.OrderRepository.
 func (o *OrderRepositoryImpl) CreateOrderItem(ctx context.Context, orderItem *order.OrderItem) error {
 	model := &models.OrderItemModel{
 		OrderItemID:  string(orderItem.OrderItemID),
@@ -103,7 +97,7 @@ func (o *OrderRepositoryImpl) CreateOrderItem(ctx context.Context, orderItem *or
 	return nil
 }
 
-// GetOrderGroupByID implements order.OrderStore.
+// GetOrderGroupByID implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderGroupByID(ctx context.Context, id uuid.UUID) (*order.OrderGroup, error) {
 	model := &models.OrderGroupModel{}
 
@@ -135,11 +129,12 @@ func (o *OrderRepositoryImpl) GetOrderGroupByID(ctx context.Context, id uuid.UUI
 	return &order.OrderGroup{
 		OrdersID:       ordersID,
 		TableSessionID: tableSessionID,
+		Status:         order.OrderGroupStatus(model.Status),
 		CreatedAt:      model.CreatedAt,
 	}, nil
 }
 
-// GetOrderGroupsByTableSession implements order.OrderStore.
+// GetOrderGroupsByTableSession implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderGroupsByTableSession(ctx context.Context, tableSessionID uuid.UUID) ([]*order.OrderGroup, error) {
 	modelsGroup := make([]models.OrderGroupModel, 0)
 
@@ -172,6 +167,7 @@ func (o *OrderRepositoryImpl) GetOrderGroupsByTableSession(ctx context.Context, 
 		groups = append(groups, &order.OrderGroup{
 			OrdersID:       ordersID,
 			TableSessionID: parsedTableSessionID,
+			Status:         order.OrderGroupStatus(model.Status),
 			CreatedAt:      model.CreatedAt,
 		})
 	}
@@ -179,7 +175,7 @@ func (o *OrderRepositoryImpl) GetOrderGroupsByTableSession(ctx context.Context, 
 	return groups, nil
 }
 
-// GetOrderItemByID implements order.OrderStore.
+// GetOrderItemByID implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemByID(ctx context.Context, id order.OrderItemID) (*order.OrderItem, error) {
 	model := &models.OrderItemModel{}
 
@@ -214,9 +210,9 @@ func (o *OrderRepositoryImpl) GetOrderItemByID(ctx context.Context, id order.Ord
 	}, nil
 }
 
-// GetOrderItemOptions implements order.OrderStore.
+// GetOrderItemOptions implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemOptions(ctx context.Context, orderItemID order.OrderItemID) ([]*order.OrderItemOption, error) {
-	optionModels := make([]orderItemOptionModel, 0)
+	optionModels := make([]models.OrderItemOptionModel, 0)
 
 	var selector *bun.SelectQuery
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
@@ -240,7 +236,7 @@ func (o *OrderRepositoryImpl) GetOrderItemOptions(ctx context.Context, orderItem
 	return options, nil
 }
 
-// GetOrderItemsByOrderGroup implements order.OrderStore.
+// GetOrderItemsByOrderGroup implements order.OrderRepository.
 func (o *OrderRepositoryImpl) GetOrderItemsByOrderGroup(ctx context.Context, ordersID uuid.UUID) ([]*order.OrderItem, error) {
 	itemModels := make([]models.OrderItemModel, 0)
 
@@ -279,7 +275,7 @@ func (o *OrderRepositoryImpl) GetOrderItemsByOrderGroup(ctx context.Context, ord
 	return items, nil
 }
 
-// RemoveOrderItemOption implements order.OrderStore.
+// RemoveOrderItemOption implements order.OrderRepository.
 func (o *OrderRepositoryImpl) RemoveOrderItemOption(ctx context.Context, orderItemID order.OrderItemID, menuOptionID string) error {
 	var deleter *bun.DeleteQuery
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
@@ -288,7 +284,7 @@ func (o *OrderRepositoryImpl) RemoveOrderItemOption(ctx context.Context, orderIt
 		deleter = o.db.NewDelete()
 	}
 
-	if _, err := deleter.Model((*orderItemOptionModel)(nil)).
+	if _, err := deleter.Model((*models.OrderItemOptionModel)(nil)).
 		Where("order_item_id = ?", string(orderItemID)).
 		Where("menu_option_id = ?", menuOptionID).
 		Exec(ctx); err != nil {
@@ -298,7 +294,7 @@ func (o *OrderRepositoryImpl) RemoveOrderItemOption(ctx context.Context, orderIt
 	return nil
 }
 
-// UpdateOrderItemStatus implements order.OrderStore.
+// UpdateOrderItemStatus implements order.OrderRepository.
 func (o *OrderRepositoryImpl) UpdateOrderItemStatus(ctx context.Context, id order.OrderItemID, status order.OrderStatus) error {
 	var updater *bun.UpdateQuery
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
@@ -311,6 +307,26 @@ func (o *OrderRepositoryImpl) UpdateOrderItemStatus(ctx context.Context, id orde
 		Set("status = ?", string(status)).
 		Set("created_at = ?", time.Now()).
 		Where("order_item_id = ?", string(id)).
+		Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CloseOrderGroupsByTableSession テーブルセッションに紐づく全オーダーグループを closed にする
+func (o *OrderRepositoryImpl) CloseOrderGroupsByTableSession(ctx context.Context, tableSessionID uuid.UUID) error {
+	var updater *bun.UpdateQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		updater = tx.NewUpdate()
+	} else {
+		updater = o.db.NewUpdate()
+	}
+
+	if _, err := updater.Model((*models.OrderGroupModel)(nil)).
+		Set("status = ?", string(order.GroupStatusClosed)).
+		Where("table_session_id = ?", tableSessionID.String()).
+		Where("status = ?", string(order.GroupStatusOpen)).
 		Exec(ctx); err != nil {
 		return err
 	}

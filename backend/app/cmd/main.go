@@ -87,7 +87,7 @@ func main() {
 	}
 
 	// 依存性注入コンテナの設定
-	injector := middleware.Injection(db, appLogger, secretKey)
+	injector := buildInjector(db, appLogger, secretKey)
 
 	// APIルートを設定
 	api.SetupRoutes(app, injector)

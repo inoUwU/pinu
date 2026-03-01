@@ -2,11 +2,14 @@ package table
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/samber/do"
 
+	"inoUwU/pinu/app/domain/order"
 	"inoUwU/pinu/app/domain/port"
+	"inoUwU/pinu/app/domain/session"
 	"inoUwU/pinu/app/domain/table"
 	"inoUwU/pinu/app/usecases/table/input"
 	"inoUwU/pinu/app/usecases/table/output"
@@ -21,22 +24,33 @@ type TableService interface {
 	UpdateTable(ctx context.Context, input *input.UpdateTableInput) (*output.UpdateTableOutput, error)
 	UpdateTableStatus(ctx context.Context, input *input.UpdateTableStatusInput) (*output.UpdateTableStatusOutput, error)
 	DeleteTable(ctx context.Context, input *input.DeleteTableInput) (*output.DeleteTableOutput, error)
+	// CheckoutTable テーブルの会計処理を行う
+	CheckoutTable(ctx context.Context, input *input.CheckoutTableInput) (*output.CheckoutTableOutput, error)
 }
 
 // TableUsecaseImpl テーブルユースケースの実装
 type TableUsecaseImpl struct {
-	tableRepo table.TableRepository
-	logger    port.Logger
+	tableRepo   table.TableRepository
+	sessionRepo session.SessionRepository
+	orderRepo   order.OrderRepository
+	unitOfWork  port.UnitOfWork
+	logger      port.Logger
 }
 
 // NewTableUsecase テーブルユースケースを生成する
 func NewTableUsecase(i *do.Injector) (TableService, error) {
 	repository := do.MustInvoke[table.TableRepository](i)
+	sessionRepository := do.MustInvoke[session.SessionRepository](i)
+	orderRepository := do.MustInvoke[order.OrderRepository](i)
+	unitOfWork := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 
 	return &TableUsecaseImpl{
-		tableRepo: repository,
-		logger:    logger,
+		tableRepo:   repository,
+		sessionRepo: sessionRepository,
+		orderRepo:   orderRepository,
+		unitOfWork:  unitOfWork,
+		logger:      logger,
 	}, nil
 }
 
@@ -109,10 +123,10 @@ func (u *TableUsecaseImpl) CreateTable(ctx context.Context, input *input.CreateT
 	// TODO: トランザクション処理を追加
 
 	tableEntity := &table.Table{
-		TableID:         input.TableID,
-		Status:          input.Status,
-		CurrentOrdersID: input.CurrentOrdersID,
-		LastUpdated:     time.Now(),
+		TableID:               input.TableID,
+		Status:                input.Status,
+		CurrentTableSessionID: input.CurrentTableSessionID,
+		LastUpdated:           time.Now(),
 	}
 
 	if err := u.tableRepo.Create(ctx, tableEntity); err != nil {
@@ -158,10 +172,10 @@ func (u *TableUsecaseImpl) UpdateTable(ctx context.Context, input *input.UpdateT
 	}
 
 	tableEntity := &table.Table{
-		TableID:         input.TableID,
-		Status:          input.Status,
-		CurrentOrdersID: input.CurrentOrdersID,
-		LastUpdated:     time.Now(),
+		TableID:               input.TableID,
+		Status:                input.Status,
+		CurrentTableSessionID: input.CurrentTableSessionID,
+		LastUpdated:           time.Now(),
 	}
 
 	if err := u.tableRepo.Update(ctx, tableEntity); err != nil {
@@ -257,5 +271,83 @@ func (u *TableUsecaseImpl) DeleteTable(ctx context.Context, input *input.DeleteT
 		TableID:   input.TableID,
 		Message:   "Table deleted successfully",
 		DeletedAt: time.Now(),
+	}, nil
+}
+
+// CheckoutTable テーブルの会計処理を行う
+// テーブルを billing に更新 → OrderGroup を closed → TableSession を revoke → session_id をクリア
+func (u *TableUsecaseImpl) CheckoutTable(ctx context.Context, input *input.CheckoutTableInput) (*output.CheckoutTableOutput, error) {
+	u.logger.Info("checking out table", "tableID", input.TableID)
+
+	// テーブルの存在確認
+	existingTable, err := u.tableRepo.GetByID(ctx, input.TableID)
+	if err != nil {
+		u.logger.Error("failed to get table for checkout", "tableID", input.TableID, "error", err)
+		return nil, err
+	}
+	if existingTable == nil {
+		u.logger.Warn("table not found for checkout", "tableID", input.TableID)
+		return nil, errors.New("table not found")
+	}
+
+	// ステータスが occupied であることを確認
+	if existingTable.Status != table.StatusOccupied {
+		u.logger.Warn("table is not occupied", "tableID", input.TableID, "status", existingTable.Status)
+		return nil, errors.New("table is not occupied")
+	}
+
+	// current_table_session_id の存在確認
+	if existingTable.CurrentTableSessionID == nil {
+		u.logger.Warn("table has no active session", "tableID", input.TableID)
+		return nil, errors.New("table has no active session")
+	}
+
+	tableSessionID := *existingTable.CurrentTableSessionID
+
+	// トランザクション内で一括処理
+	err = u.unitOfWork.Run(ctx, func(txCtx context.Context) error {
+		// 1. テーブルステータスを billing に更新
+		if err := u.tableRepo.UpdateStatus(txCtx, input.TableID, table.StatusBilling); err != nil {
+			return err
+		}
+
+		// 2. オーダーグループを closed に更新
+		if err := u.orderRepo.CloseOrderGroupsByTableSession(txCtx, tableSessionID); err != nil {
+			return err
+		}
+
+		// 3. テーブルセッションを revoke
+		if err := u.sessionRepo.RevokeTableSessionByTableID(txCtx, string(input.TableID)); err != nil {
+			return err
+		}
+
+		// 4. テーブルの current_table_session_id をクリア
+		if err := u.tableRepo.ClearTableSession(txCtx, input.TableID); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		u.logger.Error("failed to checkout table", "tableID", input.TableID, "error", err)
+		return nil, err
+	}
+
+	// 更新後のテーブルを取得
+	updatedTable, err := u.tableRepo.GetByID(ctx, input.TableID)
+	if err != nil {
+		u.logger.Error("failed to get updated table after checkout", "tableID", input.TableID, "error", err)
+		return nil, err
+	}
+
+	u.logger.Info("table checkout completed successfully", "tableID", input.TableID)
+
+	return &output.CheckoutTableOutput{
+		Table:     updatedTable,
+		Message:   "Table checkout completed successfully",
+		UpdatedAt: time.Now(),
+		TableID:   updatedTable.TableID,
+		Status:    updatedTable.Status,
 	}, nil
 }

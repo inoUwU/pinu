@@ -16,7 +16,7 @@ type AnalyticsRepositoryImpl struct {
 }
 
 // NewAnalyticsRepository 統計データリポジトリの実装を生成する
-func NewAnalyticsRepository(i *do.Injector) (analytics.AnalyticsStore, error) {
+func NewAnalyticsRepository(i *do.Injector) (analytics.AnalyticsRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &AnalyticsRepositoryImpl{db: db}, nil
 }

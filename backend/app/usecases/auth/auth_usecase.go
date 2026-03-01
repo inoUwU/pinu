@@ -9,7 +9,6 @@ import (
 	"inoUwU/pinu/app/usecases/auth/input"
 	"inoUwU/pinu/app/usecases/auth/output"
 	"inoUwU/pinu/pkg/security"
-	"inoUwU/pinu/pkg/security/token"
 	"time"
 
 	"github.com/samber/do"
@@ -24,10 +23,10 @@ type AuthService interface {
 
 type AuthUsecaseImpl struct {
 	unitOfWork port.UnitOfWork
-	authRepo   session.SessionStore
-	userRepo   user.UserStore
+	authRepo   session.SessionRepository
+	userRepo   user.UserRepository
 	logger     port.Logger
-	tokenMaker *token.JWTMaker
+	tokenMaker port.TokenMaker
 }
 
 var ErrUserNotFound = errors.New("user not found")
@@ -35,11 +34,11 @@ var ErrInvalidPassword = errors.New("invalid password")
 
 // NewAuthUsecase 認証ユースケースを生成する
 func NewAuthUsecase(i *do.Injector) (AuthService, error) {
-	repository := do.MustInvoke[session.SessionStore](i)
+	repository := do.MustInvoke[session.SessionRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
-	userRepo := do.MustInvoke[user.UserStore](i)
+	userRepo := do.MustInvoke[user.UserRepository](i)
 	unitOfWork := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
-	tokenMaker := do.MustInvokeNamed[*token.JWTMaker](i, "jwtMaker")
+	tokenMaker := do.MustInvokeNamed[port.TokenMaker](i, "jwtMaker")
 
 	return &AuthUsecaseImpl{
 		authRepo:   repository,
@@ -67,7 +66,7 @@ func (u *AuthUsecaseImpl) Login(ctx context.Context, input *input.Login) (*outpu
 		return nil, ErrUserNotFound
 	}
 
-	isValid := security.VerifyPassword(input.Password, loginUser.PASSWORD_HASH, loginUser.PASSWORD_SALT)
+	isValid := security.VerifyPassword(input.Password, loginUser.PasswordSalt, loginUser.PasswordHash)
 
 	if !isValid {
 		u.logger.Error("invalid password", "login", input.LoginId)
@@ -89,11 +88,11 @@ func (u *AuthUsecaseImpl) Login(ctx context.Context, input *input.Login) (*outpu
 
 	err = u.unitOfWork.Run(ctx, func(ctx context.Context) error {
 		modelSession := &session.Session{
-			SessionID:    refreshClaims.RegisteredClaims.ID,
-			UserID:       loginUser.USER_ID,
+			SessionID:    refreshClaims.ID,
+			UserID:       loginUser.UserID,
 			RefreshToken: refreshToken,
 			IsRevoked:    false,
-			ExpiresAt:    refreshClaims.RegisteredClaims.ExpiresAt.Time,
+			ExpiresAt:    refreshClaims.ExpiresAt,
 		}
 
 		if err := u.authRepo.CreateSession(ctx, modelSession); err != nil {
@@ -110,13 +109,13 @@ func (u *AuthUsecaseImpl) Login(ctx context.Context, input *input.Login) (*outpu
 	res := output.Login{
 		RefreshToken:          refreshToken,
 		AccessToken:           accessToken,
-		AccessTokenExpiresAt:  accessClaims.ExpiresAt.Time,
-		RefreshTokenExpiresAt: refreshClaims.ExpiresAt.Time,
+		AccessTokenExpiresAt:  accessClaims.ExpiresAt,
+		RefreshTokenExpiresAt: refreshClaims.ExpiresAt,
 		User: output.LoginUserRes{
-			UserId:   string(loginUser.USER_ID),
-			LoginId:  string(loginUser.LOGIN_ID),
-			UserName: loginUser.NAME,
-			IsAdmin:  loginUser.IS_ADMIN,
+			UserId:   string(loginUser.UserID),
+			LoginId:  string(loginUser.LoginID),
+			UserName: loginUser.Name,
+			IsAdmin:  loginUser.IsAdmin,
 		},
 	}
 
@@ -143,24 +142,24 @@ func (u *AuthUsecaseImpl) RenewAccessToken(ctx context.Context, input *input.Ren
 	}
 
 	// セッションの取得
-	userSession, err := u.authRepo.GetSessionByID(ctx, refreshClaims.RegisteredClaims.ID)
+	userSession, err := u.authRepo.GetSessionByID(ctx, refreshClaims.ID)
 	if err != nil {
 		u.logger.Error("failed to get session", "error", err)
 		return nil, err
 	}
 
 	if userSession == nil || userSession.IsRevoked {
-		u.logger.Error("session not found or revoked", "session_id", refreshClaims.RegisteredClaims.ID)
+		u.logger.Error("session not found or revoked", "session_id", refreshClaims.ID)
 		return nil, errors.New("session not found or revoked")
 	}
 
-	if string(userSession.UserID) != refreshClaims.UserId {
-		u.logger.Error("session user id does not match token user id", "session_user_id", userSession.UserID, "token_user_id", refreshClaims.UserId)
+	if string(userSession.UserID) != refreshClaims.UserID {
+		u.logger.Error("session user id does not match token user id", "session_user_id", userSession.UserID, "token_user_id", refreshClaims.UserID)
 		return nil, errors.New("session user id does not match token user id")
 	}
 
 	// 新しいアクセストークンの発行
-	accessUser, err := u.userRepo.GetUserByID(ctx, refreshClaims.UserId)
+	accessUser, err := u.userRepo.GetUserByID(ctx, refreshClaims.UserID)
 	if err != nil {
 		u.logger.Error("failed to get user by id", "error", err)
 		return nil, err
@@ -174,7 +173,7 @@ func (u *AuthUsecaseImpl) RenewAccessToken(ctx context.Context, input *input.Ren
 
 	return &output.RenewAccessToken{
 		AccessToken:          newAccessToken,
-		AccessTokenExpiresAt: newAccessClaims.ExpiresAt.Time,
+		AccessTokenExpiresAt: newAccessClaims.ExpiresAt,
 	}, nil
 }
 

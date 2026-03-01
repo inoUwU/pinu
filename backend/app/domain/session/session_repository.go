@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// SessionStore セッション永続化のポート
-type SessionStore interface {
+// SessionRepository セッション永続化のポート
+type SessionRepository interface {
 	// Session関連
 	CreateSession(ctx context.Context, session *Session) error
 	GetSessionByID(ctx context.Context, id string) (*Session, error)
@@ -21,4 +21,6 @@ type SessionStore interface {
 	UpdateTableSessionLastUsed(ctx context.Context, id uuid.UUID) error
 	DeleteTableSession(ctx context.Context, id uuid.UUID) error
 	DeleteExpiredTableSessions(ctx context.Context) error
+	// RevokeTableSessionByTableID テーブルIDに紐づく全テーブルセッションを無効化する
+	RevokeTableSessionByTableID(ctx context.Context, tableID string) error
 }

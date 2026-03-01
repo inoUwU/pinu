@@ -7,20 +7,20 @@ import (
 	"github.com/uptrace/bun"
 )
 
-// Session represents a user session.
-type Session struct {
+// SessionModel ユーザーセッションのインフラストラクチャーモデル
+type SessionModel struct {
 	bun.BaseModel `bun:"table:sessions,alias:ss"`
 
-	SESSION_ID    string    `bun:"session_id,pk"`
-	USER_ID       string    `bun:"user_id,"`
-	REFRESH_TOKEN string    `bun:"refresh_token,notnull"`
-	IS_REVOKED    bool      `bun:"is_revoked,notnull,default:false"`
-	CREATED_AT    time.Time `bun:"created_at,notnull"`
-	EXPIRES_AT    time.Time `bun:"expires_at,notnull"`
+	SessionID    string    `bun:"session_id,pk"`
+	UserID       string    `bun:"user_id,notnull"`
+	RefreshToken string    `bun:"refresh_token,notnull"`
+	IsRevoked    bool      `bun:"is_revoked,notnull,default:false"`
+	CreatedAt    time.Time `bun:"created_at,notnull"`
+	ExpiresAt    time.Time `bun:"expires_at,notnull"`
 }
 
-// TableSession represents a table session.
-type TableSession struct {
+// TableSessionModel テーブルセッションのインフラストラクチャーモデル
+type TableSessionModel struct {
 	bun.BaseModel `bun:"table:table_sessions,alias:ts"`
 
 	TableSessionID uuid.UUID `bun:"table_session_id,pk"`

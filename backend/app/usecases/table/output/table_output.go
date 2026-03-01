@@ -55,3 +55,12 @@ type DeleteTableOutput struct {
 	Message   string        `json:"message"`
 	DeletedAt time.Time     `json:"deleted_at"`
 }
+
+// CheckoutTableOutput テーブル会計処理の出力
+type CheckoutTableOutput struct {
+	Table     *table.Table      `json:"table"`
+	Message   string            `json:"message"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	TableID   table.TableID     `json:"table_id"`
+	Status    table.TableStatus `json:"status"`
+}

@@ -18,6 +18,20 @@ type Session struct {
 	ExpiresAt    time.Time
 }
 
+func (s *Session) IsExpired(now time.Time) bool {
+	if s == nil {
+		return true
+	}
+	return !now.Before(s.ExpiresAt)
+}
+
+func (s *Session) IsValid(now time.Time) bool {
+	if s == nil {
+		return false
+	}
+	return !s.IsRevoked && !s.IsExpired(now)
+}
+
 // TableSession テーブルセッションエンティティ
 type TableSession struct {
 	TableSessionID uuid.UUID
@@ -26,4 +40,18 @@ type TableSession struct {
 	CreatedAt      time.Time
 	LastUsed       time.Time
 	ExpiresAt      time.Time
+}
+
+func (s *TableSession) IsExpired(now time.Time) bool {
+	if s == nil {
+		return true
+	}
+	return !now.Before(s.ExpiresAt)
+}
+
+func (s *TableSession) IsActive(now time.Time) bool {
+	if s == nil {
+		return false
+	}
+	return !s.IsRevoked && !s.IsExpired(now)
 }

@@ -106,6 +106,7 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 		tableGroup.Get("/status/:status", tableHandler.GetTablesByStatus)
 		tableGroup.Put("/:id/status", tableHandler.UpdateTableStatus)
 		tableGroup.Delete("/:id", tableHandler.DeleteTable)
+		tableGroup.Post("/:id/checkout", tableHandler.Checkout)
 	}
 
 	// 設定関連のルート

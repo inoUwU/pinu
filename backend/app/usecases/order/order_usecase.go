@@ -35,29 +35,29 @@ type OrderService interface {
 }
 
 type OrderUsecaseImpl struct {
-	unitOfWork   port.UnitOfWork
-	orderStore   domainOrder.OrderStore
-	sessionStore domainSession.SessionStore
-	tableStore   domainTable.TableRepository
-	menuStore    domainMenu.MenuRepository
-	logger       port.Logger
+	unitOfWork  port.UnitOfWork
+	orderRepo   domainOrder.OrderRepository
+	sessionRepo domainSession.SessionRepository
+	tableRepo   domainTable.TableRepository
+	menuRepo    domainMenu.MenuRepository
+	logger      port.Logger
 }
 
 func NewOrderUsecase(i *do.Injector) (OrderService, error) {
 	uow := do.MustInvokeNamed[port.UnitOfWork](i, "uow")
-	orderStore := do.MustInvoke[domainOrder.OrderStore](i)
-	sessionStore := do.MustInvoke[domainSession.SessionStore](i)
-	tableStore := do.MustInvoke[domainTable.TableRepository](i)
-	menuStore := do.MustInvoke[domainMenu.MenuRepository](i)
+	orderRepo := do.MustInvoke[domainOrder.OrderRepository](i)
+	sessionRepo := do.MustInvoke[domainSession.SessionRepository](i)
+	tableRepo := do.MustInvoke[domainTable.TableRepository](i)
+	menuRepo := do.MustInvoke[domainMenu.MenuRepository](i)
 	logger := do.MustInvokeNamed[port.Logger](i, "logger")
 
 	return &OrderUsecaseImpl{
-		unitOfWork:   uow,
-		orderStore:   orderStore,
-		sessionStore: sessionStore,
-		tableStore:   tableStore,
-		menuStore:    menuStore,
-		logger:       logger,
+		unitOfWork:  uow,
+		orderRepo:   orderRepo,
+		sessionRepo: sessionRepo,
+		tableRepo:   tableRepo,
+		menuRepo:    menuRepo,
+		logger:      logger,
 	}, nil
 }
 
@@ -67,7 +67,7 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 		return nil, ErrInvalidTableSessionID
 	}
 
-	tableSession, err := u.sessionStore.GetTableSessionByID(ctx, tableSessionID)
+	tableSession, err := u.sessionRepo.GetTableSessionByID(ctx, tableSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 	if tableSession.IsRevoked {
 		return nil, ErrTableSessionRevoked
 	}
-	if tableSession.ExpiresAt.Before(time.Now()) {
+	if tableSession.IsExpired(time.Now()) {
 		return nil, ErrTableSessionExpired
 	}
 	if len(in.Items) == 0 {
@@ -87,7 +87,7 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 	var targetGroup *domainOrder.OrderGroup
 
 	err = u.unitOfWork.Run(ctx, func(txCtx context.Context) error {
-		groups, err := u.orderStore.GetOrderGroupsByTableSession(txCtx, tableSessionID)
+		groups, err := u.orderRepo.GetOrderGroupsByTableSession(txCtx, tableSessionID)
 		if err != nil {
 			return err
 		}
@@ -98,9 +98,10 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 			targetGroup = &domainOrder.OrderGroup{
 				OrdersID:       uuid.New(),
 				TableSessionID: tableSessionID,
+				Status:         domainOrder.GroupStatusOpen,
 				CreatedAt:      time.Now(),
 			}
-			if err := u.orderStore.CreateOrderGroup(txCtx, targetGroup); err != nil {
+			if err := u.orderRepo.CreateOrderGroup(txCtx, targetGroup); err != nil {
 				return err
 			}
 		}
@@ -110,28 +111,23 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 				return ErrInvalidOrderItem
 			}
 
-			menu, err := u.menuStore.GetByID(txCtx, item.MenuID)
+			menu, err := u.menuRepo.GetByID(txCtx, item.MenuID)
 			if err != nil {
 				return err
 			}
 			if menu == nil {
 				return ErrMenuNotFound
 			}
-			if menu.IS_SOLD_OUT {
+			if !menu.IsOrderable() {
 				return ErrMenuSoldOut
 			}
 
-			orderItem := &domainOrder.OrderItem{
-				OrderItemID:  domainOrder.OrderItemID(uuid.NewString()),
-				OrdersID:     targetGroup.OrdersID,
-				MenuID:       item.MenuID,
-				Quantity:     item.Quantity,
-				PriceAtOrder: menu.PRICE,
-				Status:       domainOrder.StatusPending,
-				CreatedAt:    time.Now(),
+			orderItem, err := domainOrder.NewOrderItem(targetGroup.OrdersID, item.MenuID, item.Quantity, menu.Price, time.Now())
+			if err != nil {
+				return ErrInvalidOrderItem
 			}
 
-			if err := u.orderStore.CreateOrderItem(txCtx, orderItem); err != nil {
+			if err := u.orderRepo.CreateOrderItem(txCtx, orderItem); err != nil {
 				return err
 			}
 
@@ -139,7 +135,7 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 				if menuOptionID == "" {
 					continue
 				}
-				if err := u.orderStore.AddOrderItemOption(txCtx, &domainOrder.OrderItemOption{
+				if err := u.orderRepo.AddOrderItemOption(txCtx, &domainOrder.OrderItemOption{
 					OrderItemID:  orderItem.OrderItemID,
 					MenuOptionID: menuOptionID,
 				}); err != nil {
@@ -148,11 +144,11 @@ func (u *OrderUsecaseImpl) CreateOrder(ctx context.Context, in *input.CreateOrde
 			}
 		}
 
-		if err := u.sessionStore.UpdateTableSessionLastUsed(txCtx, tableSessionID); err != nil {
+		if err := u.sessionRepo.UpdateTableSessionLastUsed(txCtx, tableSessionID); err != nil {
 			return err
 		}
 
-		if err := u.tableStore.UpdateStatus(txCtx, domainTable.TableID(tableSession.TableID), domainTable.StatusOccupied); err != nil {
+		if err := u.tableRepo.UpdateStatus(txCtx, domainTable.TableID(tableSession.TableID), domainTable.StatusOccupied); err != nil {
 			return err
 		}
 
@@ -178,7 +174,7 @@ func (u *OrderUsecaseImpl) GetOrdersByTableSession(ctx context.Context, in *inpu
 		return nil, ErrInvalidTableSessionID
 	}
 
-	tableSession, err := u.sessionStore.GetTableSessionByID(ctx, tableSessionID)
+	tableSession, err := u.sessionRepo.GetTableSessionByID(ctx, tableSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +182,7 @@ func (u *OrderUsecaseImpl) GetOrdersByTableSession(ctx context.Context, in *inpu
 		return nil, ErrTableSessionNotFound
 	}
 
-	groups, err := u.orderStore.GetOrderGroupsByTableSession(ctx, tableSessionID)
+	groups, err := u.orderRepo.GetOrderGroupsByTableSession(ctx, tableSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -204,14 +200,14 @@ func (u *OrderUsecaseImpl) GetOrdersByTableSession(ctx context.Context, in *inpu
 }
 
 func (u *OrderUsecaseImpl) buildOrderGroupOutput(ctx context.Context, group *domainOrder.OrderGroup) (*output.OrderGroupOutput, error) {
-	items, err := u.orderStore.GetOrderItemsByOrderGroup(ctx, group.OrdersID)
+	items, err := u.orderRepo.GetOrderItemsByOrderGroup(ctx, group.OrdersID)
 	if err != nil {
 		return nil, err
 	}
 
 	itemOutputs := make([]output.OrderItemOutput, 0, len(items))
 	for _, item := range items {
-		options, err := u.orderStore.GetOrderItemOptions(ctx, item.OrderItemID)
+		options, err := u.orderRepo.GetOrderItemOptions(ctx, item.OrderItemID)
 		if err != nil {
 			return nil, err
 		}
@@ -237,6 +233,7 @@ func (u *OrderUsecaseImpl) buildOrderGroupOutput(ctx context.Context, group *dom
 	return &output.OrderGroupOutput{
 		OrdersID:       group.OrdersID.String(),
 		TableSessionID: group.TableSessionID.String(),
+		Status:         string(group.Status),
 		CreatedAt:      group.CreatedAt,
 		Items:          itemOutputs,
 	}, nil

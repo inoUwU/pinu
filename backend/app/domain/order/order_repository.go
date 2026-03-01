@@ -6,12 +6,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// OrderStore 注文永続化のポート
-type OrderStore interface {
+// OrderRepository 注文永続化のポート
+type OrderRepository interface {
 	// OrderGroup関連
 	CreateOrderGroup(ctx context.Context, orderGroup *OrderGroup) error
 	GetOrderGroupByID(ctx context.Context, id uuid.UUID) (*OrderGroup, error)
 	GetOrderGroupsByTableSession(ctx context.Context, tableSessionID uuid.UUID) ([]*OrderGroup, error)
+	// CloseOrderGroupsByTableSession テーブルセッションに紐づく全オーダーグループを closed にする
+	CloseOrderGroupsByTableSession(ctx context.Context, tableSessionID uuid.UUID) error
 
 	// OrderItem関連
 	CreateOrderItem(ctx context.Context, orderItem *OrderItem) error

@@ -22,6 +22,7 @@ type OrderItemOutput struct {
 type OrderGroupOutput struct {
 	OrdersID       string            `json:"orders_id"`
 	TableSessionID string            `json:"table_session_id"`
+	Status         string            `json:"status"`
 	CreatedAt      time.Time         `json:"created_at"`
 	Items          []OrderItemOutput `json:"items"`
 }

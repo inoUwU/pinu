@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"inoUwU/pinu/app/domain/session"
+	"inoUwU/pinu/app/domain/user"
 	"inoUwU/pinu/app/infrastructure/models"
 
 	"github.com/google/uuid"
@@ -20,7 +21,7 @@ type SessionRepositoryImpl struct {
 }
 
 // NewSessionRepository セッションリポジトリの実装を生成する
-func NewSessionRepository(i *do.Injector) (session.SessionStore, error) {
+func NewSessionRepository(i *do.Injector) (session.SessionRepository, error) {
 	db := do.MustInvokeNamed[*bun.DB](i, "db")
 	return &SessionRepositoryImpl{
 		db: db,
@@ -29,13 +30,13 @@ func NewSessionRepository(i *do.Injector) (session.SessionStore, error) {
 
 // CreateSession セッションを作成する
 func (r SessionRepositoryImpl) CreateSession(ctx context.Context, session *session.Session) error {
-	newSession := &models.Session{
-		SESSION_ID:    session.SessionID,
-		USER_ID:       string(session.UserID),
-		REFRESH_TOKEN: session.RefreshToken,
-		IS_REVOKED:    session.IsRevoked,
-		CREATED_AT:    session.CreatedAt,
-		EXPIRES_AT:    session.ExpiresAt,
+	newSession := &models.SessionModel{
+		SessionID:    session.SessionID,
+		UserID:       string(session.UserID),
+		RefreshToken: session.RefreshToken,
+		IsRevoked:    session.IsRevoked,
+		CreatedAt:    session.CreatedAt,
+		ExpiresAt:    session.ExpiresAt,
 	}
 
 	var inserter *bun.InsertQuery
@@ -54,7 +55,7 @@ func (r SessionRepositoryImpl) CreateSession(ctx context.Context, session *sessi
 
 // GetSessionByID セッションIDでセッションを取得する
 func (r SessionRepositoryImpl) GetSessionByID(ctx context.Context, id string) (*session.Session, error) {
-	res := new(session.Session)
+	model := new(models.SessionModel)
 
 	var selector *bun.SelectQuery
 
@@ -64,11 +65,12 @@ func (r SessionRepositoryImpl) GetSessionByID(ctx context.Context, id string) (*
 		selector = r.db.NewSelect()
 	}
 
-	selector.Model(res).Where("session_id = ?", id)
+	selector.Model(model).Where("session_id = ?", id)
 	if err := selector.Scan(ctx); err != nil {
-		return nil, nil // ユーザーが見つからない場合はnilを返す
+		return nil, nil // セッションが見つからない場合はnilを返す
 	}
-	return res, nil
+
+	return mapSessionModelToDomain(model), nil
 }
 
 // RevokeSessionByID セッションIDでセッションを無効化する
@@ -85,23 +87,15 @@ func (r SessionRepositoryImpl) RevokeSessionByID(ctx context.Context, id string)
 	}
 
 	// 更新対象を取得
-	currentSession := new(session.Session)
-	if err := selector.Model(currentSession).Where("session_id = ?", id).Scan(ctx); err != nil {
+	currentModel := new(models.SessionModel)
+	if err := selector.Model(currentModel).Where("session_id = ?", id).Scan(ctx); err != nil {
 		return err
 	}
 
 	// 無効化
-	currentSession.IsRevoked = true
-	newSession := &models.Session{
-		SESSION_ID:    currentSession.SessionID,
-		USER_ID:       string(currentSession.UserID),
-		REFRESH_TOKEN: currentSession.RefreshToken,
-		IS_REVOKED:    currentSession.IsRevoked,
-		CREATED_AT:    currentSession.CreatedAt,
-		EXPIRES_AT:    currentSession.ExpiresAt,
-	}
+	currentModel.IsRevoked = true
 
-	if _, err := updater.Model(newSession).WherePK().Exec(ctx); err != nil {
+	if _, err := updater.Model(currentModel).WherePK().Exec(ctx); err != nil {
 		return err
 	}
 	return nil
@@ -116,14 +110,14 @@ func (r SessionRepositoryImpl) DeleteSession(ctx context.Context, id string) err
 		deleter = r.db.NewDelete()
 	}
 
-	if _, err := deleter.Where("session_id = ?", id).Exec(ctx); err != nil {
+	if _, err := deleter.Model((*models.SessionModel)(nil)).Where("session_id = ?", id).Exec(ctx); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (r SessionRepositoryImpl) CreateTableSession(ctx context.Context, tableSession *session.TableSession) error {
-	newTableSession := &models.TableSession{
+	newTableSession := &models.TableSessionModel{
 		TableSessionID: tableSession.TableSessionID,
 		TableID:        tableSession.TableID,
 		IsRevoked:      tableSession.IsRevoked,
@@ -147,7 +141,7 @@ func (r SessionRepositoryImpl) CreateTableSession(ctx context.Context, tableSess
 }
 
 func (r SessionRepositoryImpl) GetTableSessionByID(ctx context.Context, id uuid.UUID) (*session.TableSession, error) {
-	tableSession := &models.TableSession{}
+	tableSession := &models.TableSessionModel{}
 
 	var selector *bun.SelectQuery
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
@@ -175,7 +169,7 @@ func (r SessionRepositoryImpl) GetTableSessionByID(ctx context.Context, id uuid.
 }
 
 func (r SessionRepositoryImpl) GetTableSessionByTableID(ctx context.Context, tableID string) (*session.TableSession, error) {
-	tableSession := &models.TableSession{}
+	tableSession := &models.TableSessionModel{}
 
 	var selector *bun.SelectQuery
 	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
@@ -215,7 +209,7 @@ func (r SessionRepositoryImpl) UpdateTableSessionLastUsed(ctx context.Context, i
 		updater = r.db.NewUpdate()
 	}
 
-	if _, err := updater.Model((*models.TableSession)(nil)).
+	if _, err := updater.Model((*models.TableSessionModel)(nil)).
 		Set("last_used = ?", time.Now()).
 		Where("table_session_id = ?", id).
 		Exec(ctx); err != nil {
@@ -233,7 +227,7 @@ func (r SessionRepositoryImpl) DeleteTableSession(ctx context.Context, id uuid.U
 		deleter = r.db.NewDelete()
 	}
 
-	if _, err := deleter.Model((*models.TableSession)(nil)).Where("table_session_id = ?", id).Exec(ctx); err != nil {
+	if _, err := deleter.Model((*models.TableSessionModel)(nil)).Where("table_session_id = ?", id).Exec(ctx); err != nil {
 		return err
 	}
 
@@ -248,9 +242,41 @@ func (r SessionRepositoryImpl) DeleteExpiredTableSessions(ctx context.Context) e
 		deleter = r.db.NewDelete()
 	}
 
-	if _, err := deleter.Model((*models.TableSession)(nil)).Where("expires_at < ?", time.Now()).Exec(ctx); err != nil {
+	if _, err := deleter.Model((*models.TableSessionModel)(nil)).Where("expires_at < ?", time.Now()).Exec(ctx); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// RevokeTableSessionByTableID テーブルIDに紐づく全テーブルセッションを無効化する
+func (r SessionRepositoryImpl) RevokeTableSessionByTableID(ctx context.Context, tableID string) error {
+	var updater *bun.UpdateQuery
+	if tx, ok := ctx.Value(ctxkey.TxCtxKey).(bun.Tx); ok {
+		updater = tx.NewUpdate()
+	} else {
+		updater = r.db.NewUpdate()
+	}
+
+	if _, err := updater.Model((*models.TableSessionModel)(nil)).
+		Set("is_revoked = ?", true).
+		Where("table_id = ?", tableID).
+		Where("is_revoked = ?", false).
+		Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// mapSessionModelToDomain SessionModelからドメイン型へのマッピング
+func mapSessionModelToDomain(m *models.SessionModel) *session.Session {
+	return &session.Session{
+		SessionID:    m.SessionID,
+		UserID:       user.UserID(m.UserID),
+		RefreshToken: m.RefreshToken,
+		IsRevoked:    m.IsRevoked,
+		CreatedAt:    m.CreatedAt,
+		ExpiresAt:    m.ExpiresAt,
+	}
 }

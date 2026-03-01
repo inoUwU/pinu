@@ -109,13 +109,13 @@ func (u *MenuUsecaseImpl) CreateMenu(ctx context.Context, input *input.CreateMen
 	// TODO: カテゴリの存在確認
 
 	menuEntity := &menu.Menu{
-		MENU_ID:     input.MenuID,
-		NAME:        input.Name,
-		DESCRIPTION: input.Description,
-		PRICE:       input.Price,
-		IMAGE_URL:   input.ImageURL,
-		IS_SOLD_OUT: input.IsSoldOut,
-		CATEGORY_ID: input.CategoryID,
+		MenuID:      input.MenuID,
+		Name:        input.Name,
+		Description: input.Description,
+		Price:       input.Price,
+		ImageURL:    input.ImageURL,
+		IsSoldOut:   input.IsSoldOut,
+		CategoryID:  input.CategoryID,
 	}
 
 	if err := u.menuRepo.Create(ctx, menuEntity); err != nil {
@@ -136,13 +136,13 @@ func (u *MenuUsecaseImpl) CreateMenu(ctx context.Context, input *input.CreateMen
 		Menu:        createdMenu,
 		Message:     "Menu created successfully",
 		CreatedAt:   time.Now(),
-		MenuID:      createdMenu.MENU_ID,
-		Name:        createdMenu.NAME,
-		Description: createdMenu.DESCRIPTION,
-		Price:       createdMenu.PRICE,
-		ImageURL:    createdMenu.IMAGE_URL,
-		IsSoldOut:   createdMenu.IS_SOLD_OUT,
-		CategoryID:  createdMenu.CATEGORY_ID,
+		MenuID:      createdMenu.MenuID,
+		Name:        createdMenu.Name,
+		Description: createdMenu.Description,
+		Price:       createdMenu.Price,
+		ImageURL:    createdMenu.ImageURL,
+		IsSoldOut:   createdMenu.IsSoldOut,
+		CategoryID:  createdMenu.CategoryID,
 	}, nil
 }
 
@@ -167,13 +167,13 @@ func (u *MenuUsecaseImpl) UpdateMenu(ctx context.Context, input *input.UpdateMen
 	}
 
 	menuEntity := &menu.Menu{
-		MENU_ID:     input.MenuID,
-		NAME:        input.Name,
-		DESCRIPTION: input.Description,
-		PRICE:       input.Price,
-		IMAGE_URL:   input.ImageURL,
-		IS_SOLD_OUT: input.IsSoldOut,
-		CATEGORY_ID: input.CategoryID,
+		MenuID:      input.MenuID,
+		Name:        input.Name,
+		Description: input.Description,
+		Price:       input.Price,
+		ImageURL:    input.ImageURL,
+		IsSoldOut:   input.IsSoldOut,
+		CategoryID:  input.CategoryID,
 	}
 
 	if err := u.menuRepo.Update(ctx, menuEntity); err != nil {

@@ -158,3 +158,37 @@ func (h *TableHandler) DeleteTable(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(output)
 }
+
+// Checkout テーブルの会計処理
+func (h *TableHandler) Checkout(c *fiber.Ctx) error {
+	id := table.TableID(c.Params("id"))
+
+	checkoutInput := &input.CheckoutTableInput{
+		TableID: id,
+	}
+
+	result, err := h.tableUsecase.CheckoutTable(c.Context(), checkoutInput)
+	if err != nil {
+		switch err.Error() {
+		case "table not found":
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "Table not found",
+			})
+		case "table is not occupied":
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Table is not occupied",
+			})
+		case "table has no active session":
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Table has no active session",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":   "Failed to checkout table",
+				"message": err.Error(),
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(result)
+}

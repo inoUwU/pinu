@@ -1,18 +1,20 @@
 package models
 
 import (
-	"github.com/uptrace/bun"
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
-type User struct {
+// UserModel ユーザーのインフラストラクチャーモデル
+type UserModel struct {
 	bun.BaseModel `bun:"table:users,alias:u"`
 
-	USER_ID       string    `bun:",pk"`
-	LOGIN_ID      string    `bun:""`
-	NAME          string    `bun:""`
-	PASSWORD_HASH string    `bun:""`
-	PASSWORD_SALT string    `bun:""`
-	IS_ADMIN      bool      `bun:""`
-	CREATED_AT    time.Time `bun:""`
+	UserID       string    `bun:"user_id,pk"`
+	LoginID      string    `bun:"login_id"`
+	Name         string    `bun:"name"`
+	PasswordHash string    `bun:"password_hash"`
+	PasswordSalt string    `bun:"password_salt"`
+	IsAdmin      bool      `bun:"is_admin"`
+	CreatedAt    time.Time `bun:"created_at"`
 }

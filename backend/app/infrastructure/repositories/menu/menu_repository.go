@@ -22,13 +22,13 @@ func NewMenuRepository(db *bun.DB) menu.MenuRepository {
 
 func (r *menuRepository) Create(ctx context.Context, menuItem *menu.Menu) error {
 	model := &models.MenuModel{
-		MenuID:      menuItem.MENU_ID,
-		Name:        menuItem.NAME,
-		Description: menuItem.DESCRIPTION,
-		Price:       menuItem.PRICE,
-		ImageURL:    menuItem.IMAGE_URL,
-		IsSoldOut:   menuItem.IS_SOLD_OUT,
-		CategoryID:  menuItem.CATEGORY_ID,
+		MenuID:      menuItem.MenuID,
+		Name:        menuItem.Name,
+		Description: menuItem.Description,
+		Price:       menuItem.Price,
+		ImageURL:    menuItem.ImageURL,
+		IsSoldOut:   menuItem.IsSoldOut,
+		CategoryID:  menuItem.CategoryID,
 	}
 
 	_, err := r.db.NewInsert().Model(model).Exec(ctx)
@@ -50,13 +50,13 @@ func (r *menuRepository) GetByID(ctx context.Context, id string) (*menu.Menu, er
 	}
 
 	return &menu.Menu{
-		MENU_ID:     model.MenuID,
-		NAME:        model.Name,
-		DESCRIPTION: model.Description,
-		PRICE:       model.Price,
-		IMAGE_URL:   model.ImageURL,
-		IS_SOLD_OUT: model.IsSoldOut,
-		CATEGORY_ID: model.CategoryID,
+		MenuID:      model.MenuID,
+		Name:        model.Name,
+		Description: model.Description,
+		Price:       model.Price,
+		ImageURL:    model.ImageURL,
+		IsSoldOut:   model.IsSoldOut,
+		CategoryID:  model.CategoryID,
 	}, nil
 }
 
@@ -74,13 +74,13 @@ func (r *menuRepository) GetAll(ctx context.Context) ([]*menu.Menu, error) {
 	menus := make([]*menu.Menu, len(models))
 	for i, model := range models {
 		menus[i] = &menu.Menu{
-			MENU_ID:     model.MenuID,
-			NAME:        model.Name,
-			DESCRIPTION: model.Description,
-			PRICE:       model.Price,
-			IMAGE_URL:   model.ImageURL,
-			IS_SOLD_OUT: model.IsSoldOut,
-			CATEGORY_ID: model.CategoryID,
+			MenuID:      model.MenuID,
+			Name:        model.Name,
+			Description: model.Description,
+			Price:       model.Price,
+			ImageURL:    model.ImageURL,
+			IsSoldOut:   model.IsSoldOut,
+			CategoryID:  model.CategoryID,
 		}
 	}
 
@@ -102,13 +102,13 @@ func (r *menuRepository) GetByCategory(ctx context.Context, categoryID string) (
 	menus := make([]*menu.Menu, len(models))
 	for i, model := range models {
 		menus[i] = &menu.Menu{
-			MENU_ID:     model.MenuID,
-			NAME:        model.Name,
-			DESCRIPTION: model.Description,
-			PRICE:       model.Price,
-			IMAGE_URL:   model.ImageURL,
-			IS_SOLD_OUT: model.IsSoldOut,
-			CATEGORY_ID: model.CategoryID,
+			MenuID:      model.MenuID,
+			Name:        model.Name,
+			Description: model.Description,
+			Price:       model.Price,
+			ImageURL:    model.ImageURL,
+			IsSoldOut:   model.IsSoldOut,
+			CategoryID:  model.CategoryID,
 		}
 	}
 
@@ -117,18 +117,18 @@ func (r *menuRepository) GetByCategory(ctx context.Context, categoryID string) (
 
 func (r *menuRepository) Update(ctx context.Context, menuItem *menu.Menu) error {
 	model := &models.MenuModel{
-		MenuID:      menuItem.MENU_ID,
-		Name:        menuItem.NAME,
-		Description: menuItem.DESCRIPTION,
-		Price:       menuItem.PRICE,
-		ImageURL:    menuItem.IMAGE_URL,
-		IsSoldOut:   menuItem.IS_SOLD_OUT,
-		CategoryID:  menuItem.CATEGORY_ID,
+		MenuID:      menuItem.MenuID,
+		Name:        menuItem.Name,
+		Description: menuItem.Description,
+		Price:       menuItem.Price,
+		ImageURL:    menuItem.ImageURL,
+		IsSoldOut:   menuItem.IsSoldOut,
+		CategoryID:  menuItem.CategoryID,
 	}
 
 	_, err := r.db.NewUpdate().
 		Model(model).
-		Where("menu_id = ?", menuItem.MENU_ID).
+		Where("menu_id = ?", menuItem.MenuID).
 		Exec(ctx)
 
 	return err

@@ -2,6 +2,7 @@ package token
 
 import (
 	"fmt"
+	"inoUwU/pinu/app/domain/port"
 	"inoUwU/pinu/app/domain/user"
 	"time"
 
@@ -18,27 +19,35 @@ func NewJwtMaker(secretKey string) (*JWTMaker, error) {
 	}, nil
 }
 
-// GenerateToken loginIdからTokenを作成します
-func (maker *JWTMaker) GenerateToken(user *user.User, duration time.Duration) (string, *UserClaims, error) {
-	claims, err := NewUserClaims(string(user.USER_ID), string(user.LOGIN_ID), user.IS_ADMIN, duration)
+// GenerateToken ユーザー情報からTokenを作成する（port.TokenMaker を実装）
+func (maker *JWTMaker) GenerateToken(u *user.User, duration time.Duration) (string, *port.Claims, error) {
+	claims, err := NewUserClaims(string(u.UserID), string(u.LoginID), u.IsAdmin, duration)
 
 	if err != nil {
 		return "", nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString(maker.secret)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := t.SignedString(maker.secret)
 	if err != nil {
 		return "", nil, fmt.Errorf("error signing token: %v", err)
 	}
 
-	return t, claims, nil
+	portClaims := &port.Claims{
+		ID:        claims.RegisteredClaims.ID,
+		UserID:    claims.UserId,
+		LoginID:   claims.LoginID,
+		IsAdmin:   claims.IsAdmin,
+		IssuedAt:  claims.RegisteredClaims.IssuedAt.Time,
+		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Time,
+	}
+
+	return tokenStr, portClaims, nil
 }
 
-// VerifyToken JwtTokenを検証します
-func (maker *JWTMaker) VerifyToken(tokenString string) (*UserClaims, error) {
-	claims, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-		// verify the signing method
+// VerifyToken JwtTokenを検証する（port.TokenMaker を実装）
+func (maker *JWTMaker) VerifyToken(tokenString string) (*port.Claims, error) {
+	parsed, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -47,9 +56,17 @@ func (maker *JWTMaker) VerifyToken(tokenString string) (*UserClaims, error) {
 	if err != nil {
 		return nil, err
 	}
-	userClaims, ok := claims.Claims.(*UserClaims)
+	userClaims, ok := parsed.Claims.(*UserClaims)
 	if !ok {
 		return nil, fmt.Errorf("invalid token claims")
 	}
-	return userClaims, nil
+
+	return &port.Claims{
+		ID:        userClaims.RegisteredClaims.ID,
+		UserID:    userClaims.UserId,
+		LoginID:   userClaims.LoginID,
+		IsAdmin:   userClaims.IsAdmin,
+		IssuedAt:  userClaims.RegisteredClaims.IssuedAt.Time,
+		ExpiresAt: userClaims.RegisteredClaims.ExpiresAt.Time,
+	}, nil
 }

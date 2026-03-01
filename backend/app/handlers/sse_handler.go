@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"encoding/json"
-	"inoUwU/pinu/app/services"
+	"inoUwU/pinu/app/domain/port"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/do"
@@ -15,12 +15,12 @@ import (
 
 // SSEHandler はSSE用エンドポイントを提供します
 type SSEHandler struct {
-	sseService *services.SSEService
+	sseBroker port.SSEBroker
 }
 
 func NewSSEHandler(i *do.Injector) (*SSEHandler, error) {
-	svc := do.MustInvoke[*services.SSEService](i)
-	return &SSEHandler{sseService: svc}, nil
+	broker := do.MustInvoke[port.SSEBroker](i)
+	return &SSEHandler{sseBroker: broker}, nil
 }
 
 func (h *SSEHandler) Route(router fiber.Router) error {
@@ -41,7 +41,7 @@ func (h *SSEHandler) SSEStream(c *fiber.Ctx) error {
 
 	c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {
 		for {
-			msg, exists := h.sseService.Consume()
+			msg, exists := h.sseBroker.Consume()
 			var jsonData []byte
 			var err error
 
@@ -89,7 +89,7 @@ func (h *SSEHandler) Publish(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	h.sseService.Publish(payload.Message)
+	h.sseBroker.Publish(payload.Message)
 	println("Message published:", payload.Message)
 	return c.SendString("Message added to queue")
 }
