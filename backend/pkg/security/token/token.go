@@ -34,12 +34,12 @@ func (maker *JWTMaker) GenerateToken(u *user.User, duration time.Duration) (stri
 	}
 
 	portClaims := &port.Claims{
-		ID:        claims.RegisteredClaims.ID,
+		ID:        claims.ID,
 		UserID:    claims.UserId,
 		LoginID:   claims.LoginID,
 		IsAdmin:   claims.IsAdmin,
-		IssuedAt:  claims.RegisteredClaims.IssuedAt.Time,
-		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Time,
+		IssuedAt:  claims.IssuedAt.Time,
+		ExpiresAt: claims.ExpiresAt.Time,
 	}
 
 	return tokenStr, portClaims, nil
@@ -62,11 +62,11 @@ func (maker *JWTMaker) VerifyToken(tokenString string) (*port.Claims, error) {
 	}
 
 	return &port.Claims{
-		ID:        userClaims.RegisteredClaims.ID,
+		ID:        userClaims.ID,
 		UserID:    userClaims.UserId,
 		LoginID:   userClaims.LoginID,
 		IsAdmin:   userClaims.IsAdmin,
-		IssuedAt:  userClaims.RegisteredClaims.IssuedAt.Time,
-		ExpiresAt: userClaims.RegisteredClaims.ExpiresAt.Time,
+		IssuedAt:  userClaims.IssuedAt.Time,
+		ExpiresAt: userClaims.ExpiresAt.Time,
 	}, nil
 }

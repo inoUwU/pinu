@@ -1,31 +1,30 @@
-# shadcn/ui monorepo template
+# Frontend
 
-This template is for creating a monorepo with shadcn/ui.
+`frontend/` は client (`/`) と admin (`/admin`) を内包する単一の Next.js アプリです。
 
-## Usage
-
-```bash
-pnpm dlx shadcn@latest init
-```
-
-## Adding components
-
-To add components to your app, run the following command at the root of your `web` app:
+## 開発
 
 ```bash
-pnpm dlx shadcn@latest add button -c apps/web
+pnpm install
+cp .env.sample .env.local
+pnpm dev
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+- client: <http://localhost:3000>
+- admin: <http://localhost:3000/admin>
 
-## Tailwind
+## よく使うコマンド
 
-Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
-
-## Using components
-
-To use the components in your app, import them from the `ui` package.
-
-```tsx
-import { Button } from "@workspace/ui/components/button"
+```bash
+pnpm dev
+pnpm build
+pnpm lint
+pnpm format
 ```
+
+## 構成
+
+- `app/(client)` - client 向けルート
+- `app/admin` - admin 向けルート
+- `components`, `hooks`, `lib`, `store` - フロントエンド共通コード
+- `packages/ui` - shared UI package

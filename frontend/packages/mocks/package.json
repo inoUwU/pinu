@@ -20,7 +20,7 @@
   "msw": {
     "workerDirectory": [
       "public",
-      "..\\..\\apps\\client\\public"
+      "../../public"
     ]
   }
 }

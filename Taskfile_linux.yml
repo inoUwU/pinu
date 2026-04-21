@@ -36,6 +36,14 @@ tasks:
         else
           echo "✅ .envファイルは既に存在します"
         fi
+      - |
+        if [ ! -f {{.FRONTEND_DIR}}/.env.local ]; then
+          echo "📝 フロントエンド用 .env.local を作成中..."
+          cp {{.FRONTEND_DIR}}/.env.sample {{.FRONTEND_DIR}}/.env.local
+          echo "✅ フロントエンド用 .env.local が作成されました"
+        else
+          echo "✅ フロントエンド用 .env.local は既に存在します"
+        fi
       - echo "🐳 Docker Composeサービスを起動中..."
       - docker compose up -d postgres air
       - echo "⏳ サービスの起動を待機中..."
@@ -62,7 +70,8 @@ tasks:
         echo $FRONTEND_PID > /tmp/pinu_frontend.pid
       - echo "✨ 開発環境が起動しました！"
       - echo "⚡ バックエンド - http://localhost:8000"
-      - echo "🚀 フロントエンド - http://localhost:3000"
+      - echo "🚀 フロントエンド(client) - http://localhost:3000"
+      - echo "🛠️  フロントエンド(admin) - http://localhost:3000/admin"
       - echo "🐘 データベース - localhost:5432"
       - echo ""
       - echo "停止するには - task stop"
@@ -75,7 +84,9 @@ tasks:
       - echo "✨ 開発環境が起動しました！"
       - echo "📊 Adminer - http://localhost:8080"
       - echo "⚡ バックエンド - http://localhost:8000 (Docker内)"
-      - echo "🚀 フロントエンド - task frontend:dev で起動してください"
+      - echo "🚀 フロントエンド(client) - http://localhost:3000"
+      - echo "🛠️  フロントエンド(admin) - http://localhost:3000/admin"
+      - echo "💡 Next.js は task frontend:dev で起動してください"
       - echo ""
       - echo "停止するには - task stop"
 
@@ -95,8 +106,6 @@ tasks:
           kill $(cat /tmp/pinu_frontend.pid) 2>/dev/null || true
           rm /tmp/pinu_frontend.pid
         fi
-      - pkill -f "go run app/cmd/main.go" || true
-      - pkill -f "pnpm dev" || true
       - echo "✅ 開発環境が停止されました"
 
   # 完全クリーンアップ
@@ -223,7 +232,12 @@ tasks:
     desc: フロントエンドのテストを実行
     dir: "{{.FRONTEND_DIR}}"
     cmds:
-      - pnpm test
+      - |
+        if node -e "const scripts=require('./package.json').scripts ?? {}; process.exit(scripts.test ? 0 : 1)"; then
+          pnpm test
+        else
+          echo "ℹ️  frontend に test スクリプトが未定義のためスキップします"
+        fi
 
   frontend:lint:
     desc: フロントエンドのLintを実行

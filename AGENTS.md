@@ -29,7 +29,7 @@
 ## Integration Points
 - API は `/api` 配下で提供され、auth/user/menu/order/analytics 系エンドポイントを Fiber ルートで公開する。
 - SSE は API グループに統合されるため、関連変更時はルーティングとイベント配信の両方を確認する。
-- Frontend は `apps/client` と `apps/admin` を分離し、共有要素は workspace package で再利用する。
+- Frontend は `frontend/` 直下の単一 Next.js とし、client は `/`、admin は `/admin`、共有要素は workspace package で再利用する。
 - DB は PostgreSQL + Bun を利用。Repository 実装でクエリ責務を持たせる。
 
 ## Security

@@ -6,7 +6,7 @@
 
 ## 概要
 
-このプロジェクトは、バックエンド（Go）とフロントエンドを含むポートフォリオアプリケーションです。Task ランナーと Docker を利用して簡単に開発環境を構築できます。
+このプロジェクトは、バックエンド（Go）とフロントエンド（単一 Next.js）を含むポートフォリオアプリケーションです。Task ランナーと Docker を利用して簡単に開発環境を構築できます。
 
 ## 前提条件
 
@@ -40,7 +40,8 @@ task dev
 開発環境起動後、以下のURLでアクセスできます：
 
 - バックエンド: <http://localhost:8000>
-- フロントエンド: <http://localhost:3000>
+- フロントエンド(client): <http://localhost:3000>
+- フロントエンド(admin): <http://localhost:3000/admin>
 - Adminer (DB管理): <http://localhost:8080>
 
 ## 主要なタスク
@@ -86,13 +87,11 @@ task db:logs     # PostgreSQLのログを表示
 ```bash
 .
 ├── backend/         # Goバックエンドコード
-├── frontend/        # フロントエンドコード
+├── frontend/        # 単一 Next.js フロントエンド（client=/, admin=/admin）
 ├── database/        # データベース関連ファイル
 │   ├── init/        # 初期化SQL
 │   └── postgresql.conf  # PostgreSQL設定
-├── .docs/           # プロジェクトドキュメント
-│   ├── ACCESSIBILITY_INDEX.md  # アクセシビリティドキュメント索引
-│   └── accessibility-*.md      # アクセシビリティ関連ドキュメント
+├── docs/            # プロジェクトドキュメント
 ├── bin/             # ビルド生成物
 ├── compose.yml      # Docker Compose設定
 ├── Taskfile.yml     # Taskランナー設定
@@ -103,12 +102,7 @@ task db:logs     # PostgreSQLのログを表示
 
 ### アクセシビリティ
 
-フロントエンドのアクセシビリティに関する包括的なドキュメントは [.docs/ACCESSIBILITY_INDEX.md](.docs/ACCESSIBILITY_INDEX.md) を参照してください。
-
-- 📊 [詳細監査レポート](.docs/accessibility-audit-report.md) - 42件の問題と推奨対応
-- ✅ [実装チェックリスト](.docs/accessibility-improvements-checklist.md) - すぐに使えるコードスニペット
-- 📘 [クイックリファレンス](.docs/accessibility-quick-reference.md) - 開発時のベストプラクティス
-- 📝 [エグゼクティブサマリー](.docs/accessibility-audit-summary.md) - 概要と対応計画
+フロントエンドのアクセシビリティに関する包括的なドキュメントは `docs/` 配下を参照してください。
 
 ## ライセンス
 

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"inoUwU/pinu/app/api"
+	"inoUwU/pinu/app/bootstrap"
 	mylogger "inoUwU/pinu/app/infrastructure/logger"
 	"inoUwU/pinu/app/middleware"
 	"log"
@@ -36,7 +37,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("データベース接続に失敗しました: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if closeErr := db.Close(); closeErr != nil {
+			log.Printf("データベース切断に失敗しました: %v", closeErr)
+		}
+	}()
 
 	port := os.Getenv("BACKEND_PORT")
 	if port == "" {
@@ -87,7 +92,7 @@ func main() {
 	}
 
 	// 依存性注入コンテナの設定
-	injector := buildInjector(db, appLogger, secretKey)
+	injector := bootstrap.BuildInjector(db, appLogger, secretKey)
 
 	// APIルートを設定
 	api.SetupRoutes(app, injector)

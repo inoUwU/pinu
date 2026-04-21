@@ -114,7 +114,11 @@ func TestAPISmoke(t *testing.T) {
 			if err != nil {
 				t.Fatalf("request failed: %v", err)
 			}
-			defer res.Body.Close()
+			defer func() {
+				if closeErr := res.Body.Close(); closeErr != nil {
+					t.Errorf("failed to close response body: %v", closeErr)
+				}
+			}()
 
 			if !isExpectedStatus(res.StatusCode, tc.expectedStatus) {
 				responseBody, _ := io.ReadAll(io.LimitReader(res.Body, 1024))

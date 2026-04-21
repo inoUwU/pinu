@@ -155,5 +155,7 @@ func SetupRoutes(app *fiber.App, injector *do.Injector) {
 	if err != nil {
 		panic("Failed to create SSEHandler: " + err.Error())
 	}
-	sseHandler.Route(api)
+	if err := sseHandler.Route(api); err != nil {
+		panic("Failed to register SSE routes: " + err.Error())
+	}
 }

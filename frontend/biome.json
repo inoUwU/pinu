@@ -8,7 +8,16 @@
     "actions": { "source": { "organizeImports": "on", "recommended": true } }
   },
   "linter": {
-    "includes": ["**", "!**/.next", "!**/node_modules", "!**/public"],
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/.next/**",
+      "!**/.node_modules",
+      "!**/node_modules",
+      "!**/.turbo",
+      "!**/.turbo/**",
+      "!**/public"
+    ],
     "domains": {
       "next": "recommended"
     },
@@ -30,7 +39,16 @@
   "formatter": {
     "enabled": true,
     "formatWithErrors": true,
-    "includes": ["**", "!**/.next", "!**/node_modules", "!**/public"],
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/.next/**",
+      "!**/.node_modules",
+      "!**/node_modules",
+      "!**/.turbo",
+      "!**/.turbo/**",
+      "!**/public"
+    ],
     "indentWidth": 2,
     "indentStyle": "space",
     "lineWidth": 80
@@ -46,6 +64,9 @@
     }
   },
   "css": {
+    "parser": {
+      "tailwindDirectives": true
+    },
     "formatter": { "enabled": true }
   },
   "json": {

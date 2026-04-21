@@ -67,7 +67,10 @@ func (h *SSEHandler) SSEStream(c *fiber.Ctx) error {
 				continue
 			}
 
-			fmt.Fprintf(w, "data: %s\n\n", string(jsonData))
+			if _, err := fmt.Fprintf(w, "data: %s\n\n", string(jsonData)); err != nil {
+				fmt.Printf("SSE write error: %v\n", err)
+				break
+			}
 
 			flushErr := w.Flush()
 			if flushErr != nil {

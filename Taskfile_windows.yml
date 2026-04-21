@@ -30,6 +30,7 @@ tasks:
     desc: 環境変数と依存関係をセットアップ
     cmds:
       - powershell -Command "if (!(Test-Path .env)) { Copy-Item .env.example .env; Write-Host '📝 .envファイルを作成しました' } else { Write-Host '✅ .envファイルは既に存在します' }"
+      - powershell -Command "if (!(Test-Path frontend/.env.local)) { Copy-Item frontend/.env.sample frontend/.env.local; Write-Host '📝 フロントエンド用 .env.local を作成しました' } else { Write-Host '✅ フロントエンド用 .env.local は既に存在します' }"
       - echo 🐳 Docker Composeサービスを起動中...
       - docker compose up -d postgres air
       - echo ⏳ サービスの起動を待機中...
@@ -51,6 +52,9 @@ tasks:
       - echo "ターミナル1 - task backend:dev"
       - echo "ターミナル2 - task frontend:dev"
       - echo ""
+      - echo "client - http://localhost:3000"
+      - echo "admin  - http://localhost:3000/admin"
+      - echo ""
       - echo "または Docker環境を使用 - task dev"
 
   # 開発環境一式（Docker全サービス）
@@ -61,7 +65,9 @@ tasks:
       - echo ✨ 開発環境が起動しました！
       - echo "📊 Adminer - http://localhost:8080"
       - echo "⚡ バックエンド - http://localhost:8000 (Docker内)"
-      - echo "🚀 フロントエンド - task frontend:dev で起動してください"
+      - echo "🚀 フロントエンド(client) - http://localhost:3000"
+      - echo "🛠️  フロントエンド(admin) - http://localhost:3000/admin"
+      - echo "💡 Next.js は task frontend:dev で起動してください"
       - echo ""
       - echo "停止するには - task stop"
 
@@ -71,8 +77,7 @@ tasks:
     cmds:
       - echo 🛑 開発環境を停止中...
       - docker compose stop
-      - taskkill /F /IM go.exe 2>nul || echo ""
-      - taskkill /F /IM node.exe 2>nul || echo ""
+      - echo ℹ️  task start で別ターミナル起動した backend/frontend は各ターミナルで停止してください
       - echo ✅ 開発環境が停止されました
 
   # 完全クリーンアップ
@@ -193,7 +198,7 @@ tasks:
     desc: フロントエンドのテストを実行
     dir: "{{.FRONTEND_DIR}}"
     cmds:
-      - pnpm test
+      - powershell -Command "$scripts = (Get-Content package.json -Raw | ConvertFrom-Json).scripts; if ($scripts.PSObject.Properties.Name -contains 'test') { pnpm test } else { Write-Host 'ℹ️  frontend に test スクリプトが未定義のためスキップします' }"
 
   frontend:lint:
     desc: フロントエンドのLintを実行

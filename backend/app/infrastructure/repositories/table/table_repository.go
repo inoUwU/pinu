@@ -193,20 +193,3 @@ func (r *tableRepository) ClearTableSession(ctx context.Context, id table.TableI
 
 	return err
 }
-
-// mapTableModelToDomain TableModelからドメイン型へのマッピング
-func mapTableModelToDomain(model *models.TableModel) *table.Table {
-	var currentTableSessionID *uuid.UUID
-	if model.CurrentTableSessionID != nil {
-		if parsedUUID, err := uuid.Parse(*model.CurrentTableSessionID); err == nil {
-			currentTableSessionID = &parsedUUID
-		}
-	}
-
-	return &table.Table{
-		TableID:               table.TableID(model.TableID),
-		Status:                table.TableStatus(model.Status),
-		CurrentTableSessionID: currentTableSessionID,
-		LastUpdated:           model.LastUpdated,
-	}
-}

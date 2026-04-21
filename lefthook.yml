@@ -43,7 +43,7 @@
 pre-commit:
   parallel: true
   commands:
-    check:
+    frontend-check:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,css}"
       run: pnpm dlx @biomejs/biome check --write \
         --no-errors-on-unmatched \
@@ -51,6 +51,6 @@ pre-commit:
         --diagnostic-level=error \
         --colors=off {staged_files}
       exclude:
-        - packages\ui\src\components\*.tsx
+        - packages/ui/src/components/*.tsx
       stage_fixed: true
       root: "frontend/"

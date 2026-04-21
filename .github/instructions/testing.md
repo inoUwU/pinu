@@ -514,20 +514,15 @@ describe('OrderForm', () => {
 ### Running Frontend Tests
 
 ```bash
-# Run all tests
-cd frontend && pnpm test
+# Frontend is a single Next.js app
+cd frontend
 
-# Run tests in watch mode
-cd frontend && pnpm test:watch
+# Run the configured frontend checks
+pnpm lint
+pnpm build
 
-# Run tests with coverage
-cd frontend && pnpm test:coverage
-
-# Run specific test file
-cd frontend && pnpm test menu-item.test.tsx
-
-# Run tests for specific app
-cd frontend/apps/client && pnpm test
+# If a test script is added later, run it from the frontend root
+pnpm test
 ```
 
 ## Test Best Practices
