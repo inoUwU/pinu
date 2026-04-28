@@ -2,28 +2,31 @@
 
 ```mermaid
 flowchart TD
-    A[顧客がテーブルのQRコードを読み取る] --> B{テーブル状態は？}
-    B -- "空席" --> C[新しいUUIDトークンを生成]
-    C --> D[テーブル状態を「使用中」に更新]
-    D --> E[リダイレクトしてトークン付与]
-    B -- "使用中" --> F[既存の注文グループに接続]
-    F --> G[新しいトークンを発行（同一グループ）]
-    G --> E
-    B -- "会計済み" --> H[アクセス拒否]
-    E --> I[注文リクエストにトークンを含める]
-    I --> J[サーバーがトークンを検証]
-    J -- "有効" --> K[注文を処理]
-    J -- "無効" --> H
-    K --> L[注文情報を共有]
-    L --> I
-    K --> M[会計ボタン押下]
-    M --> N[テーブル状態を「会計済み」に更新]
-    N --> O[関連するすべてのトークンを削除]
-    N --> P[テーブルリセットボタン押下]
-    P --> Q[テーブル状態を「空席」に変更]
-    Q --> B
+    A[来店客がテーブルの QR を読み取る] --> B[フロントが qr_token を送信]
+    B --> C[サーバーが qr_token から table_id を解決]
+    C --> D{テーブル状態と active session を判定}
+    D -- available --> E[新規 table_session_id を発行]
+    E --> F[current_table_session_id を設定]
+    F --> G[テーブル状態を occupied に更新]
+    G --> H[table_session_id を返却]
+    D -- occupied かつ active session あり --> I[既存 table_session_id を返却]
+    I --> H
+    D -- billing --> J[利用不可を返却]
+    H --> K[フロントが table_session_id を保持して客用画面へ遷移]
+    K --> L[注文・履歴取得で table_session_id を送信]
+    L --> M[サーバーが session を検証]
+    M -- 有効 --> N[注文処理 / 履歴返却]
+    M -- 無効 --> J
+    N --> O[来店客が会計依頼を送信]
+    O --> P[スタッフに会計依頼を通知]
+    P --> Q[スタッフが会計確定]
+    Q --> R[order_groups を closed に更新]
+    R --> S[table session を revoke]
+    S --> T[current_table_session_id をクリア]
+    T --> U[テーブル状態を available に更新]
 ```
 
-- 各ノードは主要な処理・状態遷移を表しています。
-- 「空席」→「使用中」→「会計済み」→「空席」のサイクルを明示しています。
-- トークン発行・検証・削除の流れも含めています。
+- QR コードは固定のテーブル識別子であり、読み取り成功時にサーバーが `table_session_id` を新規発行または再利用します。
+- テーブル状態は `available` → `occupied` → `billing` → `available` を基本サイクルとします。
+- 専用の heartbeat API は設けず、`last_used` はテーブルセッション参照、注文、会計依頼などの成功時に更新します。
+- 会計依頼はスタッフへの通知イベントであり、会計確定時に `table_session_id` を revoke します。

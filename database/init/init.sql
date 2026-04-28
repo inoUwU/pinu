@@ -78,6 +78,7 @@ CREATE TABLE menu_option_assignments (
 -- Tables（外部キーは後で）
 CREATE TABLE tables (
     table_id VARCHAR(255) PRIMARY KEY,
+  qr_token UUID NOT NULL,
     status table_status NOT NULL DEFAULT 'available',
     -- 変更: current_orders_id -> current_table_session_id
     current_table_session_id UUID, -- 外部キー後付け
@@ -150,6 +151,7 @@ ALTER TABLE tables
 -- Indexes
 -- 変更: table_sessions.orders_id のインデックスは不要
 -- CREATE INDEX idx_table_sessions_orders_id ON table_sessions(orders_id);
+CREATE UNIQUE INDEX ux_tables_qr_token ON tables(qr_token);
 CREATE INDEX idx_table_sessions_table_id ON table_sessions(table_id);
 CREATE INDEX idx_tables_current_table_session_id ON tables(current_table_session_id);
 CREATE INDEX idx_order_items_orders_id ON order_items(orders_id);
@@ -167,8 +169,9 @@ COMMENT ON TABLE categories IS 'メニュー分類';
 COMMENT ON TABLE menus IS '提供メニュー';
 COMMENT ON TABLE menu_options IS 'オプション設定';
 COMMENT ON TABLE menu_option_assignments IS 'メニューとオプションの関係';
-COMMENT ON TABLE tables IS '店舗の物理テーブル（current_table_session_idで現在のセッションを参照）';
-COMMENT ON TABLE table_sessions IS 'テーブルごとのセッション';
+COMMENT ON TABLE tables IS '店舗内の物理テーブルを表す。固定 QR 識別子、テーブル状態、現在のテーブルセッションIDを管理';
+COMMENT ON COLUMN tables.qr_token IS '固定 QR 識別子。QR 読み取り時に table_id 解決へ利用する';
+COMMENT ON TABLE table_sessions IS '各テーブルのセッション（QR 読み取り成功〜会計確定または有効期限切れまで）を表す';
 COMMENT ON TABLE order_groups IS '注文グループ（セッション配下）';
 COMMENT ON TABLE order_items IS '注文明細';
 COMMENT ON TABLE order_item_options IS '明細に付属したオプション';

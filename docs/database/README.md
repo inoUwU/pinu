@@ -148,18 +148,32 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 
 ##### tables
 
-店舗内の物理テーブルを表します。テーブルの状態（空席/使用中/会計待ち）と現在のテーブルセッションIDを管理します。
+店舗内の物理テーブルを表します。固定 QR 識別子、テーブルの状態（空席/使用中/会計待ち）、現在のテーブルセッションIDを管理します。
 
 **主要カラム:**
 
 - `table_id` (varchar(255), PK): テーブルID
+- `qr_token` (uuid, UQ): 固定 QR 識別子。QR 読み取り時に `table_id` 解決へ利用
 - `status` (table_status): 状態（available/occupied/billing）
 - `current_table_session_id` (uuid, FK → table_sessions): 現在のテーブルセッションID
 - `last_updated` (timestamptz): 最終更新
 
+**設計方針:**
+
+- `qr_token` は `tables` に保持する。理由は、固定 QR が物理テーブルと 1:1 に対応するため
+- QR の再発行が必要な場合も、`tables.qr_token` を更新して再印刷すれば対応できる
+- 履歴管理や複数 QR の同時運用が不要な現時点では、専用の QR テーブルを分けない
+
+```mermaid
+flowchart LR
+   QR[固定 QR] --> Token[qr_token]
+   Token --> Table[tables.table_id]
+   Table --> Session[active table_session_id]
+```
+
 ##### table_sessions
 
-各テーブルのセッション（QR入店〜会計・有効期限まで）を表します。
+各テーブルのセッション（QR 読み取り成功〜会計確定または有効期限切れまで）を表します。
 
 **主要カラム:**
 
@@ -169,6 +183,26 @@ DBMLファイルから自動的にドキュメントを生成するツールも�
 - `created_at` (timestamptz): 作成時間
 - `last_used` (timestamptz): 最終利用時刻
 - `expires_at` (timestamptz): 有効期限
+
+**運用ルール:**
+
+- QR コードは固定のテーブル識別子を保持し、読み取り成功時にサーバーが active な `table_session_id` を解決します。
+- `available` の場合は新規 `table_session_id` を作成し、同時に `tables.status` を `occupied` に更新します。
+- `occupied` の場合は `current_table_session_id` に紐づく active session を再利用します。
+- `billing` の場合は新規参加を拒否します。
+- 専用の heartbeat API は設けず、`last_used` はテーブルセッション参照、注文、会計依頼などの成功時に更新します。
+- `expires_at` はセッションのハード期限として扱い、期限切れ後は QR の再読み取りで再参加します。
+
+```mermaid
+flowchart TD
+   A[固定 QR] --> B[サーバーが table_id を解決]
+   B --> C{table.status}
+   C -- available --> D[新規 table_session を作成]
+   D --> E[current_table_session_id を設定]
+   E --> F[status を occupied に更新]
+   C -- occupied --> G[既存 active session を再利用]
+   C -- billing --> H[利用不可]
+```
 
 ##### order_groups
 
@@ -283,6 +317,8 @@ PostgreSQL の ENUM 型で特定カラムの値を制限し、データの整合
   - `idx_order_items_orders_id`
   - `idx_order_items_menu_id`
   - `idx_menus_category_id`
+- **ユニークインデックス**:
+   - `ux_tables_qr_token`
 - **パフォーマンスインデックス**:
   - `idx_menus_is_sold_out` (売り切れメニューの検索)
   - `idx_order_items_created_at` (日時での集計)
@@ -328,23 +364,31 @@ ALTER TABLE tables
 
 #### セッション終了時の処理
 
-有効期限切れや会計時には、同一トランザクションで以下を実行することを推奨します：
+会計確定または有効期限切れ時には、同一トランザクションで以下を実行することを推奨します：
 
-1. `tables.current_table_session_id` を NULL に設定
-2. 当該セッション配下の open な `order_groups` を closed に更新
+1. 当該セッション配下の open な `order_groups` を closed に更新
+2. `table_sessions.is_revoked` を `true` に更新
+3. `tables.current_table_session_id` を `NULL` に設定
+4. `tables.status` を `available` に更新
 
 ```sql
 BEGIN;
 
+-- セッション配下のオープンな注文グループをクローズ
+UPDATE order_groups
+SET status = 'closed'
+WHERE table_session_id = <session_id> AND status = 'open';
+
+-- テーブルセッションを revoke
+UPDATE table_sessions
+SET is_revoked = true
+WHERE table_session_id = <session_id>;
+
 -- テーブルの現在のセッションをクリア
 UPDATE tables 
-SET current_table_session_id = NULL 
+SET current_table_session_id = NULL,
+    status = 'available'
 WHERE current_table_session_id = <session_id>;
-
--- セッション配下のオープンな注文グループをクローズ
-UPDATE order_groups 
-SET status = 'closed' 
-WHERE table_session_id = <session_id> AND status = 'open';
 
 COMMIT;
 ```
