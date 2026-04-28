@@ -3,8 +3,247 @@
   "darkMode": true,
   "gridEnabling": false,
   "detailLevel": "Tables",
-  "tablePositions": [],
+  "tablePositions": [
+    {
+      "name": "settings",
+      "schemaName": "public",
+      "x": 12,
+      "y": 12
+    },
+    {
+      "name": "users",
+      "schemaName": "public",
+      "x": 270.14013671875,
+      "y": 12
+    },
+    {
+      "name": "categories",
+      "schemaName": "public",
+      "x": 12,
+      "y": 163
+    },
+    {
+      "name": "menus",
+      "schemaName": "public",
+      "x": 435.302734375,
+      "y": 203
+    },
+    {
+      "name": "menu_options",
+      "schemaName": "public",
+      "x": 12,
+      "y": 274
+    },
+    {
+      "name": "menu_option_assignments",
+      "schemaName": "public",
+      "x": 853.44287109375,
+      "y": 204
+    },
+    {
+      "name": "tables",
+      "schemaName": "public",
+      "x": 435.302734375,
+      "y": 315
+    },
+    {
+      "name": "table_sessions",
+      "schemaName": "public",
+      "x": 12,
+      "y": 385
+    },
+    {
+      "name": "order_groups",
+      "schemaName": "public",
+      "x": 435.302734375,
+      "y": 426
+    },
+    {
+      "name": "order_items",
+      "schemaName": "public",
+      "x": 853.44287109375,
+      "y": 315
+    },
+    {
+      "name": "order_item_options",
+      "schemaName": "public",
+      "x": 1356.37060546875,
+      "y": 163
+    },
+    {
+      "name": "sessions",
+      "schemaName": "public",
+      "x": 488.2802734375,
+      "y": 12
+    }
+  ],
   "tableGroupCollapseStates": [],
   "stickyNoteLayouts": [],
-  "referencePaths": []
+  "referencePaths": [
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "categories",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "menus",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "menus",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "menu_option_assignments",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "menu_options",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "menu_option_assignments",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "table_sessions",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "tables",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "tables",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "table_sessions",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "table_sessions",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "order_groups",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "order_groups",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "order_items",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "menus",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "order_items",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "order_items",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "order_item_options",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "menu_options",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "order_item_options",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        ""
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        ""
+      ],
+      "secondTableName": "sessions",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    }
+  ]
 }

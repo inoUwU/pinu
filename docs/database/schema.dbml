@@ -108,15 +108,17 @@ Table menu_option_assignments {
 
 Table tables {
   table_id varchar(255) [pk, note: 'テーブルID']
+  qr_token uuid [not null, note: '固定 QR 識別子。QR 読み取り時に table_id 解決へ利用する']
   status table_status [not null, default: 'available', note: '状態（available: 空席 / occupied: 使用中 / billing: 会計待ち）']
   current_table_session_id uuid [ref: > table_sessions.table_session_id, note: '現在のテーブルセッションID']
   last_updated timestamptz [default: `CURRENT_TIMESTAMP`, note: '最終更新']
   
   Indexes {
+    qr_token [unique, name: 'ux_tables_qr_token']
     current_table_session_id [name: 'idx_tables_current_table_session_id']
   }
   
-  Note: '店舗内の物理テーブルを表す。テーブルの状態と現在のテーブルセッションIDを管理'
+  Note: '店舗内の物理テーブルを表す。固定 QR 識別子、テーブル状態、現在のテーブルセッションIDを管理'
 }
 
 Table table_sessions {
