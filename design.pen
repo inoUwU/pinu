@@ -1,0 +1,3554 @@
+{
+  "version": "2.11",
+  "children": [
+    {
+      "type": "frame",
+      "id": "overview-board",
+      "x": 0,
+      "y": 0,
+      "name": "PINU Wireframe Overview",
+      "width": 520,
+      "height": 980,
+      "fill": "$panel",
+      "cornerRadius": 24,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$line"
+      },
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "overview-title",
+          "fill": "$ink",
+          "content": "PINU Wireframe Map",
+          "fontFamily": "Inter",
+          "fontSize": 30,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "overview-subtitle",
+          "fill": "$muted",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Source: docs/spec/list_of_screens.md and docs/spec/reverse_engineered_system_spec.md.\nImplementation audit: frontend/app routes, shared layouts, hooks, and local runtime check on 2026-04-29.",
+          "fontFamily": "Inter",
+          "fontSize": 13
+        },
+        {
+          "type": "frame",
+          "id": "overview-legend",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "overview-legend-title",
+              "fill": "$ink",
+              "content": "Legend",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "overview-legend-row",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "legend-implemented",
+                  "fill": "$implemented-bg",
+                  "cornerRadius": 999,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "legend-implemented-text",
+                      "fill": "$implemented-ink",
+                      "content": "実装あり",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "legend-scaffold",
+                  "fill": "$scaffold-bg",
+                  "cornerRadius": 999,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "legend-scaffold-text",
+                      "fill": "$scaffold-ink",
+                      "content": "骨組みのみ",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "legend-spec",
+                  "fill": "$spec-bg",
+                  "cornerRadius": 999,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "legend-spec-text",
+                      "fill": "$spec-ink",
+                      "content": "仕様のみ",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FwiVu",
+                  "name": "runtimeLegend",
+                  "fill": "$runtime-bg",
+                  "cornerRadius": 999,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XubtZ",
+                      "fill": "$runtime-ink",
+                      "content": "実ラン空画面",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "overview-client",
+          "width": "fill_container",
+          "height": 248,
+          "fill": "$soft",
+          "cornerRadius": 14,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "$line"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "overview-client-title",
+              "fill": "$ink",
+              "content": "Client routes: code vs runtime",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "overview-client-body",
+              "fill": "$ink",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "/: hello + mock fetch only, runtime blank\n/category: code has 2 dummy cards, runtime blank\n/[categoryid]: placeholder, runtime blank\n/[categoryid]/[mid]: placeholder, runtime blank\n/order: title + CTA + bottom nav render\n/history: code suggests sample table, runtime blank\n/checkout: code suggests thank-you page, runtime blank",
+              "lineHeight": 1.2,
+              "fontFamily": "Inter",
+              "fontSize": 13
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "overview-admin",
+          "width": "fill_container",
+          "height": 268,
+          "fill": "$soft",
+          "cornerRadius": 14,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "$line"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "overview-admin-title",
+              "fill": "$ink",
+              "content": "Admin routes: code vs runtime",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "overview-admin-body",
+              "fill": "$ink",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "/admin/login: form in code, runtime blank\n/admin: analytics in code, runtime blank\n/admin/menu: runtime verified with category columns\n/admin/operation: runtime verified with dummy kitchen cards\n/admin/bill: table grid in code, runtime blank\n/admin/user: CRUD table in code, runtime blank\n/admin/qrcode: QR generator in code, runtime blank\n/admin/settings: heading only in runtime",
+              "lineHeight": 1.2,
+              "fontFamily": "Inter",
+              "fontSize": 13
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "overview-gaps",
+          "width": "fill_container",
+          "height": 220,
+          "fill": "$soft",
+          "cornerRadius": 14,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "$line"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "overview-gaps-title",
+              "fill": "$ink",
+              "content": "Spec + runtime gaps",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "overview-gaps-body",
+              "fill": "$ink",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Runtime check on 2026-04-29 exposed several effectively blank routes. Browser logs also showed sync dynamic params misuse, script tags inside React trees, and duplicate-key warnings.\nThe wireframes below now separate code intent from what was actually visible in the running app.",
+              "lineHeight": 1.2,
+              "fontFamily": "Inter",
+              "fontSize": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "client-language",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Language / QR Resolve",
+      "x": 580,
+      "y": 0,
+      "descendants": {
+        "mobile-title": {
+          "content": "初期設定 / QR 解決"
+        },
+        "mobile-meta": {
+          "content": "Spec only: QR resolve + language selection before the regular client flow",
+          "fill": "$spec-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "l8Rwsl",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-language-session",
+              "width": "fill_container",
+              "height": 124,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-language-session-title",
+                  "fill": "$ink",
+                  "content": "table session resolver",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-language-session-body",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "qr_token -> table_session_id\navailable / occupied / billing",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-language-buttons",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "client-language-jp",
+                  "width": "fill_container",
+                  "height": 96,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-language-jp-text",
+                      "fill": "$ink",
+                      "content": "日本語",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-language-en",
+                  "width": "fill_container",
+                  "height": 96,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-language-en-text",
+                      "fill": "$ink",
+                      "content": "English",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-language-hint",
+              "width": "fill_container",
+              "height": 120,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-language-hint-title",
+                  "fill": "$ink",
+                  "content": "edge states",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-language-hint-body",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "billing in progress\ninvalid QR token\nsession expired / rejoin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-language-note",
+              "width": "fill_container",
+              "height": 96,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-language-note-body",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Current root page is still a mock hello screen, so this wireframe follows docs rather than the actual `/` implementation.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        },
+        "mobile-footer": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "client-category",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Category List",
+      "x": 1000,
+      "y": 0,
+      "descendants": {
+        "mobile-title": {
+          "content": "カテゴリー"
+        },
+        "mobile-meta": {
+          "content": "Route: /category | Implemented skeleton with two hard-coded cards",
+          "fill": "$implemented-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "y6e72u",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-category-session",
+              "width": "fill_container",
+              "height": 78,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-category-session-title",
+                  "fill": "$ink",
+                  "content": "table session banner",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-category-session-body",
+                  "fill": "$muted",
+                  "content": "Table T01 / active session",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-category-card1",
+              "width": "fill_container",
+              "height": 170,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-category-card1-title",
+                  "fill": "$ink",
+                  "content": "飲み物",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "client-category-card1-image",
+                  "width": "fill_container",
+                  "height": 72,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-category-card1-image-text",
+                      "fill": "$muted",
+                      "content": "image / cover area",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "client-category-card1-note",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Current code shows a dummy image and pushes to /1",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-category-card2",
+              "width": "fill_container",
+              "height": 170,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-category-card2-title",
+                  "fill": "$ink",
+                  "content": "食べ物",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "client-category-card2-image",
+                  "width": "fill_container",
+                  "height": 72,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-category-card2-image-text",
+                      "fill": "$muted",
+                      "content": "image / cover area",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "client-category-card2-note",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Current code shows a dummy image and pushes to /2",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-category-footer-note",
+              "width": "fill_container",
+              "height": 70,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-category-footer-note-text",
+                  "fill": "$muted",
+                  "content": "Large touch targets for elderly-friendly browsing",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "client-menu-list",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Menu List",
+      "x": 580,
+      "y": 900,
+      "descendants": {
+        "mobile-title": {
+          "content": "メニュー一覧"
+        },
+        "mobile-meta": {
+          "content": "Route: /[categoryid] | Scaffold only, body is still placeholder text in code",
+          "fill": "$scaffold-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "g4n3CY",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-menu-filter",
+              "width": "fill_container",
+              "height": 78,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-menu-filter-title",
+                  "fill": "$ink",
+                  "content": "back + category filter rail",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-menu-filter-note",
+                  "fill": "$muted",
+                  "content": "Spec expects category-specific menu browsing",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-menu-row1",
+              "width": "fill_container",
+              "height": 88,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "client-menu-row1-thumb",
+                  "width": 72,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row1-thumb-text",
+                      "fill": "$muted",
+                      "content": "thumb",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row1-info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row1-title",
+                      "fill": "$ink",
+                      "content": "餃子",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row1-note",
+                      "fill": "$muted",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Thumbnail, note, add button",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row1-price",
+                  "width": 78,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row1-price-text",
+                      "fill": "$ink",
+                      "content": "¥480",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row1-cta",
+                      "fill": "$muted",
+                      "content": "+ add",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-menu-row2",
+              "width": "fill_container",
+              "height": 88,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "client-menu-row2-thumb",
+                  "width": 72,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row2-thumb-text",
+                      "fill": "$muted",
+                      "content": "thumb",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row2-info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row2-title",
+                      "fill": "$ink",
+                      "content": "チャーハン",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row2-note",
+                      "fill": "$muted",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Placeholder list item from docs-based flow",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row2-price",
+                  "width": 78,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row2-price-text",
+                      "fill": "$ink",
+                      "content": "¥780",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row2-cta",
+                      "fill": "$muted",
+                      "content": "+ add",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-menu-row3",
+              "width": "fill_container",
+              "height": 88,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "client-menu-row3-thumb",
+                  "width": 72,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row3-thumb-text",
+                      "fill": "$muted",
+                      "content": "thumb",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row3-info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row3-title",
+                      "fill": "$ink",
+                      "content": "烏龍茶",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row3-note",
+                      "fill": "$muted",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Option to jump into detail / option selection",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-menu-row3-price",
+                  "width": 78,
+                  "height": 64,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "client-menu-row3-price-text",
+                      "fill": "$ink",
+                      "content": "¥280",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-menu-row3-cta",
+                      "fill": "$muted",
+                      "content": "+ add",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-menu-callout",
+              "width": "fill_container",
+              "height": 88,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-menu-callout-text",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Actual page currently renders only “カテゴリー {id} のメニュー一覧がここに表示されます。”",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "client-menu-detail",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Menu Detail",
+      "x": 1000,
+      "y": 900,
+      "descendants": {
+        "mobile-title": {
+          "content": "メニュー詳細"
+        },
+        "mobile-meta": {
+          "content": "Route: /[categoryid]/[mid] | Scaffold only, intended to cover detail + options",
+          "fill": "$scaffold-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "Fj6JB",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-detail-hero",
+              "width": "fill_container",
+              "height": 220,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-detail-hero-title",
+                  "fill": "$ink",
+                  "content": "food image / hero block",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-detail-hero-note",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Menu name, price, short description",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-detail-options",
+              "width": "fill_container",
+              "height": 148,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-detail-options-title",
+                  "fill": "$ink",
+                  "content": "options selector",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-detail-options-item1",
+                  "fill": "$muted",
+                  "content": "radio / checkbox group",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "client-detail-options-item2",
+                  "fill": "$muted",
+                  "content": "notes / spice / extras",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-detail-cta",
+              "width": "fill_container",
+              "height": 118,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-detail-cta-title",
+                  "fill": "$ink",
+                  "content": "quantity stepper + add to order",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-detail-cta-note",
+                  "fill": "$muted",
+                  "content": "Primary CTA anchored near the bottom",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "client-order",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Order",
+      "x": 580,
+      "y": 1800,
+      "descendants": {
+        "mobile-title": {
+          "content": "注文"
+        },
+        "mobile-meta": {
+          "content": "Route: /order | Implemented skeleton with CTA but no real cart body yet",
+          "fill": "$implemented-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "QHKyb",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-order-items",
+              "width": "fill_container",
+              "height": 304,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-order-items-title",
+                  "fill": "$ink",
+                  "content": "cart items",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "client-order-item1",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-order-item1-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-order-item1-title",
+                          "fill": "$ink",
+                          "content": "餃子",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-order-item1-note",
+                          "fill": "$muted",
+                          "content": "remove / edit options",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-order-item1-qty",
+                      "fill": "$ink",
+                      "content": "x2",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-order-item2",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-order-item2-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-order-item2-title",
+                          "fill": "$ink",
+                          "content": "チャーハン",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-order-item2-note",
+                          "fill": "$muted",
+                          "content": "notes / modifiers",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-order-item2-qty",
+                      "fill": "$ink",
+                      "content": "x1",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-order-item3",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-order-item3-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-order-item3-title",
+                          "fill": "$ink",
+                          "content": "烏龍茶",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-order-item3-note",
+                          "fill": "$muted",
+                          "content": "line total",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-order-item3-qty",
+                      "fill": "$ink",
+                      "content": "x2",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-order-summary",
+              "width": "fill_container",
+              "height": 134,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-order-summary-title",
+                  "fill": "$ink",
+                  "content": "summary + submit",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-order-summary-total",
+                  "fill": "$ink",
+                  "content": "Total ¥2,300",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-order-summary-note",
+                  "fill": "$muted",
+                  "content": "Current implementation only shows “ここにカートの内容…”",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "client-history",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client History / Checkout Request",
+      "x": 1000,
+      "y": 1800,
+      "descendants": {
+        "mobile-title": {
+          "content": "会計・履歴"
+        },
+        "mobile-meta": {
+          "content": "Route: /history | Implemented sample table, checkout dialog, and status-oriented flow",
+          "fill": "$implemented-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "yxjnn",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-history-table",
+              "width": "fill_container",
+              "height": 304,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-history-table-title",
+                  "fill": "$ink",
+                  "content": "order history table",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "client-history-row1",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-history-row1-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-history-row1-title",
+                          "fill": "$ink",
+                          "content": "注文 #1",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-history-row1-status",
+                          "fill": "$muted",
+                          "content": "調理中",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-history-row1-amount",
+                      "fill": "$ink",
+                      "content": "¥960",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-history-row2",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-history-row2-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-history-row2-title",
+                          "fill": "$ink",
+                          "content": "注文 #2",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-history-row2-status",
+                          "fill": "$muted",
+                          "content": "提供済み",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-history-row2-amount",
+                      "fill": "$ink",
+                      "content": "¥780",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "client-history-row3",
+                  "width": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "client-history-row3-left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "client-history-row3-title",
+                          "fill": "$ink",
+                          "content": "注文 #3",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "client-history-row3-status",
+                          "fill": "$muted",
+                          "content": "会計待ち",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "client-history-row3-amount",
+                      "fill": "$ink",
+                      "content": "¥560",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "client-history-checkout",
+              "width": "fill_container",
+              "height": 120,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-history-checkout-title",
+                  "fill": "$ink",
+                  "content": "checkout request area",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-history-checkout-note",
+                  "fill": "$muted",
+                  "content": "Dialog confirmation -> /checkout transition",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "client-checkout",
+      "type": "ref",
+      "ref": "mobile-shell",
+      "name": "Client Checkout Complete",
+      "x": 580,
+      "y": 2700,
+      "descendants": {
+        "mobile-title": {
+          "content": "チェックアウト"
+        },
+        "mobile-meta": {
+          "content": "Route: /checkout | Implemented thank-you page after checkout confirmation",
+          "fill": "$implemented-ink"
+        },
+        "mobile-body": {
+          "type": "frame",
+          "id": "MGiB7",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "client-checkout-message",
+              "width": "fill_container",
+              "height": 220,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "client-checkout-message-title",
+                  "fill": "$ink",
+                  "content": "ご利用ありがとうございました",
+                  "fontFamily": "Inter",
+                  "fontSize": 24,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "client-checkout-message-body",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "お支払いのため、レジへお進みください",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 14
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "admin-login",
+      "x": 1430,
+      "y": 0,
+      "name": "Admin Login",
+      "width": 560,
+      "height": 420,
+      "fill": "$panel",
+      "cornerRadius": 20,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$line"
+      },
+      "layout": "vertical",
+      "gap": 14,
+      "padding": 18,
+      "children": [
+        {
+          "type": "text",
+          "id": "admin-login-title",
+          "fill": "$ink",
+          "content": "ログイン",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "admin-login-meta",
+          "fill": "$implemented-ink",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Route: /admin/login | Implemented form with register link and auth hook",
+          "fontFamily": "Inter",
+          "fontSize": 12
+        },
+        {
+          "type": "frame",
+          "id": "admin-login-body",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-login-card",
+              "width": "fill_container",
+              "height": 284,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 18,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-login-card-title",
+                  "fill": "$ink",
+                  "content": "Welcome back",
+                  "fontFamily": "Inter",
+                  "fontSize": 24,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-login-user",
+                  "width": "fill_container",
+                  "height": 52,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-login-user-text",
+                      "fill": "$muted",
+                      "content": "User ID input",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-login-pass",
+                  "width": "fill_container",
+                  "height": 52,
+                  "fill": "$panel",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-login-pass-text",
+                      "fill": "$muted",
+                      "content": "Password input",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-login-submit",
+                  "width": "fill_container",
+                  "height": 48,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-login-submit-text",
+                      "fill": "$ink",
+                      "content": "Login button",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "admin-login-link",
+                  "fill": "$muted",
+                  "content": "register link / inline error message",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin-dashboard",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin Dashboard",
+      "x": 2020,
+      "y": 0,
+      "descendants": {
+        "admin-title": {
+          "content": "ダッシュボード"
+        },
+        "admin-meta": {
+          "content": "Route: /admin | Implemented analytics dashboard with KPI cards and charts",
+          "fill": "$implemented-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "d7AtV",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-dashboard-metrics",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-dashboard-metric1",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric1-label",
+                      "fill": "$muted",
+                      "content": "sales",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric1-value",
+                      "fill": "$ink",
+                      "content": "¥128k",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-dashboard-metric2",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric2-label",
+                      "fill": "$muted",
+                      "content": "orders",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric2-value",
+                      "fill": "$ink",
+                      "content": "84",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-dashboard-metric3",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric3-label",
+                      "fill": "$muted",
+                      "content": "active tables",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-metric3-value",
+                      "fill": "$ink",
+                      "content": "6",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-dashboard-charts",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-dashboard-chart1",
+                  "width": "fill_container",
+                  "height": 124,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-chart1-text",
+                      "fill": "$ink",
+                      "content": "top menus chart",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-dashboard-chart2",
+                  "width": "fill_container",
+                  "height": 124,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-dashboard-chart2-text",
+                      "fill": "$ink",
+                      "content": "category sales chart",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-dashboard-trend",
+              "width": "fill_container",
+              "height": 96,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-dashboard-trend-text",
+                  "fill": "$ink",
+                  "content": "daily sales trend",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "admin-menu",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin Menu Management",
+      "x": 2610,
+      "y": 0,
+      "descendants": {
+        "admin-title": {
+          "content": "メニュー管理"
+        },
+        "admin-meta": {
+          "content": "Route: /admin/menu | Implemented local-state planner layout with category columns",
+          "fill": "$implemented-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "nkuBY",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-menu-toolbar",
+              "width": "fill_container",
+              "height": 56,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-menu-toolbar-text",
+                  "fill": "$ink",
+                  "content": "Search / add category / refresh / settings",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-menu-board",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-menu-col1",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col1-title",
+                      "fill": "$ink",
+                      "content": "麺類",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col1-count",
+                      "fill": "$muted",
+                      "content": "4 items",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col1-card1",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col1-card1-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col1-card2",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col1-card2-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-menu-col2",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col2-title",
+                      "fill": "$ink",
+                      "content": "ご飯物",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col2-count",
+                      "fill": "$muted",
+                      "content": "3 items",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col2-card1",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col2-card1-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col2-card2",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col2-card2-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-menu-col3",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col3-title",
+                      "fill": "$ink",
+                      "content": "一品料理",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "admin-menu-col3-count",
+                      "fill": "$muted",
+                      "content": "2 items",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col3-card1",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col3-card1-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "admin-menu-col3-card2",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$panel",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$line"
+                      },
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "admin-menu-col3-card2-text",
+                          "fill": "$ink",
+                          "content": "menu card",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "admin-operation",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin Operation / Kitchen",
+      "x": 1430,
+      "y": 470,
+      "descendants": {
+        "admin-title": {
+          "content": "厨房オーダー管理"
+        },
+        "admin-meta": {
+          "content": "Route: /admin/operation | Scaffold: SSE status + dummy order cards",
+          "fill": "$scaffold-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "Pgte8",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-operation-status",
+              "width": "fill_container",
+              "height": 64,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-operation-status-title",
+                  "fill": "$ink",
+                  "content": "SSE connection state",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-operation-status-note",
+                  "fill": "$muted",
+                  "content": "connected / error / waiting",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-operation-lanes",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-operation-table1",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-operation-table1-title",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 1\n餃子 x3\n3 min",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-operation-table2",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-operation-table2-title",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 2\nチャーハン x1\n5 min",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-operation-table3",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-operation-table3-title",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 3\n会計呼び出し\n12 min",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "admin-bill",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin Billing",
+      "x": 2020,
+      "y": 470,
+      "descendants": {
+        "admin-title": {
+          "content": "会計"
+        },
+        "admin-meta": {
+          "content": "Route: /admin/bill | Implemented table grid plus bill sheet flow",
+          "fill": "$implemented-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "iLfXs",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-bill-grid",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-bill-table1",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-bill-table1-text",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 1\n利用中",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-bill-table2",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-bill-table2-text",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 2\n会計中",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-bill-table3",
+                  "width": "fill_container",
+                  "height": 92,
+                  "fill": "$soft",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-bill-table3-text",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Table 3\n利用中",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-bill-sheet",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-bill-sheet-title",
+                  "fill": "$ink",
+                  "content": "right-side bill sheet",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-bill-sheet-note",
+                  "fill": "$muted",
+                  "content": "order groups, totals, checkout action",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "admin-user",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin User Management",
+      "x": 2610,
+      "y": 470,
+      "descendants": {
+        "admin-title": {
+          "content": "ユーザー管理"
+        },
+        "admin-meta": {
+          "content": "Route: /admin/user | Implemented local CRUD table with modal form",
+          "fill": "$implemented-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "bEoDj",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-user-table",
+              "width": "fill_container",
+              "height": 120,
+              "fill": "$soft",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-user-table-title",
+                  "fill": "$ink",
+                  "content": "data table",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-user-table-row1",
+                  "fill": "$muted",
+                  "content": "Admin User / admin / actions",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-user-table-row2",
+                  "fill": "$muted",
+                  "content": "Add / Edit / Delete interactions",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-user-modal",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-user-modal-title",
+                  "fill": "$ink",
+                  "content": "create / edit dialog",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-user-modal-note",
+                  "fill": "$muted",
+                  "content": "name, role, submit state",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "admin-qrcode",
+      "x": 1430,
+      "y": 940,
+      "name": "Admin QR Code",
+      "width": 560,
+      "height": 420,
+      "fill": "$panel",
+      "cornerRadius": 20,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$line"
+      },
+      "layout": "vertical",
+      "gap": 14,
+      "padding": 18,
+      "children": [
+        {
+          "type": "text",
+          "id": "admin-qrcode-title",
+          "fill": "$ink",
+          "content": "QR Code",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "admin-qrcode-meta",
+          "fill": "$implemented-ink",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Route: /admin/qrcode | Implemented local-IP QR generator for client entry",
+          "fontFamily": "Inter",
+          "fontSize": 12
+        },
+        {
+          "type": "frame",
+          "id": "admin-qrcode-body",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-qrcode-box",
+              "width": "fill_container",
+              "height": 280,
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-qrcode-box-text",
+                  "fill": "$ink",
+                  "content": "QR code square",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-qrcode-box-note",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "protocol + local IP + /category",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin-settings",
+      "type": "ref",
+      "ref": "admin-shell",
+      "name": "Admin Settings",
+      "x": 2020,
+      "y": 940,
+      "descendants": {
+        "admin-title": {
+          "content": "設定"
+        },
+        "admin-meta": {
+          "content": "Route: /admin/settings | Scaffold only: placeholder text in current code",
+          "fill": "$scaffold-ink"
+        },
+        "admin-main": {
+          "type": "frame",
+          "id": "cj81n",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-settings-empty",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$panel",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-settings-empty-title",
+                  "fill": "$ink",
+                  "content": "settings form area",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "admin-settings-empty-note",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Store profile, auth secrets, printer settings, and operational defaults are still missing from the implemented UI.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "mobile-shell",
+      "x": 3300,
+      "y": 0,
+      "name": "Wireframe Mobile Shell",
+      "reusable": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$panel",
+      "cornerRadius": 28,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$line"
+      },
+      "layout": "vertical",
+      "gap": 14,
+      "padding": 18,
+      "children": [
+        {
+          "type": "frame",
+          "id": "mobile-head",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 6,
+          "children": [
+            {
+              "type": "text",
+              "id": "mobile-title",
+              "fill": "$ink",
+              "content": "Mobile Screen",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "mobile-meta",
+              "fill": "$muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Route and implementation status",
+              "fontFamily": "Inter",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "mobile-body",
+          "slot": [],
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12
+        },
+        {
+          "type": "frame",
+          "id": "mobile-footer",
+          "width": "fill_container",
+          "fill": "$nav-bg",
+          "cornerRadius": 18,
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "top": 1
+            },
+            "fill": "$line"
+          },
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "mobile-footer-menu",
+              "fill": "$muted",
+              "content": "MENU",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "mobile-footer-order",
+              "fill": "$muted",
+              "content": "ORDER",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "mobile-footer-history",
+              "fill": "$muted",
+              "content": "HISTORY",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "admin-shell",
+      "x": 3300,
+      "y": 920,
+      "name": "Wireframe Admin Shell",
+      "reusable": true,
+      "width": 560,
+      "height": 420,
+      "fill": "$panel",
+      "cornerRadius": 20,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$line"
+      },
+      "layout": "vertical",
+      "gap": 14,
+      "padding": 18,
+      "children": [
+        {
+          "type": "text",
+          "id": "admin-title",
+          "fill": "$ink",
+          "content": "Admin Screen",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "admin-meta",
+          "fill": "$muted",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Route and implementation status",
+          "fontFamily": "Inter",
+          "fontSize": 12
+        },
+        {
+          "type": "frame",
+          "id": "admin-canvas",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "admin-sidebar",
+              "width": 120,
+              "height": "fill_container",
+              "fill": "$nav-bg",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$line"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "admin-sidebar-logo",
+                  "fill": "$ink",
+                  "content": "Pinu",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-sidebar-nav1",
+                  "width": "fill_container",
+                  "height": 34,
+                  "fill": "$soft",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-sidebar-nav1-text",
+                      "fill": "$ink",
+                      "content": "Home",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-sidebar-nav2",
+                  "width": "fill_container",
+                  "height": 34,
+                  "fill": "$soft",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-sidebar-nav2-text",
+                      "fill": "$ink",
+                      "content": "Menu",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-sidebar-nav3",
+                  "width": "fill_container",
+                  "height": 34,
+                  "fill": "$soft",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "admin-sidebar-nav3-text",
+                      "fill": "$ink",
+                      "content": "Settings",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "admin-workspace",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "admin-topbar",
+                  "width": "fill_container",
+                  "height": 42,
+                  "fill": "$nav-bg",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$line"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12
+                },
+                {
+                  "type": "frame",
+                  "id": "admin-main",
+                  "slot": [],
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg": {
+      "type": "color",
+      "value": "#F5F7FA"
+    },
+    "panel": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "line": {
+      "type": "color",
+      "value": "#CBD5E1"
+    },
+    "soft": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "nav-bg": {
+      "type": "color",
+      "value": "#F8FAFC"
+    },
+    "ink": {
+      "type": "color",
+      "value": "#0F172A"
+    },
+    "muted": {
+      "type": "color",
+      "value": "#64748B"
+    },
+    "implemented-bg": {
+      "type": "color",
+      "value": "#DCFCE7"
+    },
+    "implemented-ink": {
+      "type": "color",
+      "value": "#166534"
+    },
+    "scaffold-bg": {
+      "type": "color",
+      "value": "#FEF3C7"
+    },
+    "scaffold-ink": {
+      "type": "color",
+      "value": "#92400E"
+    },
+    "spec-bg": {
+      "type": "color",
+      "value": "#E2E8F0"
+    },
+    "spec-ink": {
+      "type": "color",
+      "value": "#334155"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#3B82F6"
+    },
+    "accent-soft": {
+      "type": "color",
+      "value": "#DBEAFE"
+    },
+    "runtime-bg": {
+      "type": "color",
+      "value": "#FEE2E2"
+    },
+    "runtime-ink": {
+      "type": "color",
+      "value": "#991B1B"
+    }
+  }
+}
