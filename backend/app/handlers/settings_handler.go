@@ -4,7 +4,7 @@ import (
 	settingsUsecase "inoUwU/pinu/app/usecases/settings"
 	"inoUwU/pinu/app/usecases/settings/input"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -23,14 +23,14 @@ func NewSettingsHandler(i *do.Injector) (*SettingsHandler, error) {
 }
 
 // GetSetting 設定取得
-func (h *SettingsHandler) GetSetting(c *fiber.Ctx) error {
+func (h *SettingsHandler) GetSetting(c fiber.Ctx) error {
 	key := c.Params("key")
 
 	getInput := &input.GetSettingByKeyInput{
 		Key: key,
 	}
 
-	output, err := h.settingsUsecase.GetSettingByKey(c.Context(), getInput)
+	output, err := h.settingsUsecase.GetSettingByKey(c.RequestCtx(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get setting",
@@ -47,10 +47,10 @@ func (h *SettingsHandler) GetSetting(c *fiber.Ctx) error {
 }
 
 // GetAllSettings 全設定取得
-func (h *SettingsHandler) GetAllSettings(c *fiber.Ctx) error {
+func (h *SettingsHandler) GetAllSettings(c fiber.Ctx) error {
 	getInput := &input.GetSettingsInput{}
 
-	output, err := h.settingsUsecase.GetAllSettings(c.Context(), getInput)
+	output, err := h.settingsUsecase.GetAllSettings(c.RequestCtx(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get settings",
@@ -61,13 +61,13 @@ func (h *SettingsHandler) GetAllSettings(c *fiber.Ctx) error {
 }
 
 // SetSetting 設定保存
-func (h *SettingsHandler) SetSetting(c *fiber.Ctx) error {
+func (h *SettingsHandler) SetSetting(c fiber.Ctx) error {
 	var req struct {
 		Key   string `json:"key"`
 		Value string `json:"value"`
 	}
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -78,7 +78,7 @@ func (h *SettingsHandler) SetSetting(c *fiber.Ctx) error {
 		Value: req.Value,
 	}
 
-	output, err := h.settingsUsecase.SetSetting(c.Context(), setInput)
+	output, err := h.settingsUsecase.SetSetting(c.RequestCtx(), setInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to set setting",
@@ -89,14 +89,14 @@ func (h *SettingsHandler) SetSetting(c *fiber.Ctx) error {
 }
 
 // DeleteSetting 設定削除
-func (h *SettingsHandler) DeleteSetting(c *fiber.Ctx) error {
+func (h *SettingsHandler) DeleteSetting(c fiber.Ctx) error {
 	key := c.Params("key")
 
 	deleteInput := &input.DeleteSettingInput{
 		Key: key,
 	}
 
-	output, err := h.settingsUsecase.DeleteSetting(c.Context(), deleteInput)
+	output, err := h.settingsUsecase.DeleteSetting(c.RequestCtx(), deleteInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete setting",

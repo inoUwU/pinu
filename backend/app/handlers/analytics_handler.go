@@ -7,7 +7,7 @@ import (
 	"inoUwU/pinu/app/usecases/analytics"
 	"inoUwU/pinu/app/usecases/analytics/input"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -25,8 +25,8 @@ func NewAnalyticsHandler(i *do.Injector) (*AnalyticsHandler, error) {
 }
 
 // GetAnalyticsData 統計データ全体を取得します
-func (h *AnalyticsHandler) GetAnalyticsData(c *fiber.Ctx) error {
-	result, err := h.analyticsUsecase.GetAnalyticsData(c.UserContext(), &input.GetAnalyticsInput{})
+func (h *AnalyticsHandler) GetAnalyticsData(c fiber.Ctx) error {
+	result, err := h.analyticsUsecase.GetAnalyticsData(c.Context(), &input.GetAnalyticsInput{})
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -38,8 +38,8 @@ func (h *AnalyticsHandler) GetAnalyticsData(c *fiber.Ctx) error {
 }
 
 // GetKPISummary KPIサマリーを取得します
-func (h *AnalyticsHandler) GetKPISummary(c *fiber.Ctx) error {
-	result, err := h.analyticsUsecase.GetKPISummary(c.UserContext(), &input.GetKPISummaryInput{})
+func (h *AnalyticsHandler) GetKPISummary(c fiber.Ctx) error {
+	result, err := h.analyticsUsecase.GetKPISummary(c.Context(), &input.GetKPISummaryInput{})
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -51,7 +51,7 @@ func (h *AnalyticsHandler) GetKPISummary(c *fiber.Ctx) error {
 }
 
 // GetTopMenus トップメニューを取得します
-func (h *AnalyticsHandler) GetTopMenus(c *fiber.Ctx) error {
+func (h *AnalyticsHandler) GetTopMenus(c fiber.Ctx) error {
 	limit := 10 // デフォルト値
 
 	// クエリパラメーターからlimitを取得
@@ -61,7 +61,7 @@ func (h *AnalyticsHandler) GetTopMenus(c *fiber.Ctx) error {
 		}
 	}
 
-	result, err := h.analyticsUsecase.GetTopMenus(c.UserContext(), &input.GetTopMenusInput{
+	result, err := h.analyticsUsecase.GetTopMenus(c.Context(), &input.GetTopMenusInput{
 		Limit: limit,
 	})
 
@@ -75,8 +75,8 @@ func (h *AnalyticsHandler) GetTopMenus(c *fiber.Ctx) error {
 }
 
 // GetCategorySales カテゴリ別売上を取得します
-func (h *AnalyticsHandler) GetCategorySales(c *fiber.Ctx) error {
-	result, err := h.analyticsUsecase.GetCategorySales(c.UserContext(), &input.GetCategorySalesInput{})
+func (h *AnalyticsHandler) GetCategorySales(c fiber.Ctx) error {
+	result, err := h.analyticsUsecase.GetCategorySales(c.Context(), &input.GetCategorySalesInput{})
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -88,7 +88,7 @@ func (h *AnalyticsHandler) GetCategorySales(c *fiber.Ctx) error {
 }
 
 // GetMenuPerformance メニューパフォーマンスを取得します
-func (h *AnalyticsHandler) GetMenuPerformance(c *fiber.Ctx) error {
+func (h *AnalyticsHandler) GetMenuPerformance(c fiber.Ctx) error {
 	limit := 20 // デフォルト値
 
 	// クエリパラメーターからlimitを取得
@@ -98,7 +98,7 @@ func (h *AnalyticsHandler) GetMenuPerformance(c *fiber.Ctx) error {
 		}
 	}
 
-	result, err := h.analyticsUsecase.GetMenuPerformance(c.UserContext(), &input.GetMenuPerformanceInput{
+	result, err := h.analyticsUsecase.GetMenuPerformance(c.Context(), &input.GetMenuPerformanceInput{
 		Limit: limit,
 	})
 
@@ -112,8 +112,8 @@ func (h *AnalyticsHandler) GetMenuPerformance(c *fiber.Ctx) error {
 }
 
 // GetDailySales 日次売上を取得します
-func (h *AnalyticsHandler) GetDailySales(c *fiber.Ctx) error {
-	result, err := h.analyticsUsecase.GetDailySales(c.UserContext(), &input.GetDailySalesInput{})
+func (h *AnalyticsHandler) GetDailySales(c fiber.Ctx) error {
+	result, err := h.analyticsUsecase.GetDailySales(c.Context(), &input.GetDailySalesInput{})
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -125,7 +125,7 @@ func (h *AnalyticsHandler) GetDailySales(c *fiber.Ctx) error {
 }
 
 // GetMenuDailyTrends メニュー日次トレンドを取得します
-func (h *AnalyticsHandler) GetMenuDailyTrends(c *fiber.Ctx) error {
+func (h *AnalyticsHandler) GetMenuDailyTrends(c fiber.Ctx) error {
 	// クエリパラメーターからmenuIdsを取得（カンマ区切り）
 	var menuIds []string
 	if menuIdsStr := c.Query("menuIds"); menuIdsStr != "" {
@@ -134,7 +134,7 @@ func (h *AnalyticsHandler) GetMenuDailyTrends(c *fiber.Ctx) error {
 		// 複数の場合: menuIds = strings.Split(menuIdsStr, ",")
 	}
 
-	result, err := h.analyticsUsecase.GetMenuDailyTrends(c.UserContext(), &input.GetMenuDailyTrendsInput{
+	result, err := h.analyticsUsecase.GetMenuDailyTrends(c.Context(), &input.GetMenuDailyTrendsInput{
 		MenuIds: menuIds,
 	})
 

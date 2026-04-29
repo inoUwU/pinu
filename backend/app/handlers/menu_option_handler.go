@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 
 	"inoUwU/pinu/app/domain/menu_option"
@@ -24,16 +24,16 @@ func NewMenuOptionHandler(i *do.Injector) (*MenuOptionHandler, error) {
 }
 
 // CreateMenuOption メニューオプション作成
-func (h *MenuOptionHandler) CreateMenuOption(c *fiber.Ctx) error {
+func (h *MenuOptionHandler) CreateMenuOption(c fiber.Ctx) error {
 	req := new(input.CreateMenuOptionInput)
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	result, err := h.menuOptionUsecase.CreateMenuOption(c.UserContext(), req)
+	result, err := h.menuOptionUsecase.CreateMenuOption(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create menu option",
@@ -47,14 +47,14 @@ func (h *MenuOptionHandler) CreateMenuOption(c *fiber.Ctx) error {
 }
 
 // GetMenuOption メニューオプション取得
-func (h *MenuOptionHandler) GetMenuOption(c *fiber.Ctx) error {
+func (h *MenuOptionHandler) GetMenuOption(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := &input.GetMenuOptionByIDInput{
 		MenuOptionID: menu_option.MenuOptionID(id),
 	}
 
-	result, err := h.menuOptionUsecase.GetMenuOptionByID(c.UserContext(), req)
+	result, err := h.menuOptionUsecase.GetMenuOptionByID(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menu option",
@@ -71,10 +71,10 @@ func (h *MenuOptionHandler) GetMenuOption(c *fiber.Ctx) error {
 }
 
 // GetAllMenuOptions 全メニューオプション取得
-func (h *MenuOptionHandler) GetAllMenuOptions(c *fiber.Ctx) error {
+func (h *MenuOptionHandler) GetAllMenuOptions(c fiber.Ctx) error {
 	req := &input.GetMenuOptionsInput{}
 
-	result, err := h.menuOptionUsecase.GetAllMenuOptions(c.UserContext(), req)
+	result, err := h.menuOptionUsecase.GetAllMenuOptions(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menu options",
@@ -85,11 +85,11 @@ func (h *MenuOptionHandler) GetAllMenuOptions(c *fiber.Ctx) error {
 }
 
 // UpdateMenuOption メニューオプション更新
-func (h *MenuOptionHandler) UpdateMenuOption(c *fiber.Ctx) error {
+func (h *MenuOptionHandler) UpdateMenuOption(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := new(input.UpdateMenuOptionInput)
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -98,7 +98,7 @@ func (h *MenuOptionHandler) UpdateMenuOption(c *fiber.Ctx) error {
 	// URLパラメータからIDを設定
 	req.MenuOptionID = menu_option.MenuOptionID(id)
 
-	result, err := h.menuOptionUsecase.UpdateMenuOption(c.UserContext(), req)
+	result, err := h.menuOptionUsecase.UpdateMenuOption(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update menu option",
@@ -112,14 +112,14 @@ func (h *MenuOptionHandler) UpdateMenuOption(c *fiber.Ctx) error {
 }
 
 // DeleteMenuOption メニューオプション削除
-func (h *MenuOptionHandler) DeleteMenuOption(c *fiber.Ctx) error {
+func (h *MenuOptionHandler) DeleteMenuOption(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := &input.DeleteMenuOptionInput{
 		MenuOptionID: menu_option.MenuOptionID(id),
 	}
 
-	result, err := h.menuOptionUsecase.DeleteMenuOption(c.UserContext(), req)
+	result, err := h.menuOptionUsecase.DeleteMenuOption(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete menu option",

@@ -11,9 +11,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -49,7 +49,7 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		ErrorHandler: func(c *fiber.Ctx, err error) error {
+		ErrorHandler: func(c fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			if e, ok := err.(*fiber.Error); ok {
 				code = e.Code
@@ -70,11 +70,11 @@ func main() {
 
 	// corsミドルウェアを設定
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000,http://localhost:5500",
-		AllowHeaders:     "Origin, Content-Type, Accept, Cache-Control",
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5500"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Cache-Control"},
 		AllowCredentials: true,
-		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
-		ExposeHeaders:    "Content-Length, Content-Type, Connection, Cache-Control",
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type", "Connection", "Cache-Control"},
 	}))
 
 	// ロガーの設定

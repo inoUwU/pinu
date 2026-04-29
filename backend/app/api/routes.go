@@ -3,9 +3,9 @@ package api
 import (
 	"inoUwU/pinu/app/handlers"
 
-	"github.com/gofiber/swagger"
+	swagger "github.com/gofiber/contrib/v3/swaggo"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -13,7 +13,7 @@ import (
 func SetupRoutes(app *fiber.App, injector *do.Injector) {
 
 	// ヘルスチェック
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.Get("/", func(c fiber.Ctx) error {
 		return c.SendString("Pinu API is running!")
 	})
 

@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 
 	menuUsecase "inoUwU/pinu/app/usecases/menu"
@@ -23,16 +23,16 @@ func NewMenuHandler(i *do.Injector) (*MenuHandler, error) {
 }
 
 // CreateMenu メニュー作成
-func (h *MenuHandler) CreateMenu(c *fiber.Ctx) error {
+func (h *MenuHandler) CreateMenu(c fiber.Ctx) error {
 	req := new(input.CreateMenuInput)
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	result, err := h.menuUsecase.CreateMenu(c.UserContext(), req)
+	result, err := h.menuUsecase.CreateMenu(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create menu",
@@ -46,14 +46,14 @@ func (h *MenuHandler) CreateMenu(c *fiber.Ctx) error {
 }
 
 // GetMenu メニュー取得
-func (h *MenuHandler) GetMenu(c *fiber.Ctx) error {
+func (h *MenuHandler) GetMenu(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := &input.GetMenuByIDInput{
 		MenuID: id,
 	}
 
-	result, err := h.menuUsecase.GetMenuByID(c.UserContext(), req)
+	result, err := h.menuUsecase.GetMenuByID(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menu",
@@ -70,10 +70,10 @@ func (h *MenuHandler) GetMenu(c *fiber.Ctx) error {
 }
 
 // GetAllMenus 全メニュー取得
-func (h *MenuHandler) GetAllMenus(c *fiber.Ctx) error {
+func (h *MenuHandler) GetAllMenus(c fiber.Ctx) error {
 	req := &input.GetMenusInput{}
 
-	result, err := h.menuUsecase.GetAllMenus(c.UserContext(), req)
+	result, err := h.menuUsecase.GetAllMenus(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menus",
@@ -84,14 +84,14 @@ func (h *MenuHandler) GetAllMenus(c *fiber.Ctx) error {
 }
 
 // GetMenusByCategory カテゴリ別メニュー取得
-func (h *MenuHandler) GetMenusByCategory(c *fiber.Ctx) error {
+func (h *MenuHandler) GetMenusByCategory(c fiber.Ctx) error {
 	categoryID := c.Params("categoryId")
 
 	req := &input.GetMenusByCategoryInput{
 		CategoryID: categoryID,
 	}
 
-	result, err := h.menuUsecase.GetMenusByCategory(c.UserContext(), req)
+	result, err := h.menuUsecase.GetMenusByCategory(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get menus by category",
@@ -102,11 +102,11 @@ func (h *MenuHandler) GetMenusByCategory(c *fiber.Ctx) error {
 }
 
 // UpdateMenu メニュー更新
-func (h *MenuHandler) UpdateMenu(c *fiber.Ctx) error {
+func (h *MenuHandler) UpdateMenu(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := new(input.UpdateMenuInput)
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -115,7 +115,7 @@ func (h *MenuHandler) UpdateMenu(c *fiber.Ctx) error {
 	// URLパラメータからIDを設定
 	req.MenuID = id
 
-	result, err := h.menuUsecase.UpdateMenu(c.UserContext(), req)
+	result, err := h.menuUsecase.UpdateMenu(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update menu",
@@ -129,14 +129,14 @@ func (h *MenuHandler) UpdateMenu(c *fiber.Ctx) error {
 }
 
 // DeleteMenu メニュー削除
-func (h *MenuHandler) DeleteMenu(c *fiber.Ctx) error {
+func (h *MenuHandler) DeleteMenu(c fiber.Ctx) error {
 	id := c.Params("id")
 
 	req := &input.DeleteMenuInput{
 		MenuID: id,
 	}
 
-	result, err := h.menuUsecase.DeleteMenu(c.UserContext(), req)
+	result, err := h.menuUsecase.DeleteMenu(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete menu",

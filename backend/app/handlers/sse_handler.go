@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"inoUwU/pinu/app/domain/port"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 	"github.com/valyala/fasthttp"
 )
@@ -32,14 +32,14 @@ func (h *SSEHandler) Route(router fiber.Router) error {
 }
 
 // SSEStream SSEストリームを返却します
-func (h *SSEHandler) SSEStream(c *fiber.Ctx) error {
+func (h *SSEHandler) SSEStream(c fiber.Ctx) error {
 	c.Set("Content-Type", "text/event-stream")
 	c.Set("Cache-Control", "no-cache")
 	c.Set("Connection", "keep-alive")
 	c.Set("Access-Control-Allow-Origin", "*")
 	c.Set("Access-Control-Allow-Headers", "Cache-Control")
 
-	c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {
+	c.Status(fiber.StatusOK).RequestCtx().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {
 		for {
 			msg, exists := h.sseBroker.Consume()
 			var jsonData []byte
@@ -85,11 +85,11 @@ func (h *SSEHandler) SSEStream(c *fiber.Ctx) error {
 }
 
 // Publish キューにメッセージを追加します
-func (h *SSEHandler) Publish(c *fiber.Ctx) error {
+func (h *SSEHandler) Publish(c fiber.Ctx) error {
 	var payload struct {
 		Message string `json:"message"`
 	}
-	if err := c.BodyParser(&payload); err != nil {
+	if err := c.Bind().Body(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 	h.sseBroker.Publish(payload.Message)

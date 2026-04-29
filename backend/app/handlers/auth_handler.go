@@ -5,7 +5,7 @@ import (
 	"inoUwU/pinu/app/usecases/auth/input"
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -24,13 +24,13 @@ func NewAuthHandler(i *do.Injector) (*AuthHandler, error) {
 }
 
 // Login ログイン
-func (h *AuthHandler) Login(c *fiber.Ctx) error {
+func (h *AuthHandler) Login(c fiber.Ctx) error {
 	request := new(input.Login)
-	if err := c.BodyParser(&request); err != nil {
+	if err := c.Bind().Body(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
 	}
 
-	res, err := h.authUsecase.Login(c.Context(), request)
+	res, err := h.authUsecase.Login(c.RequestCtx(), request)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -39,13 +39,13 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 }
 
 // Logout  ログアウト
-func (h *AuthHandler) Logout(c *fiber.Ctx) error {
+func (h *AuthHandler) Logout(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing session ID"})
 	}
 
-	err := h.authUsecase.Logout(c.Context(), id)
+	err := h.authUsecase.Logout(c.RequestCtx(), id)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to logout", "message": err.Error()})
 	}
@@ -54,12 +54,12 @@ func (h *AuthHandler) Logout(c *fiber.Ctx) error {
 }
 
 // RenewAccessToken アクセストークンの更新
-func (h *AuthHandler) RenewAccessToken(c *fiber.Ctx) error {
+func (h *AuthHandler) RenewAccessToken(c fiber.Ctx) error {
 	request := new(input.RenewAccessToken)
-	if err := c.BodyParser(&request); err != nil {
+	if err := c.Bind().Body(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
 	}
-	res, err := h.authUsecase.RenewAccessToken(c.Context(), request)
+	res, err := h.authUsecase.RenewAccessToken(c.RequestCtx(), request)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -67,7 +67,7 @@ func (h *AuthHandler) RenewAccessToken(c *fiber.Ctx) error {
 }
 
 // RevokeSession セッションの無効化
-func (h *AuthHandler) RevokeSession(c *fiber.Ctx) error {
+func (h *AuthHandler) RevokeSession(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing session ID"})
@@ -78,7 +78,7 @@ func (h *AuthHandler) RevokeSession(c *fiber.Ctx) error {
 		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
 	}
 
-	err := h.authUsecase.RevokeSession(c.Context(), input.RevokeSession{
+	err := h.authUsecase.RevokeSession(c.RequestCtx(), input.RevokeSession{
 		SessionId: id,
 	})
 

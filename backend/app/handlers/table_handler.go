@@ -5,7 +5,7 @@ import (
 	tableUsecase "inoUwU/pinu/app/usecases/table"
 	"inoUwU/pinu/app/usecases/table/input"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -24,13 +24,13 @@ func NewTableHandler(i *do.Injector) (*TableHandler, error) {
 }
 
 // CreateTable テーブル作成
-func (h *TableHandler) CreateTable(c *fiber.Ctx) error {
+func (h *TableHandler) CreateTable(c fiber.Ctx) error {
 	var req struct {
 		TableID string `json:"table_id"`
 		Status  string `json:"status,omitempty"`
 	}
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -46,7 +46,7 @@ func (h *TableHandler) CreateTable(c *fiber.Ctx) error {
 		Status:  status,
 	}
 
-	output, err := h.tableUsecase.CreateTable(c.Context(), createInput)
+	output, err := h.tableUsecase.CreateTable(c.RequestCtx(), createInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create table",
@@ -57,14 +57,14 @@ func (h *TableHandler) CreateTable(c *fiber.Ctx) error {
 }
 
 // GetTable テーブル取得
-func (h *TableHandler) GetTable(c *fiber.Ctx) error {
+func (h *TableHandler) GetTable(c fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
 	getInput := &input.GetTableByIDInput{
 		TableID: id,
 	}
 
-	output, err := h.tableUsecase.GetTableByID(c.Context(), getInput)
+	output, err := h.tableUsecase.GetTableByID(c.RequestCtx(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get table",
@@ -81,10 +81,10 @@ func (h *TableHandler) GetTable(c *fiber.Ctx) error {
 }
 
 // GetAllTables 全テーブル取得
-func (h *TableHandler) GetAllTables(c *fiber.Ctx) error {
+func (h *TableHandler) GetAllTables(c fiber.Ctx) error {
 	getInput := &input.GetTablesInput{}
 
-	output, err := h.tableUsecase.GetAllTables(c.Context(), getInput)
+	output, err := h.tableUsecase.GetAllTables(c.RequestCtx(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get tables",
@@ -95,14 +95,14 @@ func (h *TableHandler) GetAllTables(c *fiber.Ctx) error {
 }
 
 // GetTablesByStatus ステータス別テーブル取得
-func (h *TableHandler) GetTablesByStatus(c *fiber.Ctx) error {
+func (h *TableHandler) GetTablesByStatus(c fiber.Ctx) error {
 	status := table.TableStatus(c.Params("status"))
 
 	getInput := &input.GetTablesByStatusInput{
 		Status: status,
 	}
 
-	output, err := h.tableUsecase.GetTablesByStatus(c.Context(), getInput)
+	output, err := h.tableUsecase.GetTablesByStatus(c.RequestCtx(), getInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get tables by status",
@@ -113,14 +113,14 @@ func (h *TableHandler) GetTablesByStatus(c *fiber.Ctx) error {
 }
 
 // UpdateTableStatus テーブルステータス更新
-func (h *TableHandler) UpdateTableStatus(c *fiber.Ctx) error {
+func (h *TableHandler) UpdateTableStatus(c fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
 	var req struct {
 		Status string `json:"status"`
 	}
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -131,7 +131,7 @@ func (h *TableHandler) UpdateTableStatus(c *fiber.Ctx) error {
 		Status:  table.TableStatus(req.Status),
 	}
 
-	output, err := h.tableUsecase.UpdateTableStatus(c.Context(), updateInput)
+	output, err := h.tableUsecase.UpdateTableStatus(c.RequestCtx(), updateInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update table status",
@@ -142,14 +142,14 @@ func (h *TableHandler) UpdateTableStatus(c *fiber.Ctx) error {
 }
 
 // DeleteTable テーブル削除
-func (h *TableHandler) DeleteTable(c *fiber.Ctx) error {
+func (h *TableHandler) DeleteTable(c fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
 	deleteInput := &input.DeleteTableInput{
 		TableID: id,
 	}
 
-	output, err := h.tableUsecase.DeleteTable(c.Context(), deleteInput)
+	output, err := h.tableUsecase.DeleteTable(c.RequestCtx(), deleteInput)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete table",
@@ -160,14 +160,14 @@ func (h *TableHandler) DeleteTable(c *fiber.Ctx) error {
 }
 
 // Checkout テーブルの会計処理
-func (h *TableHandler) Checkout(c *fiber.Ctx) error {
+func (h *TableHandler) Checkout(c fiber.Ctx) error {
 	id := table.TableID(c.Params("id"))
 
 	checkoutInput := &input.CheckoutTableInput{
 		TableID: id,
 	}
 
-	result, err := h.tableUsecase.CheckoutTable(c.Context(), checkoutInput)
+	result, err := h.tableUsecase.CheckoutTable(c.RequestCtx(), checkoutInput)
 	if err != nil {
 		switch err.Error() {
 		case "table not found":

@@ -6,7 +6,7 @@ import (
 	"inoUwU/pinu/app/usecases/order/input"
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/samber/do"
 )
 
@@ -21,13 +21,13 @@ func NewOrderHandler(i *do.Injector) (*OrderHandler, error) {
 }
 
 // GetAllOrders すべての注文を取得します
-func (h OrderHandler) GetAllOrders(c *fiber.Ctx) error {
+func (h OrderHandler) GetAllOrders(c fiber.Ctx) error {
 	tableSessionID := c.Query("table_session_id")
 	if tableSessionID == "" {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "table_session_id is required"})
 	}
 
-	result, err := h.orderService.GetOrdersByTableSession(c.UserContext(), &input.GetOrdersInput{TableSessionID: tableSessionID})
+	result, err := h.orderService.GetOrdersByTableSession(c.Context(), &input.GetOrdersInput{TableSessionID: tableSessionID})
 	if err != nil {
 		if errors.Is(err, orderUsecase.ErrInvalidTableSessionID) {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
@@ -42,13 +42,13 @@ func (h OrderHandler) GetAllOrders(c *fiber.Ctx) error {
 }
 
 // Order 注文を作成します
-func (h OrderHandler) Order(c *fiber.Ctx) error {
+func (h OrderHandler) Order(c fiber.Ctx) error {
 	request := new(input.CreateOrderInput)
-	if err := c.BodyParser(request); err != nil {
+	if err := c.Bind().Body(request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "cannot parse request"})
 	}
 
-	result, err := h.orderService.CreateOrder(c.UserContext(), request)
+	result, err := h.orderService.CreateOrder(c.Context(), request)
 	if err != nil {
 		switch {
 		case errors.Is(err, orderUsecase.ErrInvalidTableSessionID),
