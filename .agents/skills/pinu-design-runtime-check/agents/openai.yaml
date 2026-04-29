@@ -1,0 +1,4 @@
+interface:
+  display_name: "PINU Design Check"
+  short_description: "Reconnect frontend and Pencil, then verify runtime routes"
+  default_prompt: "Use $pinu-design-runtime-check to start the local frontend, verify routes in the in-app browser, and reconcile design.pen with runtime behavior."
